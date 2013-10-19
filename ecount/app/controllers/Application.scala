@@ -12,9 +12,7 @@ object Application extends Controller {
   }
 
   def map(countyId: Long) = Action {
-    // there will be some conversion from dynamic route to
-    // correct string representation for db query
-    County.getElectoralDivisons("Galway County")
+    County.getElectoralDivisions("Galway County")
     Ok(views.html.index("Your new application is ready."))
   }
 

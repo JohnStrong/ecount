@@ -11,6 +11,9 @@ package models
 import anorm._
 import play.api.Play.current
 
+/** packages all methods for accessing projection data
+ * for the interactive map service
+ */
 package object County {
 
   /**
@@ -20,24 +23,11 @@ package object County {
    * @return
    *         EDs as JSON format
    */
-  def getElectoralDivisons(county:String) {
+  def getElectoralDivisions(county:String) {
 
     //TODO: complete implementation
     play.api.db.DB.withConnection { implicit conn =>
 
-      val c = SQL(
-        """
-           select *
-           from electoral_divisions
-           where county = {countyName};
-        """
-      ).on("countyName" -> county)
-
-      val countyResultMap = c().map(row =>
-        row[Int]("gid") -> row[String]("county")
-      ).toList
-
-      countyResultMap.foreach( println(_) )
     }
   }
 }
