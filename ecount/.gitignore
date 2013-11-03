@@ -1,4 +1,5 @@
 logs
+conf
 project/project
 project/target
 target
@@ -13,4 +14,3 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-conf
