@@ -11,7 +11,9 @@
 
 				type: "GET",
 
-				url: "/map/divisions/0",
+				dataType: "json",
+
+				url: "/map/divisions/1",
 
 				error: function(err) {
 					console.log(err);
@@ -19,7 +21,11 @@
 
 				success: function(data) {
 
-					console.log(data);
+					// parse returned geojson
+					$.each(data, function(key, value) {
+						console.log(value);
+						console.log(key);
+					});
 
 					// center map at position
 					var mapOptions = {

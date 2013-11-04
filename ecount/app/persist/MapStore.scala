@@ -2,31 +2,41 @@ package persistence
 
 import org.mybatis.scala.mapping._
 
-import models.Map
+import models.{GeoElectoralDivisions, IMap}
 
 object MapStore {
 
-  val findDivisionsByCounty = new SelectOneBy[String, String] {
-    def xsql = <xsql>
-      SELECT ST_ASGEOJSON(geom)
-      FROM electoral_divisions
-      WHERE county = #{{value}}
-    </xsql>
+  // TODO: fix argument param to work successfully with Application.scala
+  val findDivisionsByCounty = new SelectListBy[Int, GeoElectoralDivisions] {
+
+    resultMap = new ResultMap[GeoElectoralDivisions] {
+      result(property = "geoJson", column = "st_asgeojson")
+    }
+
+    def xsql =
+      """
+      SELECT ST_asGeoJson(geom)
+      FROM electoral_divisions ed, counties c
+      WHERE c.county_id = 1
+      AND c.county = ed.county;
+      """
   }
 
-  val findAllDivisions = new SelectListBy[Unit, List[String]] {
-    def xsql = <xsql>
-      SELECT ST_ASGEOJSON(geom)
-      FROM electoral_divisions
-    </xsql>
-  }
+  val find = new SelectListBy[String, IMap] {
 
-  val find = new SelectListBy[String, Map] {
-    def xsql = <xsql>
+    resultMap = new ResultMap[GeoElectoralDivisions] {
+      id(property = "id" , column = "gid")
+      result(property = "csoCode", column = "cso_code")
+      result(property = "county", column = "county")
+      result(property = "saps_label", column = "edLabel")
+    }
+
+    def xsql =
+      """
       SELECT gid, cso_code, county, saps_label
       FROM electoral_divisions
-    </xsql>
+      """
   }
 
-  def bind = Seq(findDivisionsByCounty, findAllDivisions, find)
+  def bind = Seq(findDivisionsByCounty, find)
 }

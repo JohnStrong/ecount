@@ -2,10 +2,11 @@ package controllers
 
 import persistence.MapStore
 import play.api._
+import play.api.libs.json._
 import play.api.mvc._
 import persistence.PersistenceContext._
 
-import models._
+import models.{GeoElectoralDivisions, IMap}
 
 /**
  * @define
@@ -21,23 +22,17 @@ object Application extends Controller {
     Ok(views.html.map("Interactive Map"))
   }
 
-  // load EDs for all/or specific county
-  def electoralDivisions(countyId: Long) = Action {
+  // TODO: fix issue with poor data returned by Json...
+  // loads ED coordinates in Geo-Json format for a county by countyId
+  def electoralDivisions(countyId: Int) = Action {
+
     withConnection { implicit conn =>
 
-      countyId match {
+      val edByCounty = MapStore.findDivisionsByCounty(countyId).map(ed => {
+        Json.toJson(ed.geoJson)
+      }).toSeq
 
-        case id if countyId == 0 =>  {
-
-            // TODO: return geo-json data to client
-            val divisions = MapStore.findAllDivisions
-            Ok("success")
-        }
-
-        case id => {
-            NotFound
-        }
-      }
+      Ok(Json.toJson(edByCounty))
     }
   }
 

@@ -8,22 +8,18 @@
 
 package models
 
-import play.api.Play.current
-
-import persistence._
-
-class Map{
+class IMap{
   var id:Int = _
   var csoCode:String = _
   var county:String = _
   var edLabel:String = _
 }
 
-object Map {
+object IMap {
 
   def apply(id:Int, csoCode:String, county:String, edLabel:String) = {
 
-    val m = new Map
+    val m = new IMap
     m.id = id
     m.csoCode = csoCode
     m.county = county
@@ -32,7 +28,7 @@ object Map {
     m
   }
 
-  def unapply(m:Map) =
+  def unapply(m:IMap) =
     Some(m.id , m.csoCode, m.county, m.edLabel)
 }
 
