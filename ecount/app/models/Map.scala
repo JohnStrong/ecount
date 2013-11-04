@@ -6,35 +6,33 @@
  * To change this template use File | Settings | File Templates.
  */
 
-package com.ecount.models
+package models
 
-import anorm._
 import play.api.Play.current
 
-/**
- * @define
- *    base api for handling map data
- */
+import persistence._
+
+class Map{
+  var id:Int = _
+  var csoCode:String = _
+  var county:String = _
+  var edLabel:String = _
+}
+
 object Map {
 
-  def getAllED() {
+  def apply(id:Int, csoCode:String, county:String, edLabel:String) = {
 
-    play.api.db.DB.withConnection { implicit conn =>
+    val m = new Map
+    m.id = id
+    m.csoCode = csoCode
+    m.county = county
+    m.edLabel = m.edLabel
 
-    }
+    m
   }
 
-  /**
-   * @param id
-   *      county id when wish to return the EDs for
-   * @return
-   *         ED as GEO-JSON format
-   */
-  def getEDByCounty(id:Long) {
-
-    play.api.db.DB.withConnection { implicit conn =>
-
-    }
-  }
+  def unapply(m:Map) =
+    Some(m.id , m.csoCode, m.county, m.edLabel)
 }
 

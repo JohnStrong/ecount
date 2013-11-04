@@ -1,17 +1,17 @@
-package com.ecount.controllers
+package controllers
 
+import persistence.MapStore
 import play.api._
 import play.api.mvc._
+import persistence.PersistenceContext._
 
-import com.ecount.models._
+import models._
 
 /**
  * @define
  *    main application controller handles core requests for the api.
  */
 object Application extends Controller {
-
-  // TODO: mybatis integration
 
   def index = Action {
     Ok(views.html.index("welcome"))
@@ -23,17 +23,25 @@ object Application extends Controller {
 
   // load EDs for all/or specific county
   def electoralDivisions(countyId: Long) = Action {
+    withConnection { implicit conn =>
 
-    countyId match {
-      case id if countyId == 0 =>
-        Map.getAllED()
-      case id =>
-        Map.getEDByCounty(countyId)
+      countyId match {
+
+        case id if countyId == 0 =>  {
+
+            // TODO: return geo-json data to client
+            val divisions = MapStore.findAllDivisions
+            Ok("success")
+        }
+
+        case id => {
+            NotFound
+        }
+      }
     }
-
-    Ok("success")
   }
 
   // load county statistics in interactive map view
   def loadCountyStats(countyId: Long) = TODO
+
 }

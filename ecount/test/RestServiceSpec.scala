@@ -13,6 +13,6 @@ import play.api.test._
 import play.api.test.Helpers._
 
 // contains units tests for Postgres Database queries
-class ElectoralDatabaseSpec extends Specification {
+class RestServiceSpec extends Specification {
 
 }
