@@ -1,20 +1,18 @@
 package models
 
 class GeoElectoralDivisions {
-  var geoJson: String = _
+  var lon:Double = _
+  var lat:Double = _
 }
 
 object GeoElectoralDivisions {
 
-  def apply(geoJson:String) = {
-
+  def apply(lon:Double, lat:Double) = {
     val ed = new GeoElectoralDivisions
-
-    ed.geoJson = geoJson
-
-    ed
+    ed.lon = lon
+    ed.lat = lat
   }
 
   def unapply(gED:GeoElectoralDivisions) =
-    Some(gED.geoJson)
+    Some(gED.lon, gED.lat)
 }

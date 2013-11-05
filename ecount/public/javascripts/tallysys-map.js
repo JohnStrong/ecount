@@ -10,9 +10,7 @@
 			$.ajax({
 
 				type: "GET",
-
 				dataType: "json",
-
 				url: "/map/divisions/1",
 
 				error: function(err) {
@@ -21,22 +19,35 @@
 
 				success: function(data) {
 
-					// parse returned geojson
-					$.each(data, function(key, value) {
-						console.log(value);
-						console.log(key);
+					var coords = [];
+
+					$.each(data.features, function(ith, datum) {
+						console.log(datum.geometry, "");
+						//coords.push(new G.maps.LatLng(25.774, -80.190));
 					});
 
 					// center map at position
 					var mapOptions = {
 					  center: new G.maps.LatLng(position.coords.latitude,
-					  	position.coords.longitude),
-					  zoom: 10,
+					  		position.coords.longitude),
+					  zoom: 8,
 					  mapTypeId: G.maps.MapTypeId.ROADMAP
 					};
 
 					var map = new G.maps.Map(document.getElementById("map"),
 					    mapOptions);
+
+					var polys = new google.maps.Polygon({
+						map: map,
+						paths: coords,
+						strokeColor: '#111',
+						strokeOpacity: 0.8,
+						strokeWeight: 2,
+						fillColor: '#FF0000',
+						fillOpacity: 0.5,
+						draggable: false,
+						geodesic: true
+					});
 				}
 			});
 		});

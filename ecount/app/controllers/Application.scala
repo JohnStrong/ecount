@@ -7,6 +7,7 @@ import play.api.mvc._
 import persistence.PersistenceContext._
 
 import models.{GeoElectoralDivisions, IMap}
+import scala.util.parsing.json.JSONObject
 
 /**
  * @define
@@ -15,24 +16,30 @@ import models.{GeoElectoralDivisions, IMap}
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index("welcome"))
+    Ok(views.html.index("E-count: Tally System"))
   }
 
   def map = Action {
     Ok(views.html.map("Interactive Map"))
   }
 
-  // TODO: fix issue with poor data returned by Json...
   // loads ED coordinates in Geo-Json format for a county by countyId
   def electoralDivisions(countyId: Int) = Action {
 
     withConnection { implicit conn =>
 
-      val edByCounty = MapStore.findDivisionsByCounty(countyId).map(ed => {
-        Json.toJson(ed.geoJson)
-      }).toSeq
+      val edByCounty =  MapStore.getDivisionsByCounty(countyId).map(ed => {
+        Json.obj(
+          "type" -> "Feature",
+          "geometry" ->  Json.parse(ed)
+        )
+      })
 
-      Ok(Json.toJson(edByCounty))
+      Ok(Json.obj(
+          "type" -> "FeatureCollection",
+          "features" -> Json.toJson(edByCounty)
+        )
+      )
     }
   }
 
