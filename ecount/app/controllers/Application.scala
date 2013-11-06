@@ -43,6 +43,23 @@ object Application extends Controller {
     }
   }
 
+  def bounds = Action {
+    withConnection { implicit conn =>
+      val cityTownBounds = MapStore.getCityTownBounds().map(ctd => {
+        Json.obj(
+          "type" -> "Feature",
+          "geometry" ->  Json.parse(ctd)
+        )
+      })
+
+      Ok(Json.obj(
+        "type" -> "FeatureCollection",
+        "features" -> Json.toJson(cityTownBounds)
+       )
+      )
+    }
+  }
+
   // load county statistics in interactive map view
   def loadCountyStats(countyId: Long) = TODO
 

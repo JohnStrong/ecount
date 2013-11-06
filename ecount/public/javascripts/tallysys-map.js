@@ -1,58 +1,82 @@
-(function(G, $, D) {
+(function($, O, P) {
 
-    "use strict";
+	"use strict";
 
-	var initialize = function() {
+	var GOOGLE_PROJECTION = new O.Projection("EPSG:4326");
 
-		// get geolocation, load & project electoral divisions
-		navigator.geolocation.getCurrentPosition(function(position) {
+	// definte new projection systems
+	P.defs["EPSG:29902"] = "+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +towgs84=482.5,-130.6,564.6,-1.042,-0.214,-0.631,8.15 +units=m +no_defs";
+	P.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
 
-			$.ajax({
+	var IRISH_PROJECTION = new Proj4js.Proj("EPSG:29902");
+	var OPENLAYERS_PROJECTION = new Proj4js.Proj("EPSG:900913");
 
-				type: "GET",
-				dataType: "json",
-				url: "/map/divisions/1",
+	navigator.geolocation.getCurrentPosition(function(position) {
 
-				error: function(err) {
-					console.log(err);
-				},
+		var options = {
+		    div: "map",
+		    zoom: 4,
+		    center: [],
+		    layers: [
+		        new OpenLayers.Layer.OSM()
+		    ]
+		};
 
-				success: function(data) {
+		// initalize map with options
+		var vector = new O.Layer.Vector('multiPolygon')
+		var map = new O.Map(options);
 
-					var coords = [];
+		// center position on map with lon-lat coordinates
+		var point = new O.LonLat(position.coords.longitude, position.coords.latitude);
+		point.transform(GOOGLE_PROJECTION, map.getProjectionObject());
 
-					$.each(data.features, function(ith, datum) {
-						console.log(datum.geometry, "");
-						//coords.push(new G.maps.LatLng(25.774, -80.190));
+		map.setCenter(point);
+
+		$.ajax({
+
+			type: "GET",
+			dataType: "json",
+			url: "/map/allbounds",
+
+			error: function(err) {
+
+			},
+
+			success: function(data) {
+
+				var polygonList = [];
+
+				$.each(data.features, function(ith, feature) {
+
+					$.each(feature.geometry.coordinates, function(kth, data) {
+
+						var pointList = [];
+
+						for(var i = 0; i < data.length; i++) {
+
+							for(var j = 0; j < data[i].length; j++) {
+
+								// convert from Irish Grid to OpenLayers format
+								var coord = new P.Point(data[i][j][0], data[i][j][1])
+								P.transform(IRISH_PROJECTION, OPENLAYERS_PROJECTION, coord);
+
+								var lonLat = new O.LonLat(coord.x, coord.y);
+								pointList.push(lonLat);
+							}
+						}
+
+						var linearRing = new O.Geometry.LinearRing(pointList);
+						polygonList.push(new O.Geometry.Polygon([linearRing]));
 					});
 
-					// center map at position
-					var mapOptions = {
-					  center: new G.maps.LatLng(position.coords.latitude,
-					  		position.coords.longitude),
-					  zoom: 8,
-					  mapTypeId: G.maps.MapTypeId.ROADMAP
-					};
+					var multiPolyGeom = new O.Geometry.MultiPolygon(polygonList);
+					var multiPolyFeature = new O.Feature.Vector(multiPolyGeom);
 
-					var map = new G.maps.Map(document.getElementById("map"),
-					    mapOptions);
-
-					var polys = new google.maps.Polygon({
-						map: map,
-						paths: coords,
-						strokeColor: '#111',
-						strokeOpacity: 0.8,
-						strokeWeight: 2,
-						fillColor: '#FF0000',
-						fillOpacity: 0.5,
-						draggable: false,
-						geodesic: true
-					});
-				}
-			});
+					vector.addFeatures(multiPolyFeature);
+					map.addLayer(vector);
+				});
+			}
 		});
-	};
+	});
 
-	G.maps.event.addDomListener(window, 'load', initialize);
-
-})(google, $, d3);
+})($, OpenLayers, Proj4js);

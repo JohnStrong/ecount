@@ -10,15 +10,10 @@ object MapStore {
   // TODO: fix argument param to work successfully with Application.scala
   val getDivisionsByCounty = new SelectListBy[Int, String] {
 
-    /*resultMap = new ResultMap[GeoElectoralDivisions] {
-        result(property = "lon", column = "lon")
-        result(property = "lat", column = "lat")
-    }*/
-
     def xsql =
       """
        Select ST_asGeoJson(geom) from electoral_divisions ed, counties c
-       where c.county_id = 1 and c.county = ed.county
+       where c.county_id = 12 and c.county = ed.county
        limit 1
       """
   }
@@ -39,5 +34,14 @@ object MapStore {
       """
   }
 
-  def bind = Seq(getDivisionsByCounty, find)
+  val getCityTownBounds = new SelectListBy[Unit,String] {
+
+    def xsql =
+      """
+        SELECT st_asGeoJson(geom)
+        FROM city_towns
+      """
+  }
+
+  def bind = Seq(getDivisionsByCounty, find, getCityTownBounds)
 }
