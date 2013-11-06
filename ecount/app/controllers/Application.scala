@@ -6,7 +6,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import persistence.PersistenceContext._
 
-import models.{GeoElectoralDivisions, IMap}
+import models._
 import scala.util.parsing.json.JSONObject
 
 /**

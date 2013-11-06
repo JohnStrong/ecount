@@ -2,7 +2,7 @@ package persistence
 
 import org.mybatis.scala.mapping._
 
-import models.{GeoElectoralDivisions, IMap}
+import models._
 import scala.util.parsing.json.JSONObject
 
 object MapStore {
@@ -12,15 +12,15 @@ object MapStore {
 
     def xsql =
       """
-       Select ST_asGeoJson(geom) from electoral_divisions ed, counties c
-       where c.county_id = 12 and c.county = ed.county
-       limit 1
+       SELECT ST_asGeoJson(ST_transform(geom, 900913))
+       FROM electoral_divisions ed, counties c
+       WHERE c.county_id = 22 and c.county = ed.county
       """
   }
 
   val find = new SelectListBy[String, IMap] {
 
-    resultMap = new ResultMap[GeoElectoralDivisions] {
+    resultMap = new ResultMap[IMap] {
       id(property = "id" , column = "gid")
       result(property = "csoCode", column = "cso_code")
       result(property = "county", column = "county")
@@ -38,8 +38,9 @@ object MapStore {
 
     def xsql =
       """
-        SELECT st_asGeoJson(geom)
+        SELECT st_asGeoJson(ST_transform(geom, 900913))
         FROM city_towns
+        LIMIT 4
       """
   }
 
