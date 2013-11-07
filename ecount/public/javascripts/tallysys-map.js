@@ -1,4 +1,4 @@
-(function($, O, P) {
+(function(Q, O, P) {
 
 	"use strict";
 
@@ -17,7 +17,7 @@
 
 		return {
 
-			GOOGLE_PROJECTION: new O.Projection("EPSG:4326"),
+			REGULAR_PROJECTION: new O.Projection("EPSG:4326"),
 
 			IRISH_PROJECTION: new P.Proj("EPSG:29902"),
 
@@ -25,48 +25,58 @@
 		};
 
 	})(O, P);
+	
+	/**
+	 *	@description
+	 *		given a lat,lon position on which to center the map, 
+	 *		returns various properties to layer projections
+	 **/ 
+	var draw = (function(O) {
+		
+		var map;
 
-	//	takes OpenLayers vector 'V' & map 'M',
-	//	@returns
-	//		a collection of operations on electoral division data
-	var request = function(M) {
+		return function(position) {
+			
+			map = new O.Map({
+				div: "map",
+			    zoom: 7,
+			    center: [],
+			    layers: [
+			        new OpenLayers.Layer.OSM()
+			    ]
+			});
 
-		return {
-			electoralDivisions : function() {
+			var point = new O.LonLat(position.coords.longitude, 
+				position.coords.latitude);
 
-				var geojson = new OpenLayers.Layer.GML("GeoJSON", "/map/divisions/0", {
-					projection: new OpenLayers.Projection("EPSG:900913"),
-  					format: OpenLayers.Format.GeoJSON
-				});
+			point.transform(projections['GOOGLE_PROJECTION'],
+				map.getProjectionObject());
 
-				M.addLayer(geojson);
-			}
+			map.setCenter(point);
+
+			return {
+
+				// get county projection by id
+				countyBorder: function(id) {
+				
+					console.log(map);
+
+					var geojson = new O.Layer.GML("GeoJSON", "/map/county/all", {
+						projection: new O.Projection("EPSG:900913"),
+						format: O.Format.GeoJSON
+					});
+
+					map.addLayer(geojson);
+				}
+			};
 		};
-	};
 
-	// Entry Point...
+	})(O);
+	
+	// give user an option of geolocate or selection here....
 	navigator.geolocation.getCurrentPosition(function(position) {
-
-		var options = {
-		    div: "map",
-		    zoom: 8,
-		    center: [],
-		    layers: [
-		        new OpenLayers.Layer.OSM()
-		    ]
-		};
-
-		// initalize map with optio
-		var map = new O.Map(options);
-
-
-		// center position on map with lon-lat coordinates
-		var point = new O.LonLat(position.coords.longitude, position.coords.latitude);
-		point.transform(projections['GOOGLE_PROJECTION'], map.getProjectionObject());
-		map.setCenter(point);
-
-		request(map).electoralDivisions();
-
+		draw(position).countyBorder(0);
 	});
+	
 
 })($, OpenLayers, Proj4js);

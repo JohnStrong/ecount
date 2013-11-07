@@ -31,7 +31,8 @@ object Application extends Controller {
       val edByCounty =  MapStore.getDivisionsByCounty(countyId).map(ed => {
         Json.obj(
           "type" -> "Feature",
-          "geometry" ->  Json.parse(ed)
+          "geometry" ->  Json.parse(ed) ,
+          "properties" -> Json.obj()
         )
       })
 
@@ -43,12 +44,13 @@ object Application extends Controller {
     }
   }
 
-  def bounds = Action {
+  def countyBounds = Action {
     withConnection { implicit conn =>
-      val cityTownBounds = MapStore.getCityTownBounds().map(ctd => {
+      val cityTownBounds = MapStore.getCountyBounds().map(ctd => {
+
         Json.obj(
           "type" -> "Feature",
-          "geometry" ->  Json.parse(ctd)
+          "geometry" ->  Json.parse(ctd.geometry)
         )
       })
 

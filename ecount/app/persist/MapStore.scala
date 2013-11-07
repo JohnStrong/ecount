@@ -3,11 +3,9 @@ package persistence
 import org.mybatis.scala.mapping._
 
 import models._
-import scala.util.parsing.json.JSONObject
 
 object MapStore {
 
-  // TODO: fix argument param to work successfully with Application.scala
   val getDivisionsByCounty = new SelectListBy[Int, String] {
 
     def xsql =
@@ -18,31 +16,18 @@ object MapStore {
       """
   }
 
-  val find = new SelectListBy[String, IMap] {
+  val getCountyBounds = new SelectList[GeomCounty] {
 
-    resultMap = new ResultMap[IMap] {
-      id(property = "id" , column = "gid")
-      result(property = "csoCode", column = "cso_code")
-      result(property = "county", column = "county")
-      result(property = "saps_label", column = "edLabel")
+    resultMap = new ResultMap[GeomCounty]{
+      result(property = "county", column = "countyname")
+      result(property =  "geometry", column = "st_asgeojson")
     }
-
     def xsql =
       """
-      SELECT gid, cso_code, county, saps_label
-      FROM electoral_divisions
+       Select countyname, ST_asGeoJson(ST_Transform(st_setSrid(geom, 29902), 4326))
+       FROM county_boundries
       """
   }
 
-  val getCityTownBounds = new SelectListBy[Unit,String] {
-
-    def xsql =
-      """
-        SELECT st_asGeoJson(ST_transform(geom, 900913))
-        FROM city_towns
-        LIMIT 4
-      """
-  }
-
-  def bind = Seq(getDivisionsByCounty, find, getCityTownBounds)
+  def bind = Seq(getDivisionsByCounty, getCountyBounds)
 }

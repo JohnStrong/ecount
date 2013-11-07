@@ -1,12 +1,31 @@
 @(message: String)
 
 @main(message){
-
-    <script type="text/javascript"
-       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoMyHvseK3euddOYlag2XumMOr5LDLeI0&sensor=true">
-    </script>
-    <div id="map"></div>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/OpenLayers.js")"></script>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/proj4js-compressed.js")"></script>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map.js")"></script>
+<main class="wrap">
+    <div class="grid">
+        <div class="row">
+            <div class="span3 bg-green">
+                <ul>
+                    <li>
+                        This
+                    </li>
+                    <li>
+                        Is
+                    </li>
+                    <li>
+                        An
+                    </li>
+                    <li>
+                        Aside
+                    </li>
+                </ul>
+            </div>
+            <div class="span9">
+                <div id="map" style=""></div>
+                <!--<script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map.js")"></script>-->
+                <script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map-vis.js")"></script>
+            </div>
+        </div>
+    </div>
+</main>
 }
