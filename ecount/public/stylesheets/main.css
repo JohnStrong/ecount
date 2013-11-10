@@ -1,15 +1,98 @@
-html { height: 100%; }
-body { height: 100%; margin: 0; padding: 0; color: #ffffff }
+
+/**
+*   Font Face
+*/
+
+@font-face {
+    font-family: 'Quicksand';
+    src: url('./../font/Quicksand-Regular.otf');
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    height: 100%;
+    font-size: 16px;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #fafafa;
+    font-size: 100%;
+    font-family: 'Quicksand', sans-serif;
+}
 
 /**
 *   General Styles
 */
-.wrap { width: 86%; margin: 0 auto; padding: 0 }
+.wrap { width: 100%; margin: 0 auto; padding: 0 }
 
 /**
 *   Section Styles
 */
-#map { height: 100%; margin: 0; padding: 0; }
+
+/*      Main Header     */
+body > header {
+    width: 100%;
+    float: left;
+    background-color: hsla(120, 40%, 45%, 1);
+}
+
+#top {
+    width: 100%;
+    color: #fafafa;
+}
+
+#top ul {
+    float: right;
+    width: 30%;
+    padding: 2%;
+    text-align: right;
+}
+
+#top ul li {
+    display: inline;
+    padding: 0 2%;
+}
+
+/*      Main            */
+main {
+    clear: both;
+    float: none;
+}
+
+/*   Interactive Map    */
+.grid-layer .left {
+    float: left;
+    border-right: 1px solid #222;
+    padding: 1% 1%;
+    width: 20%;
+    text-align: center;
+}
+
+.grid-layer .right {
+    float: right;
+    margin: 4% auto;
+    width: 65%;
+}
+
+#county-labels {
+    font-size: 0.75em;
+}
+
+#county-labels ul {
+    list-style: none;
+}
+
+.county-label {
+    padding: 1% 0;
+    cursor: pointer;
+}
 
 /**
 *   Media Queries

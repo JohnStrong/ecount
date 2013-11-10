@@ -28,11 +28,10 @@ object Application extends Controller {
 
     withConnection { implicit conn =>
 
-      val edByCounty =  MapStore.getDivisionsByCounty(countyId).map(ed => {
+      val edByCounty =  MapStore.getElectoralDivisions(countyId).map(ed => {
         Json.obj(
           "type" -> "Feature",
-          "geometry" ->  Json.parse(ed) ,
-          "properties" -> Json.obj()
+          "geometry" ->  Json.parse(ed)
         )
       })
 
@@ -50,7 +49,10 @@ object Application extends Controller {
 
         Json.obj(
           "type" -> "Feature",
-          "geometry" ->  Json.parse(ctd.geometry)
+          "geometry" ->  Json.parse(ctd.geometry),
+          "properties" -> Json.obj(
+            "id" -> ctd.countyId,
+            "name" -> ctd.countyName)
         )
       })
 

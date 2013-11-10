@@ -9,20 +9,22 @@
 package models
 
 class GeomCounty {
-  var county:String = _
+  var countyId:Int = _
+  var countyName:String = _
   var geometry:String = _
 }
 
 object GeomCounty {
 
-  def apply(county:String, geom:String) = {
+  def apply(id:Int, county:String, geom:String) = {
 
     val m = new GeomCounty
-    m.county = county
+    m.countyId = id
+    m.countyName = county
     m.geometry = geom
   }
 
   def unapply(m:GeomCounty) =
-    Some(m.county, m.geometry)
+    Some(m.countyId, m.countyName, m.geometry)
 }
 

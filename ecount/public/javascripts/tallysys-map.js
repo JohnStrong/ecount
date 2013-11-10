@@ -1,4 +1,4 @@
-(function(Q, O, P) {
+/*(function(Q, O, P) {
 
 	"use strict";
 
@@ -25,18 +25,13 @@
 		};
 
 	})(O, P);
-	
-	/**
-	 *	@description
-	 *		given a lat,lon position on which to center the map, 
-	 *		returns various properties to layer projections
-	 **/ 
+
 	var draw = (function(O) {
-		
+
 		var map;
 
 		return function(position) {
-			
+
 			map = new O.Map({
 				div: "map",
 			    zoom: 7,
@@ -46,7 +41,7 @@
 			    ]
 			});
 
-			var point = new O.LonLat(position.coords.longitude, 
+			var point = new O.LonLat(position.coords.longitude,
 				position.coords.latitude);
 
 			point.transform(projections['GOOGLE_PROJECTION'],
@@ -58,7 +53,7 @@
 
 				// get county projection by id
 				countyBorder: function(id) {
-				
+
 					console.log(map);
 
 					var geojson = new O.Layer.GML("GeoJSON", "/map/county/all", {
@@ -72,11 +67,11 @@
 		};
 
 	})(O);
-	
+
 	// give user an option of geolocate or selection here....
 	navigator.geolocation.getCurrentPosition(function(position) {
 		draw(position).countyBorder(0);
 	});
-	
 
-})($, OpenLayers, Proj4js);
+
+})($, OpenLayers, Proj4js);*/
