@@ -1,77 +1,229 @@
-/*(function(Q, O, P) {
+(function($, O, D) {
 
-	"use strict";
+"use strict";
 
-	var projections = (function(O, P) {
+// Open Layers top-level map
+var map = new O.Map({
 
-		// Irish Grid
-		P.defs["EPSG:29902"] = "+proj=tmerc +lat_0=53.5"+
-		"+lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 "+
-		"+ellps=mod_airy +towgs84=482.5,-130.6,564.6," +
-		"-1.042,-0.214,-0.631,8.15 +units=m +no_defs";
+	div: "map",
+	zoom: 6.5,
+    numZoomLevels: 20,
+    projection: new OpenLayers.Projection("EPSG:900913"),
+   	displayProjection: new OpenLayers.Projection("EPSG: 4326"),
+    center: [],
+    layers: [
+       new OpenLayers.Layer.OSM()
+    ],
+    controls: [
+        new OpenLayers.Control.Navigation(),
+        new OpenLayers.Control.Zoom(),
+        new OpenLayers.Control.ScaleLine(),
+        new OpenLayers.Control.LayerSwitcher(),
+        new OpenLayers.Control.MousePosition(),
+        new OpenLayers.Control.KeyboardDefaults()
+    ]
+});
 
-		// Open Layers Grid (Geom)
-		P.defs["EPSG:900913"] = "+proj=merc +a=6378137" +
-		" +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0" +
-		" +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+var styles = {
 
-		return {
+	mapDefault: "#FAFAFA",
+	mapHover: "#99CC22",
+	countyBoundary: "#444444",
+	countyFill: "#CCCCCC",
+	countyBorder: "1px",
+	opacityDefault: ".5",
+	opacityHover: "1"
+};
 
-			REGULAR_PROJECTION: new O.Projection("EPSG:4326"),
+// DOM manipulation module
+var manipulate = (function(OL) {
 
-			IRISH_PROJECTION: new P.Proj("EPSG:29902"),
+	return {
 
-			OPENLAYERS_PROJECTION: new P.Proj("EPSG:900913")
-		};
+		countyList: function(collection) {
 
-	})(O, P);
+			D.select("#county-labels")
+				.append("ul")
+				.selectAll("li")
+				.data(collection.features)
+				.enter()
+				.append("li")
+				.attr("class", "county-label")
+				.append("span")
+				.append("a")
+				.on("click", evts.clicked)
+				.text(function(d) {
+					return d.properties['name'];
+				});
+		},
 
-	var draw = (function(O) {
+		drawCounties: function(collection) {
+			overlay.counties(collection);			
+		},
 
-		var map;
+		drawEDs: function(features) {
+			// TODO
+		}
+	};
 
-		return function(position) {
+})();
 
-			map = new O.Map({
-				div: "map",
-			    zoom: 7,
-			    center: [],
-			    layers: [
-			        new OpenLayers.Layer.OSM()
-			    ]
+// HTTP requests module
+var query = (function(M) {
+
+	return {
+
+		countyBounds: function() {
+
+			$.ajax({
+
+		    	type: "GET",
+		    	url: "/map/county/all",
+		    	dataType: "json",
+
+		    	error: function(err) {
+		    		console.log("ERROR during request: " + err);
+		    	},
+
+		    	success: function(data) {
+
+		    		M.countyList(data);
+		    		M.drawCounties(data);
+		    	}
 			});
+		},
 
-			var point = new O.LonLat(position.coords.longitude,
-				position.coords.latitude);
+		electoralDivisions: function(d) {
 
-			point.transform(projections['GOOGLE_PROJECTION'],
-				map.getProjectionObject());
+			$.ajax({
 
-			map.setCenter(point);
+	    		type: "GET",
+	    		url: "/map/divisions/" + d.id,
+	    		dataType: "json",
 
-			return {
+	    		error: function(err) {
+	    			console.log(err);
+	    		},
 
-				// get county projection by id
-				countyBorder: function(id) {
+	    		success: function(data) {
+	    			M.drawEDs(data.features);
+	    		}
 
-					console.log(map);
+	    	});
+		}
+	};
 
-					var geojson = new O.Layer.GML("GeoJSON", "/map/county/all", {
-						projection: new O.Projection("EPSG:900913"),
-						format: O.Format.GeoJSON
-					});
+})(manipulate);
 
-					map.addLayer(geojson);
-				}
+// Event handling module
+var evts = (function(S, Q) {
+
+	return  {
+
+    	clicked: function(d){
+    		Q.electoralDivisions(d);
+    	},
+
+    	hover: function(d) {
+    		D.select(this)
+    		.style("fill", S.mapHover)
+    		.style("fill-opacity", S.opacityHover)
+    		.style("cursor", "pointer");
+    	},
+
+    	leave: function(d) {
+    		D.select(this)
+    		.style("fill", S.mapDefault)
+    		.style("fill-opacity", S.opacityDefault)
+    		.style("cursor", "default");
+    	}
+    };
+
+})(styles, query);
+
+// module handles map overlays
+var overlay = (function(S, E) {
+
+	return {
+
+		counties: function(collection) {
+
+			var overlay = new OpenLayers.Layer.Vector("counties");
+
+			overlay.afterAdd = function() {
+
+				var mapDiv;
+				var svg;
+				var g;
+				var bounds;
+				var path;
+				var feature;
+
+				var project = function(x) {
+					var point = map.getViewPortPxFromLonLat(
+						new OpenLayers.LonLat(x[0], x[1])
+                        .transform("EPSG:4326", "EPSG:900913"));
+                    return [point.x, point.y];
+				};
+
+		        var set = function() {		
+
+					var bottomLeft = project(bounds[0]);
+	                var topRight = project(bounds[1]);
+
+	                svg.attr("width", topRight[0] - bottomLeft[0])
+		            	.attr("height", bottomLeft[1] - topRight[1])
+		            	.style("margin-left", bottomLeft[0] + "px")
+		            	.style("margin-top", topRight[1] + "px");
+
+		            g.attr("transform", "translate(" + 
+		            	-bottomLeft[0] + "," + -topRight[1] + ")");
+
+	            	feature.attr("d", path)
+			            .on("click", E.clicked)
+						.on("mouseover", E.hover)
+						.on("mouseout", E.leave)
+			            .style("fill", S.mapDefault)
+			            .style("stroke", S.countyBoundary)
+			            .style("stroke-width", S.countyBorder)
+			            .style("fill-opacity", S.opacityDefault)
+				};
+
+				mapDiv = D.selectAll("#" + overlay.div.id);
+				mapDiv.selectAll("svg").remove();
+
+				svg = mapDiv.append("svg");
+				g = svg.append("g");
+
+				bounds = D.geo.bounds(collection);
+				path = D.geo.path().projection(project);
+
+				feature = g.selectAll("path")
+	            .data(collection.features, function(d) {
+	            	return d.id = d.properties['id'];
+	            }).enter().append("path");
+
+	            map.events.register("moveend", map, set);
+				set();
+				
 			};
-		};
 
-	})(O);
+			map.addLayer(overlay);
+		}
+	};
 
-	// give user an option of geolocate or selection here....
-	navigator.geolocation.getCurrentPosition(function(position) {
-		draw(position).countyBorder(0);
-	});
+})(styles, evts);
 
+// entry point
+var init = function() {
 
-})($, OpenLayers, Proj4js);*/
+	var center = [-881166.06195, 7042602.03710]
+	var point = new O.LonLat(center[0], center[1]);
+
+	map.setCenter(point);
+	query.countyBounds();
+};
+
+init();
+
+})($, OpenLayers, d3);

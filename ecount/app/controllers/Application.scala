@@ -23,26 +23,6 @@ object Application extends Controller {
     Ok(views.html.map("Interactive Map"))
   }
 
-  // loads ED coordinates in Geo-Json format for a county by countyId
-  def electoralDivisions(countyId: Int) = Action {
-
-    withConnection { implicit conn =>
-
-      val edByCounty =  MapStore.getElectoralDivisions(countyId).map(ed => {
-        Json.obj(
-          "type" -> "Feature",
-          "geometry" ->  Json.parse(ed)
-        )
-      })
-
-      Ok(Json.obj(
-          "type" -> "FeatureCollection",
-          "features" -> Json.toJson(edByCounty)
-        )
-      )
-    }
-  }
-
   def countyBounds = Action {
     withConnection { implicit conn =>
       val cityTownBounds = MapStore.getCountyBounds().map(ctd => {
@@ -61,6 +41,30 @@ object Application extends Controller {
         "features" -> Json.toJson(cityTownBounds)
        )
       )
+    }
+  }
+
+  // loads ED coordinates in Geo-Json format for a county by countyId
+  def electoralDivisions(countyId: Long) = Action {
+
+    withConnection { implicit conn =>
+
+      val edByCounty =  MapStore.getElectoralDivisions(countyId).map(ed => {
+        Json.obj(
+          "type" -> "Feature",
+          "geometry" ->  Json.parse(ed.geometry),
+          "properties" -> Json.obj(
+            "id" -> ed.id,
+            "name" -> ed.name,
+            "county" -> ed.county
+          )
+        )
+      })
+
+      Ok(Json.obj(
+        "type" -> "FeatureCollection",
+        "features" -> Json.toJson(edByCounty)
+      ))
     }
   }
 

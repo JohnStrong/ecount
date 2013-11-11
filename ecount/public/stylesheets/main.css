@@ -32,11 +32,19 @@ body {
 */
 .wrap { width: 100%; margin: 0 auto; padding: 0 }
 
+.right {
+	float: right;
+}
+
+.left{
+	float: left;
+}
+
 /**
 *   Section Styles
 */
 
-/*      Main Header     */
+/*      Top Header     */
 body > header {
     width: 100%;
     float: left;
@@ -60,38 +68,38 @@ body > header {
     padding: 0 2%;
 }
 
-/*      Main            */
+/*   Main   */
 main {
     clear: both;
     float: none;
 }
 
-/*   Interactive Map    */
-.grid-layer .left {
-    float: left;
-    border-right: 1px solid #222;
-    padding: 1% 1%;
-    width: 20%;
-    text-align: center;
-}
-
-.grid-layer .right {
-    float: right;
-    margin: 4% auto;
-    width: 65%;
-}
+/*   Interactive Map Aside   */
 
 #county-labels {
     font-size: 0.75em;
+    width: 250px;
+    text-align: center;
 }
 
 #county-labels ul {
     list-style: none;
+    padding: 1% 0;
 }
 
 .county-label {
-    padding: 1% 0;
+    padding: 2% 0;
     cursor: pointer;
+}
+
+/**
+*   Footer
+*/
+
+body > footer {
+    clear: both;
+    background-color: hsla(120, 10%, 8%, 1);
+    padding: 0 0 5% 0;
 }
 
 /**

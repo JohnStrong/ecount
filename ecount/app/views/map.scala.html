@@ -1,15 +1,14 @@
 @(message: String)
 
 @main(message){
-<main class="wrap">
+<div class="wrap">
     <div class="grid-layer">
+        <div>
+            <div class="right" id="map" style="width: 80%; height: 680px"></div>
+            <script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map.js")"></script>
+        </div>
         <aside class="left" id='county-labels'>
          </aside>
-         <div class="right">
-            <div id="map"></div>
-            <!--<script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map.js")"></script>-->
-            <script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map-vis.js")"></script>
-        </div>
     </div>
-</main>
+</div>
 }
