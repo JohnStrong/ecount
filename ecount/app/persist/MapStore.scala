@@ -24,7 +24,21 @@ object MapStore {
       </xsql>
   }
 
-  val getCountyBounds = new SelectList[GeomCounty] {
+  val getAllCounties = new SelectList[County] {
+
+    resultMap = new ResultMap[County] {
+      result(property = "id", column = "county_id")
+      result(property = "name", column = "county")
+    }
+
+    def xsql =
+      """
+        SELECT county_id, county
+        FROM counties
+      """
+  }
+
+  val getCountyBounds = new SelectListBy[String, GeomCounty] {
 
     resultMap = new ResultMap[GeomCounty]{
       result(property = "countyId", column = "county")
@@ -33,12 +47,13 @@ object MapStore {
     }
     def xsql =
       """
-       Select cb.county, cb.countyname,
-       ST_asGeoJson(ST_Transform(st_setSrid(cb.geom, 29902), 4326))
-       FROM counties as c, county_boundries as cb
-       WHERE c.county = cb.countyname
+        Select cb.county, cb.countyname,
+        ST_asGeoJson(ST_Transform(st_setSrid(cb.geom, 29902), 4326))
+        FROM counties as c, county_boundries as cb
+        WHERE c.county = #{countyName}
+        AND c.county = cb.countyname
       """
   }
 
-  def bind = Seq(getElectoralDivisions, getCountyBounds)
+  def bind = Seq(getElectoralDivisions, getAllCounties, getCountyBounds)
 }

@@ -23,23 +23,46 @@ object Application extends Controller {
     Ok(views.html.map("Interactive Map"))
   }
 
-  def getAndGroupCounties() = {
-    withConnection { implicit conn =>
-      MapStore.getCountyBounds().map(ctd => {
-        // return script and exec with comet sockets???
-        Json.obj(
-          "type" -> "Feature",
-          "geometry" ->  Json.parse(ctd.geometry),
-          "properties" -> Json.obj(
-            "id" -> ctd.countyId,
-            "countyname" -> ctd.countyName)
-        )
-      })
+  def countyNames = Action.async {
+
+    def getCountyNames() = {
+      withConnection { implicit conn =>
+        MapStore.getAllCounties().map{county => {
+            Json.obj(
+              "id" -> county.id,
+              "name" -> county.name
+            )
+          }
+        }
+      }
+    }
+
+    val future = scala.concurrent.Future { getCountyNames }
+    future.map{counties => Ok(Json.obj(
+      "type" -> "counties",
+      "counties" -> counties
+      ))
     }
   }
 
-  def countyBounds = Action.async {
-    val future = scala.concurrent.Future { getAndGroupCounties() }
+  def countyBounds(countyName: String) = Action.async {
+
+    def getAndGroupCounties(countyName: String) = {
+      withConnection { implicit conn =>
+        MapStore.getCountyBounds(countyName).map(ctd => {
+          // return script and exec with comet sockets???
+          Json.obj(
+            "type" -> "Feature",
+            "geometry" ->  Json.parse(ctd.geometry),
+            "properties" -> Json.obj(
+              "id" -> ctd.countyId,
+              "countyname" -> ctd.countyName)
+          )
+        })
+      }
+    }
+
+    val future = scala.concurrent.Future { getAndGroupCounties(countyName) }
     future.map(i => Ok(Json.obj(
       "type" -> "FeatureCollection",
       "features" -> Json.toJson(i)

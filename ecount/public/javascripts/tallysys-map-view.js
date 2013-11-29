@@ -7,8 +7,6 @@ requirejs.config({
 // main map page module
 requirejs([], function() {
 
-	var map = L.map('map');
-
 	var calc = {
 
 		long2tile: function(lon,zoom) {
@@ -20,55 +18,37 @@ requirejs([], function() {
 		}
 	};
 
-	var layer = function(position) {
+	// LEAFLET MODULE
+	var geom = (function(map) {
 
-		var zoom = 7;
-		var lonTile = calc.long2tile(position.coords.longitude, zoom);
-		var latTile = calc.lat2tile(position.coords.latitude, zoom);
+		var layer = function(position) {
 
-		map.setView([position.coords.latitude, position.coords.longitude], zoom);
+			var zoom = 7;
+			var lonTile = calc.long2tile(position.coords.longitude, zoom);
+			var latTile = calc.lat2tile(position.coords.latitude, zoom);
 
-		// add an OpenStreetMap tile layer
-		L.tileLayer('http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png', {
-			attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2012 CloudMade',
-			key: '1f43dc838a3344c69e1a320cf87ce237'
-		}).addTo(map);
-	}
+			map.setView([position.coords.latitude, position.coords.longitude], zoom);
 
-	var dom = (function() {
-
-		return {
-
-			countyList: function(collection) {
-
-				var uList = $("<li></li>");
-
-				$("#county-labels").append(uList);
-
-				$.each(collection, function(ith, data) {
-
-					var listElem = $("<li class='county-label'></li>");
-					uList.append(listElem.append(data.properties.countyname));
-
-				});
-			}
+			// add an OpenStreetMap tile layer
+			L.tileLayer('http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png', {
+				attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2012 CloudMade',
+				key: '1f43dc838a3344c69e1a320cf87ce237'
+			}).addTo(map);
 		};
-
-	})();
-
-	var geom = (function() {
 
 		var style = function(feature) {
 
 		    return {
-		        fillColor: "#FAFAFA",
+		        fillColor: "#AAAA66",
 		        weight: 2,
 		        opacity: 1,
 		        color: '#444444',
-		        dashArray: '2',
-		        fillOpacity: 0.4
+		        dashArray: '1',
+		        fillOpacity: 0.3
 		    };
 		};
+
+		navigator.geolocation.getCurrentPosition(layer);
 
 		return {
 
@@ -86,35 +66,69 @@ requirejs([], function() {
 			}
 		};
 
-	})();
+	})(L.map('map'));
 
-	var query = (function() {
+
+	// RESTful QUERY MODULE
+	var query = function(counties) {
 
 		return {
 
-			counties: function() {
+			countyBounds: function() {
 
-				$.ajax({
+				$.each(counties, function(key, datum) {
+
+					$.ajax({
 
 			    	type: "GET",
-			    	url: "/map/county/all",
+			    	url: "/map/county/" + datum.name,
 			    	dataType: "json",
 
 			    	error: function(err) {
-			    		console.log("ERROR during request: " + err);
+			    		console.error("ERROR during request: " + err);
 			    	},
 
 			    	success: function(data) {
 
 			    		geom.drawCounties(data);
-			    		navigator.geolocation.getCurrentPosition(layer);
 			    	}
+
+					});
 				});
+
 			}
 		};
 
-	})();
+	};
 
-	query.counties();
+
+	// INIT
+	(function() {
+
+		$.ajax({
+
+		type: "GET",
+		url: "/map/county",
+		dataType: "json",
+
+		error: function(err) {
+			console.error("request failed. " + err)
+		},
+
+		success: function(data)
+		{
+			var counties = [];
+			var c = data.counties;
+
+			for(var i = 0; i< c.length; i++) {
+				counties[i] = c[i];
+			}
+
+			query(counties).countyBounds();
+		}
+
+		});
+
+	})();
 
 });
