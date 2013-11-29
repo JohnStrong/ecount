@@ -2,13 +2,16 @@
 
 @main(message){
 <div class="wrap">
-    <div class="grid-layer">
-        <div>
-            <div class="right" id="map" style="width: 80%; height: 680px"></div>
-            <script type="text/javascript" src="@routes.Assets.at("javascripts/tallysys-map.js")"></script>
-        </div>
-        <aside class="left" id='county-labels'>
-         </aside>
+    <div>
+        <section id='county-labels'>
+        </section>
+        <section id="map-view">
+            <div id="map" style="height: 650px"></div>
+            <script type="text/javascript"
+            	data-main="@routes.Assets.at("javascripts/tallysys-map-view.js")"
+            	src="@routes.Assets.at("javascripts/require.js")">
+            </script>
+        </section>
     </div>
 </div>
 }

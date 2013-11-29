@@ -1,7 +1,7 @@
 package controllers
 
 import persistence.MapStore
-import play.api._
+import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 import play.api.mvc._
 import persistence.PersistenceContext._
@@ -23,25 +23,27 @@ object Application extends Controller {
     Ok(views.html.map("Interactive Map"))
   }
 
-  def countyBounds = Action {
+  def getAndGroupCounties() = {
     withConnection { implicit conn =>
-      val cityTownBounds = MapStore.getCountyBounds().map(ctd => {
-
+      MapStore.getCountyBounds().map(ctd => {
+        // return script and exec with comet sockets???
         Json.obj(
           "type" -> "Feature",
           "geometry" ->  Json.parse(ctd.geometry),
           "properties" -> Json.obj(
             "id" -> ctd.countyId,
-            "name" -> ctd.countyName)
+            "countyname" -> ctd.countyName)
         )
       })
-
-      Ok(Json.obj(
-        "type" -> "FeatureCollection",
-        "features" -> Json.toJson(cityTownBounds)
-       )
-      )
     }
+  }
+
+  def countyBounds = Action.async {
+    val future = scala.concurrent.Future { getAndGroupCounties() }
+    future.map(i => Ok(Json.obj(
+      "type" -> "FeatureCollection",
+      "features" -> Json.toJson(i)
+    )))
   }
 
   // loads ED coordinates in Geo-Json format for a county by countyId
