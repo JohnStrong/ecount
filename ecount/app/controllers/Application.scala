@@ -53,10 +53,7 @@ object Application extends Controller {
           // return script and exec with comet sockets???
           Json.obj(
             "type" -> "Feature",
-            "geometry" ->  Json.parse(ctd.geometry),
-            "properties" -> Json.obj(
-              "id" -> ctd.countyId,
-              "countyname" -> ctd.countyName)
+            "geometry" ->  Json.parse(ctd)
           )
         })
       }

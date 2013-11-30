@@ -44,7 +44,7 @@ requirejs([], function() {
 		        opacity: 1,
 		        color: '#444444',
 		        dashArray: '1',
-		        fillOpacity: 0.3
+		        fillOpacity: 0.2
 		    };
 		};
 
@@ -56,11 +56,7 @@ requirejs([], function() {
 
 				L.geoJson(collection, {
 
-					style: style,
-
-					onEachFeature: function(feature, layer) {
-						layer.bindPopup(feature.properties.countyname);
-					}
+					style: style
 
 				}).addTo(map);
 			}

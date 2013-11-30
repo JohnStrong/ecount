@@ -1,6 +1,6 @@
 package models
 
-class ElectoralDivision {
+class CountyElectoralDivision {
   var id:Long = _
   var name:String = _
   var county:String = _
@@ -8,18 +8,18 @@ class ElectoralDivision {
 }
 
 
-object ElectoralDivision {
+object CountyElectoralDivision {
 
   def apply(id:Long, name:String, county:String, geom:String) {
 
-    val ed = new ElectoralDivision
+    val ed = new CountyElectoralDivision
     ed.id = id
     ed.name = name
     ed.county = county
     ed.geometry = geom
   }
 
-  def unapply(ed:ElectoralDivision) {
+  def unapply(ed:CountyElectoralDivision) {
     Some(ed.id, ed.name, ed.county, ed.geometry)
   }
 }
