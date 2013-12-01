@@ -40,10 +40,9 @@ requirejs([], function() {
 
 		    return {
 		        fillColor: "#AAAA66",
-		        weight: 2,
+		        weight: 1,
 		        opacity: 1,
-		        color: '#444444',
-		        dashArray: '1',
+		        color: '#AAAAAA',
 		        fillOpacity: 0.2
 		    };
 		};
@@ -77,7 +76,7 @@ requirejs([], function() {
 					$.ajax({
 
 			    	type: "GET",
-			    	url: "/map/county/" + datum.name,
+			    	url: "/tallysys/map/county/" + datum,
 			    	dataType: "json",
 
 			    	error: function(err) {
@@ -101,29 +100,14 @@ requirejs([], function() {
 	// INIT
 	(function() {
 
-		$.ajax({
+		var countiesHTML = $("#counties").find(".county");
+		var counties = [];
 
-		type: "GET",
-		url: "/map/county",
-		dataType: "json",
-
-		error: function(err) {
-			console.error("request failed. " + err)
-		},
-
-		success: function(data)
-		{
-			var counties = [];
-			var c = data.counties;
-
-			for(var i = 0; i< c.length; i++) {
-				counties[i] = c[i];
-			}
-
-			query(counties).countyBounds();
-		}
-
+		counties = $.map(countiesHTML, function(elem, i) {
+			return $(elem).find("h1").text();	
 		});
+		
+		query(counties).countyBounds();
 
 	})();
 

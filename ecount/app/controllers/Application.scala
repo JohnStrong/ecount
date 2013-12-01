@@ -20,29 +20,14 @@ object Application extends Controller {
   }
 
   def map = Action {
-    Ok(views.html.map("Interactive Map"))
-  }
 
-  def countyNames = Action.async {
-
-    def getCountyNames() = {
+    val getCountyNames  = {
       withConnection { implicit conn =>
-        MapStore.getAllCounties().map{county => {
-            Json.obj(
-              "id" -> county.id,
-              "name" -> county.name
-            )
-          }
-        }
+        MapStore.getAllCounties()
       }
     }
 
-    val future = scala.concurrent.Future { getCountyNames }
-    future.map{counties => Ok(Json.obj(
-      "type" -> "counties",
-      "counties" -> counties
-      ))
-    }
+    Ok(views.html.map("Interactive Map", getCountyNames.toList))
   }
 
   def countyBounds(countyName: String) = Action.async {

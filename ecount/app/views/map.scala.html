@@ -1,9 +1,16 @@
-@(message: String)
+@(message: String, counties: List[County])
 
 @main(message){
 <div class="wrap">
-    <div>
+    <div class="spacial span-2">
         <section id='county-labels'>
+            <ul id="counties">
+            @for(county <- counties) {
+                <li class="county" data-county=@county.id>
+                    <h1>@county.name</h1>
+                </li>
+            }
+            </ul>
         </section>
         <section id="map-view">
             <div id="map" style="height: 650px"></div>

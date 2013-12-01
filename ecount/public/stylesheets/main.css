@@ -22,7 +22,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #fafafa;
+    background-color: #fcfcfc;
     font-size: 100%;
     font-family: 'Quicksand', sans-serif;
 }
@@ -34,40 +34,42 @@ ul {
 /**
 *   General Styles
 */
-.wrap { width: 100%; margin: 0 auto; padding: 0 }
-
-.right {
-	float: right;
-}
-
-.left{
-	float: left;
-}
+.wrap { width: 90%; margin: 0 auto; padding: 0 }
 
 /**
 *   Section Styles
 */
 
-/*      Top Header     */
-body > header {
-    width: 100%;
+div[class$="-2"] section:nth-child(1) {
     float: left;
-    background-color: hsla(120, 40%, 45%, 1);
+    width: 30%;
 }
+
+div[class$="-2"] section:nth-child(2) {
+   float: right;
+   width: 70%;
+}
+
+.spacial {
+    width: 98%;
+    padding: 2%;
+}
+
+/*      Top Header     */
 
 #top {
-    width: 100%;
-    color: #fafafa;
+  width: 100%;
 }
 
-#top ul {
+
+#nets {
+    width: 50%;
     float: right;
-    width: 30%;
     padding: 2%;
     text-align: right;
 }
 
-#top ul li {
+#nets ul li {
     display: inline;
     padding: 0 2%;
 }
@@ -76,21 +78,6 @@ body > header {
 main {
     clear: both;
     float: none;
-}
-
-/*   Interactive Map Aside   */
-
-#county-labels {
-	position: absolute;
-	top: 0;
-    font-size: 0.75em;
-    width: 250px;
-    text-align: center;
-}
-
-.county-label {
-    padding: 2% %5;
-    cursor: pointer;
 }
 
 /**
