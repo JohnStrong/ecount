@@ -1,11 +1,5 @@
-
-// config paths for module
-requirejs.config({
-	baseUrl: "javascripts"
-});
-
 // main map page module
-requirejs([], function() {
+(function() {
 
 	var calc = {
 
@@ -104,9 +98,9 @@ requirejs([], function() {
 		var counties = [];
 
 		counties = $.map(countiesHTML, function(elem, i) {
-			return $(elem).find("h1").text();	
+			return $(elem).find("h1").text();
 		});
-		
+
 		query(counties).countyBounds();
 
 	})();
