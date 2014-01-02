@@ -1,24 +1,26 @@
-@(message: String, counties: List[County])
+@(message: String)
 
 @main(message){
-<div class="wrap">
-    <div class="spacial span-2">
-        <section id='county-labels'>
-            <ul id="counties">
-            @for(county <- counties) {
-                <li class="county" data-county=@county.id>
-                    <h1>@county.name</h1>
-                </li>
-            }
-            </ul>
-        </section>
-        <section id="map-view">
+<div class="wrap row">
+    <div class="row" ng-controller='CountyListController'>
+        <script src="@routes.Assets.at("javascripts/map-controller.js")"></script>
+        <!-- error message if fatal server error in application
+            TO FINISH -->
+        <div class="server-error" ng-repeat="error in errors">
+            <h1>{{error}}</h1>
+        </div>
+        <div class="col-md-3">
+            <div id='county-labels'>
+                <ul id="counties">
+                    <li class="county" ng-repeat='county in counties'>
+                        <a href="#"><span>{{county.name}}</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="map-view" class="col-md-9">
             <div id="map" style="height: 650px"></div>
-            <script type="text/javascript"
-            	data-main="@routes.Assets.at("javascripts/tallysys-map-view.js")"
-            	src="@routes.Assets.at("javascripts/require.js")">
-            </script>
-        </section>
+        </div>
     </div>
 </div>
 }

@@ -36,25 +36,6 @@ ul {
 */
 .wrap { width: 90%; margin: 0 auto; padding: 0 }
 
-/**
-*   Section Styles
-*/
-
-div[class$="-2"] section:nth-child(1) {
-    float: left;
-    width: 30%;
-}
-
-div[class$="-2"] section:nth-child(2) {
-   float: right;
-   width: 70%;
-}
-
-.spacial {
-    width: 98%;
-    padding: 2%;
-}
-
 /*      Top Header     */
 
 #top {
@@ -75,9 +56,17 @@ div[class$="-2"] section:nth-child(2) {
 }
 
 /*   Main   */
-main {
+#main {
     clear: both;
     float: none;
+    width: 100%;
+}
+
+#content-main, #top {
+    clear: both;
+    float: none;
+    width: 95%;
+    margin: 0 auto;
 }
 
 /**
@@ -88,6 +77,17 @@ body > footer {
     clear: both;
     background-color: hsla(120, 10%, 8%, 1);
     padding: 0 0 5% 0;
+}
+
+/***
+ *  Errors
+ */
+.server-error {
+
+}
+
+.server-error h1 {
+
 }
 
 /**

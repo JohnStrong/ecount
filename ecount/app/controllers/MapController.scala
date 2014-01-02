@@ -1,35 +1,46 @@
 package controllers
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: User 1
+ * Date: 02/01/14
+ * Time: 16:18
+ * To change this template use File | Settings | File Templates.
+ */
+
 import persistence.MapStore
+import persistence.PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 import play.api.mvc._
-import persistence.PersistenceContext._
+import play.api.libs.json.Json
 
-import models._
-import scala.util.parsing.json.JSONObject
+object MapController extends Controller {
 
-/**
- * @define
- *    main application controller handles core requests for the api.
- */
-object Application extends Controller {
-
-  def index = Action {
-    Ok(views.html.index("E-count: Tally System"))
-  }
-
-  def map = Action {
+  def counties = Action.async {
 
     val getCountyNames  = {
       withConnection { implicit conn =>
-        MapStore.getAllCounties()
+        MapStore.getAllCounties() map { county => {
+            Json.obj(
+              "id" -> county.id,
+              "name" -> county.name
+            )
+          }
+        }
       }
     }
 
-    Ok(views.html.map("Interactive Map", getCountyNames.toList))
-  }
+    val countyList = scala.concurrent.Future { getCountyNames }
 
+    countyList.map { countiesFuture =>
+
+      Ok(Json.obj(
+        "type" -> "counties",
+        "counties" -> countiesFuture
+      ))
+    }
+  }
   def countyBounds(countyName: String) = Action.async {
 
     def getAndGroupCounties(countyName: String) = {
@@ -44,8 +55,8 @@ object Application extends Controller {
       }
     }
 
-    val future = scala.concurrent.Future { getAndGroupCounties(countyName) }
-    future.map(i => Ok(Json.obj(
+    val groupedCounties = scala.concurrent.Future { getAndGroupCounties(countyName) }
+    groupedCounties.map(i => Ok(Json.obj(
       "type" -> "FeatureCollection",
       "features" -> Json.toJson(i)
     )))
@@ -77,5 +88,4 @@ object Application extends Controller {
 
   // load county statistics in interactive map view
   def loadCountyStats(countyId: Long) = TODO
-
 }

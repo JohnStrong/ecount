@@ -8,7 +8,8 @@
 		},
 
 	 	lat2tile: function(lat,zoom)  {
-	 		return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom)))
+	 		return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) +
+	 			1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom)))
 		}
 	};
 
@@ -78,7 +79,7 @@
 			    	},
 
 			    	success: function(data) {
-
+			    		console.log("success");
 			    		geom.drawCounties(data);
 			    	}
 
@@ -98,7 +99,7 @@
 		var counties = [];
 
 		counties = $.map(countiesHTML, function(elem, i) {
-			return $(elem).find("h1").text();
+			return $(elem).find("a").text();
 		});
 
 		query(counties).countyBounds();

@@ -1,7 +1,7 @@
 @(title:String)(content:Html)
 
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app='EcountMap' lang="en">
 <head>
     <meta charset="UTF-8" >
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
@@ -9,15 +9,15 @@
     <title>@title</title>
     @styles()
 </head>
-<body class="">
+<body id="main">
     <header id="top">
         @header()
     </header>
-    <main>
+    <div id="content-main">
     @content
-    </main>
+    </div>
     <footer>
-        @credits()
+    <!-- credits will go here -->
     </footer>
 </body>
 </html>
