@@ -27,32 +27,16 @@ body {
     font-family: 'Quicksand', sans-serif;
 }
 
+body { padding-bottom: 70px; }
+
 ul {
     list-style: none;
 }
-
-/**
-*   General Styles
-*/
-.wrap { width: 90%; margin: 0 auto; padding: 0 }
 
 /*      Top Header     */
 
 #top {
   width: 100%;
-}
-
-
-#nets {
-    width: 50%;
-    float: right;
-    padding: 2%;
-    text-align: right;
-}
-
-#nets ul li {
-    display: inline;
-    padding: 0 2%;
 }
 
 /*   Main   */
@@ -67,8 +51,13 @@ ul {
     float: none;
     width: 95%;
     margin: 0 auto;
+    padding-bottom: 2%;
 }
 
+.wrap {
+    width: 90%;
+    margin: 0 auto;
+}
 /**
 *   Footer
 */

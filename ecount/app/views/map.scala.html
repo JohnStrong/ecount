@@ -9,16 +9,7 @@
         <div class="server-error" ng-repeat="error in errors">
             <h1>{{error}}</h1>
         </div>
-        <div class="col-md-3">
-            <div id='county-labels'>
-                <ul id="counties">
-                    <li class="county" ng-repeat='county in counties'>
-                        <a href="#"><span>{{county.name}}</span></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div id="map-view" class="col-md-9">
+        <div id="map-view" class="col-md-12">
             <div id="map" style="height: 650px"></div>
         </div>
     </div>
