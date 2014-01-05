@@ -1,10 +1,40 @@
-var ecountmap = angular.module('EcountMap', []);
+var ecount = angular.module('Ecount', ['ngRoute'],
 
-ecountmap.factory('Counties', function($http) {
+	function($routeProvider, $locationProvider) {
+
+		$routeProvider.when('/', {
+			redirectTo: '/home'
+		});
+		$routeProvider.when('/home', {
+			templateUrl: '/home',
+			controller: HomeController,
+			controllerAs: 'home'
+		});
+		$routeProvider.when('/map', {
+			templateUrl: '/map',
+			controller: MapController,
+			controllerAs: 'map'
+		});
+		$routeProvider.when('/statbank', {
+			templateUrl: '/statbank',
+			controller: StatBankController,
+			controllerAs: 'statbank'
+		});
+		$routeProvider.when('/about', {
+			templateUrl: '/about',
+			controller: AboutController,
+			controllerAs: 'about'
+		});
+
+	// configure html5 to get links working on jsfiddle
+	$locationProvider.html5Mode(true);
+});
+
+ecount.factory('Counties', function($http) {
 	return $http.get('/tallysys/map/counties');
 });
 
-ecountmap.factory('CountyBounds', function() {
+ecount.factory('CountyBounds', function() {
 	var COUNTY_BOUNDS_REQ_URL = '/tallysys/map/county/';
 
 	return function(county) {
@@ -12,7 +42,7 @@ ecountmap.factory('CountyBounds', function() {
 	};
 });
 
-ecountmap.factory('CountyCentroid', function($http) {
+ecount.factory('CountyCentroid', function($http) {
 	var COUNTY_BOUNDS_CENTROID_URL = '/tallysys/map/center/';
 
 	return function(countyId) {
@@ -20,7 +50,7 @@ ecountmap.factory('CountyCentroid', function($http) {
 	}
 });
 
-ecountmap.factory('ElectionBounds', function($http) {
+ecount.factory('ElectionBounds', function($http) {
 	var ELECTION_BOUNDS_REQ_URL = '/tallysys/map/divisions/';
 
 	return function(countyId) {
@@ -29,21 +59,21 @@ ecountmap.factory('ElectionBounds', function($http) {
 });
 
 // Leaflet module
-ecountmap.factory('Map', function() {
+ecount.factory('Map', function() {
 
-	var map = L.map('map');
+	var map = L.map('imap-view');
 	var DEFAULT_ZOOM_LEVEL = 6;
 	var EVENT_ZOOM_LEVEL = 7;
 
-	var layer = function(position) {
+	var setView = function(position) {
+		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
+	};
 
-
+	var layer = function() {
 		var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png';
 		var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
 			'Imagery &copy; 2012 CloudMade';
 		var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
-
-		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
 
 		L.tileLayer(URL, {
 			attribution: ATTRIBUTION,
@@ -67,10 +97,12 @@ ecountmap.factory('Map', function() {
 	    };
 	};
 
-	navigator.geolocation.getCurrentPosition(layer);
-
-
 	return {
+
+		renderMap: function() {
+			navigator.geolocation.getCurrentPosition(setView);
+			layer();
+		},
 
 		updateMapView: function(coords) {
 			map.setView(coords, EVENT_ZOOM_LEVEL);
@@ -90,7 +122,7 @@ ecountmap.factory('Map', function() {
 });
 
 // get the list of all counties on which statistics can be found
-function CountyListController($scope, Map, Counties, CountyBounds, CountyCentroid, ElectionBounds) {
+function MapController($scope, Map, Counties, CountyBounds, CountyCentroid, ElectionBounds) {
 
 	$scope.getGeomForCounty = function($event) {
 
@@ -112,6 +144,10 @@ function CountyListController($scope, Map, Counties, CountyBounds, CountyCentroi
 		});
 	};
 
+	$scope.renderMap = function() {
+		Map.renderMap();
+	}
+
 	var buildMap = function(county) {
 		$.when(CountyBounds(county.name))
 		.done(function(countyBounds) {
@@ -131,4 +167,16 @@ function CountyListController($scope, Map, Counties, CountyBounds, CountyCentroi
 	}).error(function(err) {
 		// defer error
 	});
+}
+
+function StatBankController($scope) {
+
+}
+
+function AboutController($scope) {
+
+}
+
+function HomeController($scope) {
+
 }

@@ -14,8 +14,8 @@ object MapStore {
     }
 
     def xsql = <xsql>
-      SELECT ST_X(ST_CENTROID(ST_TRANSFORM(st_setSrid(geom, 29902), 4326))) as lon,
-      ST_Y(ST_CENTROID(ST_TRANSFORM(st_setSrid(geom, 29902), 4326))) as lat
+      SELECT ST_X(ST_PointOnSurface(ST_TRANSFORM(st_setSrid(geom, 29902), 4326))) as lon,
+      ST_Y(ST_PointOnSurface(ST_TRANSFORM(st_setSrid(geom, 29902), 4326))) as lat
       FROM county_boundries
       WHERE countyname = #{{name}};
     </xsql>

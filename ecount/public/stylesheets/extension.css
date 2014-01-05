@@ -2,6 +2,10 @@
 	color: hsla(220, 10%, 90%, 1);
 }
 
+a.contrast {
+	cursor: pointer;
+}
+
 .sea {
 	border: none;
 	background-color: hsla(220, 10%, 40%, 1);
@@ -14,4 +18,8 @@
 
 .content-container {
 	padding: 1% 0;
+}
+
+.hide {
+	visibility: hidden;
 }

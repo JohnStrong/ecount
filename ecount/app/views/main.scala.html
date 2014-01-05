@@ -1,21 +1,94 @@
-@(title:String)(content:Html)
-
 <!DOCTYPE html>
-<html ng-app='EcountMap' lang="en">
+<html ng-app='Ecount' lang="en">
 <head>
     <meta charset="UTF-8" >
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
-    @scripts()
-    <title>@title</title>
-    @styles()
+    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/angular.min.js")"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+    <title>Ecount</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/extension.css")"/>
 </head>
 <body id="main">
-    <header id="top">
-        @header()
+    <!-- prettify the buttons -->
+    <header id="top" class="spacial">
+        <nav class="navbar navbar-default navbar-static-top sea top" role="navigation">
+            <a class="navbar-brand" href="#"><span class="contrast">E-Count</span></a>
+             <ul class="nav navbar-nav navbar-right">
+                <li><a class="contrast" data-toggle="modal" data-target="#Register">Register</a></li>
+                <li><a class="contrast" data-toggle="modal" data-target="#Sign-in">Sign in</a></li>
+             </ul>
+        </nav>
     </header>
-    <div id="content-main">
-    @content
+    <!-- modal popups -->
+    <div class="modal fade" id="Sign-in" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Sign in</h4>
+          </div>
+          <div class="modal-body">
+            <p>One fine body&hellip;</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Sign in</button>
+          </div>
+        </div>
+      </div>
     </div>
+    <div class="modal fade" id="Register" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Register</h4>
+          </div>
+          <div class="modal-body">
+            <p>One fine body&hellip;</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- content body -->
+    <div id="content-main spacial">
+        <div class="wrap row">
+            <ul id="main-nav" class="nav nav-tabs">
+                <li id="map" class=""><a href="/map">Map</a></li>
+                <li id="statbank" class=""><a href="/statbank">StatBank</a></li>
+                <li id="about" class=""><a href="/about">About</a></li>
+            </ul>
+
+            <div ng-view id="interactive-main" class="spacial">
+                <div class="jumbotron">
+                  <h1>Welcome to E-count</h1>
+                  <p>...</p>
+                  <p><a href="/about" class="btn btn-primary btn-lg" role="button">Take a Tour</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $("li").click('#main-nav', function(e) {
+            $(this).parent().children().removeClass("active");
+            $(this).addClass("active");
+        });
+    </script>
+        <script src="@routes.Assets.at("javascripts/views.js")"></script>
     <footer id="credits">
         <!-- credits will go here -->
     </footer>
