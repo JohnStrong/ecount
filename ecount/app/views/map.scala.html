@@ -4,13 +4,40 @@
 <div class="wrap row">
     <div class="row" ng-controller='CountyListController'>
         <script src="@routes.Assets.at("javascripts/map-controller.js")"></script>
-        <!-- error message if fatal server error in application
-            TO FINISH -->
-        <div class="server-error" ng-repeat="error in errors">
-            <h1>{{error}}</h1>
+        <!-- TO FINISH -->
+        <div id="map-error" class="server-error" style="visibility:hidden;">
+            <div class="alert alert-danger fade in">
+                <h4>Something broke</h4>
+                <p>
+                    this is embarrassing.....<br />
+                    Please refersh the page and try again.
+                </p>
+            </div>
+            <script>
+               $("#map-error").find(".alert").alert('close');
+            </script>
         </div>
-        <div id="map-view" class="col-md-12">
-            <div id="map" style="height: 650px"></div>
+        <ul id="stat-tabs" class="nav nav-tabs">
+          <li class="active"><a href="#imap">Map</a></li>
+          <li class=""><a href="#help">Help</a></li>
+        </ul>
+        <div id="imap" class="content-container">
+            <div id="counties" class="col-md-3">
+                <ul class="counties-list list-group">
+                   <li class="county list-group-item" ng-repeat='county in counties' ng-click="getGeomForCounty($event)">
+                        <span id="key" style="visibility:hidden;">{{county.id}}</span>
+                        <span id="name" class="county-link">{{county.name}}</span>
+                    </li>
+                </ul>
+                <style>
+                    .county {
+                        cursor: pointer;
+                    }
+                </style>
+            </div>
+            <div id="map-view" class="col-md-9">
+                <div id="map" style="height: 500px"></div>
+            </div>
         </div>
     </div>
 </div>

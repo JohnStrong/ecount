@@ -3,5 +3,15 @@
 }
 
 .sea {
+	border: none;
 	background-color: hsla(220, 10%, 40%, 1);
+	box-shadow: -1px 0px 10px hsla(220, 10%, 40%, 1);
+}
+
+.top {
+	margin: 1% 0;
+}
+
+.content-container {
+	padding: 1% 0;
 }

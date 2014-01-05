@@ -62,27 +62,51 @@ object MapController extends Controller {
     )))
   }
 
-  // loads ED coordinates in Geo-Json format for a county by countyId
-  def electoralDivisions(countyId: Long) = Action {
+  def countyCentroid(county: String) = Action {
 
-    withConnection { implicit conn =>
-
-      val edByCounty =  MapStore.getElectoralDivisions(countyId).map(ed => {
-        Json.obj(
-          "type" -> "Feature",
-          "geometry" ->  Json.parse(ed.geometry),
-          "properties" -> Json.obj(
-            "id" -> ed.id,
-            "name" -> ed.name,
-            "county" -> ed.county
+    def getCountyCentroid =
+      withConnection { implicit conn =>
+        MapStore.getCountyCentroid(county).map(centroid => {
+          Json.obj(
+            "lon" -> centroid.x,
+            "lat" -> centroid.y
           )
-        )
-      })
+        })
+      }
 
-      Ok(Json.obj(
+    val centroid = getCountyCentroid
+    Ok(Json.obj(
+      "centroid" -> centroid
+      )
+    )
+  }
+  // loads ED coordinates in Geo-Json format for a county by countyId
+  def electoralDivisions(countyId: Long) = Action.async {
+
+    def getEDByCountyId =
+      withConnection { implicit conn =>
+        MapStore.getElectoralDivisions(countyId).map(ed => {
+          Json.obj(
+            "type" -> "Feature",
+            "geometry" ->  Json.parse(ed.geometry),
+            "properties" -> Json.obj(
+              "id" -> ed.id,
+              "name" -> ed.name,
+              "county" -> ed.county
+            )
+          )
+        })
+      }
+
+
+    val edByCounty = scala.concurrent.Future { getEDByCountyId }
+
+    edByCounty.map{ i =>
+      Ok( Json.obj(
         "type" -> "FeatureCollection",
-        "features" -> Json.toJson(edByCounty)
-      ))
+        "features" -> Json.toJson(i)
+        )
+      )
     }
   }
 

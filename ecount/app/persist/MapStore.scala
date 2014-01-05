@@ -6,18 +6,32 @@ import models._
 
 object MapStore {
 
+  val getCountyCentroid = new SelectOneBy[String, Point] {
+
+    resultMap = new ResultMap[Point] {
+      result(property = "x", column = "lon")
+      result(property = "y", column = "lat")
+    }
+
+    def xsql = <xsql>
+      SELECT ST_X(ST_CENTROID(ST_TRANSFORM(st_setSrid(geom, 29902), 4326))) as lon,
+      ST_Y(ST_CENTROID(ST_TRANSFORM(st_setSrid(geom, 29902), 4326))) as lat
+      FROM county_boundries
+      WHERE countyname = #{{name}};
+    </xsql>
+  }
   val getElectoralDivisions = new SelectListBy[Long, CountyElectoralDivision] {
 
     resultMap = new ResultMap[CountyElectoralDivision] {
-       result(property = "id", column = "gid")
-       result(property = "name", column = "saps_label")
-       result(property = "county", column = "county")
-       result(property = "geometry", column = "st_asgeojson")
+        result(property = "id", column = "gid")
+        result(property = "name", column = "saps_label")
+        result(property = "county", column = "county")
+        result(property = "geometry", column = "geom")
     }
 
     def xsql = <xsql>
       SELECT ed.gid, ed.county, ed.saps_label,
-      ST_asGeoJson(ST_transform(ed.geom, 4326))
+      ST_ASGEOJSON(ST_TRANSFORM(ed.geom, 4326)) as geom
       FROM electoral_divisions ed, counties c
       WHERE c.county_id = #{{id}}
       AND c.county = ed.county
@@ -46,8 +60,8 @@ object MapStore {
         FROM counties as c, county_boundries as cb
         WHERE c.county = #{countyName}
         AND c.county = cb.countyname
-      """
+    """
   }
 
-  def bind = Seq(getElectoralDivisions, getAllCounties, getCountyBounds)
+  def bind = Seq(getCountyCentroid, getElectoralDivisions, getAllCounties, getCountyBounds)
 }
