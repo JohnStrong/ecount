@@ -3,24 +3,19 @@ var ecount = angular.module('Ecount', ['ngRoute'],
 	function($routeProvider, $locationProvider) {
 
 		$routeProvider.when('/', {
-			redirectTo: '/home'
+			redirectTo: '/feature/home'
 		});
-		$routeProvider.when('/home', {
+		$routeProvider.when('/feature/home', {
 			templateUrl: '/home',
 			controller: HomeController,
 			controllerAs: 'home'
 		});
-		$routeProvider.when('/map', {
+		$routeProvider.when('/feature/map', {
 			templateUrl: '/map',
 			controller: MapController,
 			controllerAs: 'map'
 		});
-		$routeProvider.when('/statbank', {
-			templateUrl: '/statbank',
-			controller: StatBankController,
-			controllerAs: 'statbank'
-		});
-		$routeProvider.when('/about', {
+		$routeProvider.when('/feature/about', {
 			templateUrl: '/about',
 			controller: AboutController,
 			controllerAs: 'about'
@@ -42,15 +37,8 @@ ecount.factory('CountyBounds', function() {
 	};
 });
 
-ecount.factory('CountyCentroid', function($http) {
-	var COUNTY_BOUNDS_CENTROID_URL = '/tallysys/map/center/';
-
-	return function(countyId) {
-		return $http.get(COUNTY_BOUNDS_CENTROID_URL + countyId);
-	}
-});
-
 ecount.factory('ElectionBounds', function($http) {
+
 	var ELECTION_BOUNDS_REQ_URL = '/tallysys/map/divisions/';
 
 	return function(countyId) {
@@ -58,12 +46,13 @@ ecount.factory('ElectionBounds', function($http) {
 	}
 });
 
-// Leaflet module
-ecount.factory('Map', function() {
+ecount.service('Map', function(ElectionBounds) {
 
 	var map = L.map('imap-view');
-	var DEFAULT_ZOOM_LEVEL = 6;
-	var EVENT_ZOOM_LEVEL = 7;
+	var geojson;
+
+	var DEFAULT_ZOOM_LEVEL = 7;
+	var EVENT_ZOOM_LEVEL = 8;
 
 	var setView = function(position) {
 		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
@@ -83,19 +72,75 @@ ecount.factory('Map', function() {
 
 	var style = function(feature) {
 
-		var FILL_COLOR = "#888822";
-		var STROKE_COLOR = '#AAAAAA';
-		var WEIGHT_OPACITY_NUM = 1;
-		var FILL_OPACITY = 0.2;
+		var DEFAULT_WEIGHT = 2;
+        var DEFAULT_OPACITY = 0.5;
+        var DEAULT_COLOR = '#888888';
+        var DEAULT_FILL_COLOR = '#265588';
+        var DEAULT_DASH_ARRAY = '3';
+        var DEFAULT_FILL_OPACITY = 0.2;
 
 	    return {
-	        fillColor: FILL_COLOR,
-	        weight: WEIGHT_OPACITY_NUM,
-	        opacity: WEIGHT_OPACITY_NUM,
-	        color: STROKE_COLOR,
-	        fillOpacity: FILL_OPACITY
+	        weight: DEFAULT_WEIGHT,
+	        opacity: DEFAULT_OPACITY,
+	        color: DEAULT_COLOR,
+	        fillColor: DEAULT_FILL_COLOR,
+	        dashArray: DEAULT_DASH_ARRAY,
+	        fillOpacity: DEFAULT_FILL_OPACITY
 	    };
 	};
+
+	var interaction = function(feature, layer) {
+
+
+		var HIGHLIGHT_WEIGHT = 3;
+		var HIGHLIGHT_CLICK_COLOR = '#885526';
+		var HIGHLIGHT_FILL_OPACITY = 0.5;
+
+		function highlightFeature(e) {
+			var layer = e.target;
+
+			layer.setStyle({
+				weight: HIGHLIGHT_WEIGHT,
+		        color: HIGHLIGHT_CLICK_COLOR,
+		        fillOpacity: HIGHLIGHT_FILL_OPACITY
+			});
+
+			if(!L.Browser.ie && !L.Browser.opera) {
+       			layer.bringToFront();
+   			}
+		}
+
+		function resetHighlight(e) {
+			geojson.resetStyle(e.target);
+		}
+
+		function getElectoralDivisions(e){
+
+			function zoomToFeature() {
+				map.fitBounds(e.target.getBounds());
+			}
+
+			function drawED(geom) {
+				L.geoJson(geom, {
+					style: style
+				}).addTo(map);
+			}
+
+			var id = feature.properties.id;
+			ElectionBounds(id).success(function(geom) {
+				zoomToFeature();
+				drawED(geom);
+			}).error(function(err) {
+				// defer error
+			});
+		}
+
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: getElectoralDivisions
+		});
+	}
 
 	return {
 
@@ -104,55 +149,26 @@ ecount.factory('Map', function() {
 			layer();
 		},
 
-		updateMapView: function(coords) {
-			map.setView(coords, EVENT_ZOOM_LEVEL);
-		},
-
-		drawGeom: function (collection) {
-			L.geoJson(collection, {
-				style: style
+		drawCounties: function (collection) {
+			geojson = L.geoJson(collection, {
+				style: style,
+				onEachFeature: interaction
 			}).addTo(map);
-		},
-
-		drawElectoralBounds: function(collection, coords) {
-			this.drawGeom(collection);
-			this.updateMapView(coords);
 		}
 	};
 });
 
-// get the list of all counties on which statistics can be found
-function MapController($scope, Map, Counties, CountyBounds, CountyCentroid, ElectionBounds) {
-
-	$scope.getGeomForCounty = function($event) {
-
-		var targetElem = $event.target;
-		var countyname = $(targetElem).parent().find("#name").text();
-		var countyid = $(targetElem).parent().find("#key").text();
-
-		CountyCentroid(countyname).success(function(c) {
-
-			ElectionBounds(countyid).success(function(geom) {
-
-				Map.drawElectoralBounds(geom, [c.centroid.lat, c.centroid.lon]);
-
-			}).error(function(err) {
-				// defer error
-			});
-		}).error(function(err) {
-			// defer error
-		});
-	};
+function MapController($scope, Map, Counties, CountyBounds) {
 
 	$scope.renderMap = function() {
 		Map.renderMap();
-	}
+	};
 
 	var buildMap = function(county) {
 		$.when(CountyBounds(county.name))
-		.done(function(countyBounds) {
-			Map.drawGeom(countyBounds);
-		});
+			.done(function(countyBounds) {
+				Map.drawCounties(countyBounds);
+			});
 	};
 
 	Counties.success(function(data) {
@@ -169,8 +185,25 @@ function MapController($scope, Map, Counties, CountyBounds, CountyCentroid, Elec
 	});
 }
 
-function StatBankController($scope) {
+/** STATISTICS SERVICE **/
+ecount.factory('GeneralStats', function($http){
 
+	return {
+		liveRegister: function() {
+			return $.getJSON(
+				'/stats/general/register/mature/m',
+				'/stats/general/register/mature/f',
+				'/stats/general/register/young/m',
+				'/stats/general/register/young/f')
+		}
+	};
+});
+
+function StatBankController($scope, GeneralStats) {
+	$.when(GeneralStats.liveRegister())
+		.done(function(mm, mf, ym, yf) {
+			console.log(mm, mf, ym, yf);
+		});
 }
 
 function AboutController($scope) {

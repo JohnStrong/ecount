@@ -20,10 +20,6 @@ object ViewController extends Controller {
     Ok(views.html.map.render())
   }
 
-  def statbank = Action {
-    Ok(views.html.map.render())
-  }
-
   def about = Action {
     Ok(views.html.about.render())
   }

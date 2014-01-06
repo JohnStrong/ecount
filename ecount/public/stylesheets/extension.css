@@ -1,5 +1,5 @@
-.contrast {
-	color: hsla(220, 10%, 90%, 1);
+.county-search {
+	margin: 0 auto;
 }
 
 a.contrast {
@@ -8,12 +8,16 @@ a.contrast {
 
 .sea {
 	border: none;
-	background-color: hsla(220, 10%, 40%, 1);
-	box-shadow: -1px 0px 10px hsla(220, 10%, 40%, 1);
+	background-color: hsla(220, 10%, 45%, 1);
+	box-shadow: -1px 0px 10px hsla(220, 10%, 45%, 1);
 }
 
 .top {
-	margin: 1% 0;
+ margin: 1% 0;
+}
+
+#top a {
+	color: #fff;
 }
 
 .content-container {

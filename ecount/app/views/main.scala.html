@@ -21,10 +21,10 @@
     <!-- prettify the buttons -->
     <header id="top" class="spacial">
         <nav class="navbar navbar-default navbar-static-top sea top" role="navigation">
-            <a class="navbar-brand" href="#"><span class="contrast">E-Count</span></a>
+            <a id="brand-link" class="navbar-brand sea" href="/"><span class="contrast">E-Count</span></a>
              <ul class="nav navbar-nav navbar-right">
-                <li><a class="contrast" data-toggle="modal" data-target="#Register">Register</a></li>
-                <li><a class="contrast" data-toggle="modal" data-target="#Sign-in">Sign in</a></li>
+                <li><a class="navbar-link" data-toggle="modal" data-target="#Register">Register</a></li>
+                <li><a class="navbar-link" data-toggle="modal" data-target="#Sign-in">Sign in</a></li>
              </ul>
         </nav>
     </header>
@@ -36,13 +36,21 @@
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h4 class="modal-title">Sign in</h4>
           </div>
-          <div class="modal-body">
-            <p>One fine body&hellip;</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary">Sign in</button>
-          </div>
+          <form role="form" method="POST" action="/auth/sign-in">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email</label>
+                    <input type="email" class="form-control" id="user-email" placeholder="user email">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="user-pass" placeholder="user password">
+                </div>
+            </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+          </form>
         </div>
       </div>
     </div>
@@ -67,9 +75,8 @@
     <div id="content-main spacial">
         <div class="wrap row">
             <ul id="main-nav" class="nav nav-tabs">
-                <li id="map" class=""><a href="/map">Map</a></li>
-                <li id="statbank" class=""><a href="/statbank">StatBank</a></li>
-                <li id="about" class=""><a href="/about">About</a></li>
+                <li id="map" class=""><a href="/feature/map">Map</a></li>
+                <li id="about" class=""><a href="/feature/about">About</a></li>
             </ul>
 
             <div ng-view id="interactive-main" class="spacial">
@@ -82,10 +89,14 @@
         </div>
     </div>
     <script>
-
         $("li").click('#main-nav', function(e) {
             $(this).parent().children().removeClass("active");
             $(this).addClass("active");
+        });
+
+        $("#brand-link").click(function(e) {
+            console.log("clicked");
+            $("#main-nav").children().removeClass("active");
         });
     </script>
         <script src="@routes.Assets.at("javascripts/views.js")"></script>

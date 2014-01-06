@@ -32,7 +32,6 @@ object MapController extends Controller {
     }
 
     val countyList = scala.concurrent.Future { getCountyNames }
-
     countyList.map { countiesFuture =>
 
       Ok(Json.obj(
@@ -46,10 +45,12 @@ object MapController extends Controller {
     def getAndGroupCounties(countyName: String) = {
       withConnection { implicit conn =>
         MapStore.getCountyBounds(countyName).map(ctd => {
-          // return script and exec with comet sockets???
           Json.obj(
             "type" -> "Feature",
-            "geometry" ->  Json.parse(ctd)
+            "geometry" ->  Json.parse(ctd.geom),
+            "properties" -> Json.obj(
+              "id" -> ctd.id
+            )
           )
         })
       }
