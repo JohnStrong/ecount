@@ -31,7 +31,7 @@ object MapStore {
 
     def xsql = <xsql>
       SELECT ed.gid, ed.county, ed.saps_label,
-      ST_ASGEOJSON(ST_TRANSFORM(ST_SIMPLIFY(ed.geom, 90), 4326)) as geom
+      ST_ASGEOJSON(ST_TRANSFORM(st_setSrid(ST_SIMPLIFY(ed.geom, 60), 29902), 4326)) as geom
       FROM electoral_divisions ed, counties c
       WHERE c.county_id = #{{id}}
       AND c.county = ed.county
@@ -60,7 +60,7 @@ object MapStore {
     }
     def xsql =
       """
-        SELECT ST_asGeoJson(ST_Transform(st_setSrid(ST_SIMPLIFY(cb.geom, 20), 29902), 4326)),
+        SELECT ST_asGeoJson(ST_Transform(st_setSrid(ST_SIMPLIFY(cb.geom, 50), 29902), 4326)),
         c.county_id
         FROM counties as c, county_boundries as cb
         WHERE c.county = #{countyName}
