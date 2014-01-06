@@ -43,22 +43,67 @@ ecount.factory('ElectionBounds', function($http) {
 
 	return function(countyId) {
 		return $http.get(ELECTION_BOUNDS_REQ_URL + countyId);
-	}
+	};
 });
 
-ecount.service('Map', function(ElectionBounds) {
+ecount.factory('ElectionStatistics', function($http) {
+	var GENERAL_ELECTION_STATS_URL = '/stats/elections/general/';
 
-	var map = L.map('imap-view');
-	var geojson;
+	return function(countyId) {
+		return $http.get(GENERAL_ELECTION_STATS_URL + countyId);
+	};
+});
+
+ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
 
 	var DEFAULT_ZOOM_LEVEL = 7;
 	var EVENT_ZOOM_LEVEL = 8;
 
-	var setView = function(position) {
-		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
-	};
+	var map = L.map('imap-view');
+	var geojson;
 
-	var layer = function() {
+	var info = (function() {
+
+		var i = L.control();
+
+		i.onAdd = function (map) {
+		    this._div = L.DomUtil.create('div', 'imap-info'); // create a div with a class "info"
+		    this.update();
+		    return this._div;
+		};
+
+		// method that we will use to update the control based on feature properties passed
+		i.update = function (stats) {
+			var htm = '<p>click a county to view some election statistics</p>';
+
+			if(stats !== undefined) {
+				htm = ''
+			}
+
+			$(stats).each(function(key, data) {
+				htm += '<div class="imap-info-entry">' +
+				'<b>' + data.constituency + ': </b>' +
+				'<p>' +
+				'registered electors: ' + data.registeredElectors + '<br />' +
+				'votes: ' + data.votes + '<br />' +
+				'turnout: ' + data.percentTurnout + '%<br />' +
+				'invalid ballots: ' + data.invalidBallots + '<br />' +
+				'percentage invalid: ' + data.percentInvalid + '%<br />' +
+				'valid ballots: ' + data.validVotes + '<br />' +
+				'percentage valid: ' + data.percentValid + '%<br />' +
+				'</p>' +
+				'</div>';
+			});
+
+		    this._div.innerHTML = '<h4>Election statistics</h4>' + htm;
+		};
+
+		i.addTo(map);
+
+		return i;
+	})();
+
+	var layer = (function() {
 		var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png';
 		var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
 			'Imagery &copy; 2012 CloudMade';
@@ -68,6 +113,10 @@ ecount.service('Map', function(ElectionBounds) {
 			attribution: ATTRIBUTION,
 			key: API_KEY
 		}).addTo(map);
+	})();
+
+	var setView = function(position) {
+		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
 	};
 
 	var style = function(feature) {
@@ -114,7 +163,7 @@ ecount.service('Map', function(ElectionBounds) {
 			geojson.resetStyle(e.target);
 		}
 
-		function getElectoralDivisions(e){
+		function getElectoralInformation(e){
 
 			function zoomToFeature() {
 				map.fitBounds(e.target.getBounds());
@@ -127,9 +176,18 @@ ecount.service('Map', function(ElectionBounds) {
 			}
 
 			var id = feature.properties.id;
+
+			// electoral divisions
 			ElectionBounds(id).success(function(geom) {
 				zoomToFeature();
 				drawED(geom);
+			}).error(function(err) {
+				// defer error
+			});
+
+			// election stats of county
+			ElectionStatistics(id).success(function(stats){
+				info.update(stats);
 			}).error(function(err) {
 				// defer error
 			});
@@ -138,7 +196,7 @@ ecount.service('Map', function(ElectionBounds) {
 		layer.on({
 			mouseover: highlightFeature,
 			mouseout: resetHighlight,
-			click: getElectoralDivisions
+			click: getElectoralInformation
 		});
 	}
 
@@ -146,7 +204,6 @@ ecount.service('Map', function(ElectionBounds) {
 
 		renderMap: function() {
 			navigator.geolocation.getCurrentPosition(setView);
-			layer();
 		},
 
 		drawCounties: function (collection) {

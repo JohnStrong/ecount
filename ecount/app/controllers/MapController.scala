@@ -42,7 +42,7 @@ object MapController extends Controller {
   }
   def countyBounds(countyName: String) = Action.async {
 
-    def getAndGroupCounties(countyName: String) = {
+    def getAndGroupCounties = {
       withConnection { implicit conn =>
         MapStore.getCountyBounds(countyName).map(ctd => {
           Json.obj(
@@ -56,7 +56,7 @@ object MapController extends Controller {
       }
     }
 
-    val groupedCounties = scala.concurrent.Future { getAndGroupCounties(countyName) }
+    val groupedCounties = scala.concurrent.Future { getAndGroupCounties }
     groupedCounties.map(i => Ok(Json.obj(
       "type" -> "FeatureCollection",
       "features" -> Json.toJson(i)

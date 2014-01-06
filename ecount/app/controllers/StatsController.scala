@@ -5,6 +5,10 @@ package controllers
  */
 
 import play.api.mvc._
+import persistence.PersistenceContext._
+import play.api.libs.concurrent.Execution.Implicits._
+import persistence.StatStore
+import play.api.libs.json.Json
 
 object StatsController extends Controller {
 
@@ -15,4 +19,30 @@ object StatsController extends Controller {
   def lveRegisterYoungMale = TODO
 
   def lveRegisterYoungFemale = TODO
+
+  def generalElectionResults(countyId: Long) = Action.async {
+
+    def getElectionResults = {
+      withConnection {  implicit conn => {
+          StatStore.getGeneralElectionStatistics(countyId).map(ges => {
+            Json.obj(
+                "constituency" -> ges.constituency,
+                "votes" -> ges.votes,
+                "percentTurnout" -> ges.percentTurnout,
+                "invalidBallots" -> ges.invalidBallots,
+                "percentInvalid" -> ges.percentInvalid,
+                "validVotes" -> ges.validVotes,
+                "percentValid" -> ges.percentValid,
+                "registeredElectors" -> ges.registeredElectors
+            )
+          })
+        }
+      }
+    }
+
+    val results = scala.concurrent.Future { getElectionResults }
+    results.map(i => {
+      Ok(Json.toJson(i))
+    })
+  }
 }
