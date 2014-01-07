@@ -36,11 +36,21 @@ a.contrast {
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
 }
+
 .imap-info h4 {
-    margin: 0 0 5px;
+    margin: 0 0 2px;
     color: #777;
 }
 
 .imap-info-entry p {
 	color: #555;
+}
+
+.imap-elec-year {
+	margin: 0 0 2px;
+	color: #77A;
+}
+
+.imap-elec-year:hover {
+	cursor: pointer;
 }

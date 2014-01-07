@@ -37,7 +37,11 @@ ecount.factory('CountyBounds', function() {
 	};
 });
 
-ecount.factory('ElectionBounds', function($http) {
+ecount.factory('Elections', function($http) {
+	return $http.get('/stats/elections/');
+})
+
+ecount.factory('ElectorialDivisions', function($http) {
 
 	var ELECTION_BOUNDS_REQ_URL = '/tallysys/map/divisions/';
 
@@ -47,20 +51,25 @@ ecount.factory('ElectionBounds', function($http) {
 });
 
 ecount.factory('ElectionStatistics', function($http) {
+	var ALL_COUNTY_COUNSTITUENCIES_URL = '/stats/elections/const/'
 	var GENERAL_ELECTION_STATS_URL = '/stats/elections/general/';
 
-	return function(countyId) {
-		return $http.get(GENERAL_ELECTION_STATS_URL + countyId);
+	return {
+		generalElectionStats: function(electionId, countyId) {
+			return $http.get(GENERAL_ELECTION_STATS_URL
+				+ electionId + '/' + countyId);
+		}
 	};
 });
 
-ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
+ecount.service('Map', function(ElectorialDivisions, ElectionStatistics) {
 
 	var DEFAULT_ZOOM_LEVEL = 7;
 	var EVENT_ZOOM_LEVEL = 8;
 
 	var map = L.map('imap-view');
 	var geojson;
+	var electionId = 1;
 
 	var info = (function() {
 
@@ -68,38 +77,16 @@ ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
 
 		i.onAdd = function (map) {
 		    this._div = L.DomUtil.create('div', 'imap-info'); // create a div with a class "info"
-		    this.update();
+		    this.update('<h4>click on a county to view some election statistics</h4>');
 		    return this._div;
 		};
 
 		// method that we will use to update the control based on feature properties passed
-		i.update = function (stats) {
-			var htm = '<p>click a county to view some election statistics</p>';
-
-			if(stats !== undefined) {
-				htm = ''
-			}
-
-			$(stats).each(function(key, data) {
-				htm += '<div class="imap-info-entry">' +
-				'<b>' + data.constituency + ': </b>' +
-				'<p>' +
-				'registered electors: ' + data.registeredElectors + '<br />' +
-				'votes: ' + data.votes + '<br />' +
-				'turnout: ' + data.percentTurnout + '%<br />' +
-				'invalid ballots: ' + data.invalidBallots + '<br />' +
-				'percentage invalid: ' + data.percentInvalid + '%<br />' +
-				'valid ballots: ' + data.validVotes + '<br />' +
-				'percentage valid: ' + data.percentValid + '%<br />' +
-				'</p>' +
-				'</div>';
-			});
-
-		    this._div.innerHTML = '<h4>Election statistics</h4>' + htm;
+		i.update = function (markup) {
+		    this._div.innerHTML = markup;
 		};
 
 		i.addTo(map);
-
 		return i;
 	})();
 
@@ -109,7 +96,7 @@ ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
 			'Imagery &copy; 2012 CloudMade';
 		var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
 
-		L.tileLayer(URL, {
+		return L.tileLayer(URL, {
 			attribution: ATTRIBUTION,
 			key: API_KEY
 		}).addTo(map);
@@ -175,22 +162,45 @@ ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
 				}).addTo(map);
 			}
 
-			var id = feature.properties.id;
+			function electionStats(stats) {
+				var htm = '<h4>Election Statistics</h4>';
+
+				$(stats).each(function(key, data) {
+					htm += '<div class="imap-info-entry">' +
+					'<b>' + data.constituency + ': </b>' +
+					'<p>' +
+					'registered electors: ' + data.registeredElectors + '<br />' +
+					'votes: ' + data.votes + '<br />' +
+					'turnout: ' + data.percentTurnout + '%<br />' +
+					'invalid ballots: ' + data.invalidBallots + '<br />' +
+					'percentage invalid: ' + data.percentInvalid + '%<br />' +
+					'valid ballots: ' + data.validVotes + '<br />' +
+					'percentage valid: ' + data.percentValid + '%<br />' +
+					'</p>' +
+					'</div>';
+				});
+
+				info.update(htm);
+			}
+
+			var countyId = feature.properties.id;
 
 			// electoral divisions
-			ElectionBounds(id).success(function(geom) {
-				zoomToFeature();
-				drawED(geom);
-			}).error(function(err) {
-				// defer error
-			});
+			ElectorialDivisions(countyId)
+				.success(function(geom) {
+					zoomToFeature();
+					drawED(geom);
+				}).error(function(err) {
+					// defer error
+				});
 
-			// election stats of county
-			ElectionStatistics(id).success(function(stats){
-				info.update(stats);
-			}).error(function(err) {
-				// defer error
-			});
+			ElectionStatistics.generalElectionStats(electionId, countyId)
+				.success(function(stats) {
+					electionStats(stats);
+				})
+				.error(function(err) {
+					// defer error
+				});
 		}
 
 		layer.on({
@@ -206,6 +216,10 @@ ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
 			navigator.geolocation.getCurrentPosition(setView);
 		},
 
+		setElectionId: function(_id) {
+			electionId = _id;
+		},
+
 		drawCounties: function (collection) {
 			geojson = L.geoJson(collection, {
 				style: style,
@@ -215,31 +229,49 @@ ecount.service('Map', function(ElectionBounds, ElectionStatistics) {
 	};
 });
 
-function MapController($scope, Map, Counties, CountyBounds) {
+function MapController($scope, Map, Counties, CountyBounds, Elections) {
 
-	$scope.renderMap = function() {
-		Map.renderMap();
-	};
+	$scope.initIMap = function() {
 
-	var buildMap = function(county) {
-		$.when(CountyBounds(county.name))
-			.done(function(countyBounds) {
-				Map.drawCounties(countyBounds);
+		function buildMap(county) {
+			$.when(CountyBounds(county.name))
+				.done(function(countyBounds) {
+					Map.drawCounties(countyBounds);
+					Map.renderMap();
+				});
+		}
+
+		Counties.success(function(data) {
+
+			counties = data.counties;
+			$.each(data.counties, function(key, county) {
+				buildMap(county);
 			});
+
+		}).error(function(err) {
+			// defer error
+		});
 	};
 
-	Counties.success(function(data) {
-
-		counties = data.counties;
-		$scope.counties = counties;
-
-		$.each(data.counties, function(key, county) {
-			buildMap(county);
+	$scope.getElections = function() {
+		Elections.success(function(data) {
+			$scope.elections = data;
+		}).error(function(err) {
+			// defer error
 		});
+	}
 
-	}).error(function(err) {
-		// defer error
-	});
+	$scope.electionChange = function($event) {
+
+		var button = $event.target;
+
+		$(button).closest("#election-selections")
+			.find("button").removeClass("active");
+		$(button).addClass("active");
+
+		var electionId = $(button).closest("span").find("span").text();
+		Map.setElectionId(electionId);
+	};
 }
 
 /** STATISTICS SERVICE **/
@@ -270,3 +302,7 @@ function AboutController($scope) {
 function HomeController($scope) {
 
 }
+
+/*
+
+*/

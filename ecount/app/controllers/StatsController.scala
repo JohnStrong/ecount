@@ -20,7 +20,48 @@ object StatsController extends Controller {
 
   def lveRegisterYoungFemale = TODO
 
-  def generalElectionResults(countyId: Long) = Action.async {
+  def electionEntries = Action.async {
+
+    def getAvailableElections = {
+      withConnection { implicit conn => {
+        StatStore.getElectionEntries().map(election => {
+         Json.obj(
+          "id" -> election.id,
+          "title" -> election.title
+         )
+        })
+      }
+     }
+    }
+
+    val result = scala.concurrent.Future { getAvailableElections }
+    result.map{i => {
+        Ok(Json.toJson(i))
+      }
+    }
+  }
+
+  def countyConstituencies(countyId:Long) = Action.async {
+
+    def getCountyConstituencies = {
+        withConnection { implicit conn => {
+          StatStore.getCountyConstituencies(countyId).map(c => {
+            Json.obj(
+              "id" -> c.id,
+              "title" -> c.title
+            )
+          })
+        }
+      }
+    }
+
+    val result = scala.concurrent.Future { getCountyConstituencies }
+    result.map(i => {
+      Ok(Json.toJson(i))
+    })
+  }
+
+  def generalElectionResults(electionId: Long, countyId: Long) = Action.async {
 
     def getElectionResults = {
       withConnection {  implicit conn => {
