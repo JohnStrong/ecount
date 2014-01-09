@@ -10,6 +10,20 @@ import play.api.libs.concurrent.Execution.Implicits._
 import persistence.StatStore
 import play.api.libs.json.Json
 
+class ElectionStatsExtractor {
+  var electionId:Long = _
+  var countyId:Long = _
+}
+
+object ElectionStatsExtractor {
+  def apply(electionId: Long, countyId: Long) =  {
+    val electionSE = new ElectionStatsExtractor
+    electionSE.electionId = electionId
+    electionSE.countyId = countyId
+
+    electionSE
+  }
+}
 object StatsController extends Controller {
 
   def lveRegisterMatureMale = TODO
@@ -41,31 +55,13 @@ object StatsController extends Controller {
     }
   }
 
-  def countyConstituencies(countyId:Long) = Action.async {
-
-    def getCountyConstituencies = {
-        withConnection { implicit conn => {
-          StatStore.getCountyConstituencies(countyId).map(c => {
-            Json.obj(
-              "id" -> c.id,
-              "title" -> c.title
-            )
-          })
-        }
-      }
-    }
-
-    val result = scala.concurrent.Future { getCountyConstituencies }
-    result.map(i => {
-      Ok(Json.toJson(i))
-    })
-  }
-
   def generalElectionResults(electionId: Long, countyId: Long) = Action.async {
 
-    def getElectionResults = {
+    val ese = ElectionStatsExtractor.apply(electionId, countyId)
+
+    def getGeneralElectionResults = {
       withConnection {  implicit conn => {
-          StatStore.getGeneralElectionStatistics(countyId).map(ges => {
+          StatStore.getGeneralElectionStatistics(ese).map(ges => {
             Json.obj(
                 "constituency" -> ges.constituency,
                 "votes" -> ges.votes,
@@ -81,9 +77,28 @@ object StatsController extends Controller {
       }
     }
 
-    val results = scala.concurrent.Future { getElectionResults }
-    results.map(i => {
-      Ok(Json.toJson(i))
+    def getPartyElectionResults = {
+      withConnection { implicit conn => {
+          StatStore.getPartyElectionStats(ese).map(pges => {
+            Json.obj(
+              "partyName" -> pges.partyName,
+              "firstPreferenceVotes" -> pges.firstPreferenceVotes,
+              "percentageVote" -> pges.percentageVote,
+              "seats" -> pges.seats
+            )
+          })
+        }
+      }
+    }
+
+    val geResults = scala.concurrent.Future { getGeneralElectionResults }
+    val peResults =  scala.concurrent.Future { getPartyElectionResults }
+
+    geResults.zip(peResults).map(p => {
+      Ok(Json.obj(
+        "general" -> Json.toJson(p._1),
+        "parties" -> Json.toJson(p._2)
+      ))
     })
   }
 }

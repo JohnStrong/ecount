@@ -19,30 +19,25 @@
     </div>
 </div> -->
 <div class="row">
-    <div class="col-md-12" ng-init="getElections()">
-    <ul id="election-selections" class="list-group">
-        <li class="list-group-item">
-            <h4>Select the Election that you are interested in:</h4>
-            <span ng-repeat="election in elections">
-                <span style="visibility:hidden;">{{election.id}}</span>
-                <button type="button" class="btn btn-default" ng-click="electionChange($event)">
-                    {{election.title}}
-                </button>
-            </span>
-        </li>
-    </ul>
-    </div>
 </div>
 <div class="row">
     <div id="imap" class="content-container">
-        <div id="stats" class="col-md-3" ng-controller="StatBankController">
-            <ul class="list-group">
+        <div id="election-nav-pane" class="col-md-3" ng-init="getElections()">
+             <ul id="election-selections" class="list-group">
+                <li class="list-group-item">
+                    <h4>Select an Election:</h4>
+                </li>
+                <li class="list-group-item">
+                    <ul class="list-group">
+                        <div class="" ng-repeat="election in elections">
+                            <span style="visibility:hidden;">{{election.id}}</span>
+                            <button type="button" class="btn btn-default" ng-click="electionChange($event)">
+                                {{election.title}}
+                            </button>
+                        </div>
+                    </ul>
+                </li>
             </ul>
-            <style>
-                .stat {
-                    cursor: pointer;
-                }
-            </style>
         </div>
         <div class="col-md-9">
             <ul class="list-group">

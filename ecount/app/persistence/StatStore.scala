@@ -7,6 +7,7 @@ package persistence
 import org.mybatis.scala.mapping._
 
 import models._
+import controllers.ElectionStatsExtractor
 
 object StatStore {
 
@@ -23,23 +24,7 @@ object StatStore {
     </xsql>
   }
 
-  val getCountyConstituencies = new SelectListBy[Long, Constituency] {
-
-    resultMap = new ResultMap[Constituency] {
-      result(property = "id", column = "constituency_id")
-      result(property = "title", column = "constituency_title")
-    }
-
-    def xsql = <xsql>
-      SELECT sbc.constituency_title, sbc.constituency_id
-      FROM stat_bank_constituencies as sbc,
-      stat_bank_counties_constituencies as sbcc
-      WHERE sbcc.county_id = #{{id}}
-      AND sbcc.constituency_id = sbc.constituency_id;
-    </xsql>
-  }
-
-  val getGeneralElectionStatistics = new SelectListBy[Long, GeneralElectionResults] {
+  val getGeneralElectionStatistics = new SelectListBy[ElectionStatsExtractor, GeneralElectionResults] {
 
     resultMap = new ResultMap[GeneralElectionResults] {
       result(property = "votes", column = "votes")
@@ -61,8 +46,8 @@ object StatStore {
       stat_bank_counties_constituencies as sbcc,
       stat_bank_election_election_results as sbeer,
       counties as c
-      WHERE c.county_id = #{{countyid}}
-      AND sbeer.election_id = 1
+      WHERE c.county_id = #{{countyId}}
+      AND sbeer.election_id = #{{electionId}}
       AND sbcc.county_id = c.county_id
       AND sbc.constituency_id = sbcc.constituency_id
       AND sber.constituency_id = sbc.constituency_id
@@ -70,5 +55,32 @@ object StatStore {
     </xsql>
   }
 
-  def bind = Seq(getCountyConstituencies, getElectionEntries, getGeneralElectionStatistics)
+  val getPartyElectionStats = new SelectListBy[ElectionStatsExtractor, PartyElectionResults] {
+
+    resultMap = new ResultMap[PartyElectionResults] {
+         result( property = "firstPreferenceVotes", column = "first_preference_votes")
+         result( property = "percentageVote", column = "percentage_vote")
+         result( property = "seats", column = "seats")
+         result( property = "partyName", column = "party_name")
+    }
+
+    def xsql = <xsql>
+      SELECT sbper.first_preference_votes, sbper.percentage_vote, sbper.seats,
+      sbper.party_name
+      FROM
+      stat_bank_party_election_results as sbper,
+      stat_bank_constituencies as sbc,
+      stat_bank_counties_constituencies as sbcc,
+      stat_bank_election_party_election_results as sbeper,
+      counties as c
+      WHERE c.county_id = #{{countyId}}
+      AND sbeper.election_id = #{{electionId}}
+      AND sbcc.county_id = c.county_id
+      AND sbc.constituency_id = sbcc.constituency_id
+      AND sbper.constituency_id = sbc.constituency_id
+      AND sbeper.election_results_id = sbper.election_results_id
+    </xsql>
+  }
+
+  def bind = Seq(getElectionEntries, getGeneralElectionStatistics, getPartyElectionStats)
 }

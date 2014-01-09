@@ -62,25 +62,6 @@ object MapController extends Controller {
       "features" -> Json.toJson(i)
     )))
   }
-
-  def countyCentroid(county: String) = Action {
-
-    def getCountyCentroid =
-      withConnection { implicit conn =>
-        MapStore.getCountyCentroid(county).map(centroid => {
-          Json.obj(
-            "lon" -> centroid.x,
-            "lat" -> centroid.y
-          )
-        })
-      }
-
-    val centroid = getCountyCentroid
-    Ok(Json.obj(
-      "centroid" -> centroid
-      )
-    )
-  }
   // loads ED coordinates in Geo-Json format for a county by countyId
   def electoralDivisions(countyId: Long) = Action.async {
 
@@ -98,7 +79,6 @@ object MapController extends Controller {
           )
         })
       }
-
 
     val edByCounty = scala.concurrent.Future { getEDByCountyId }
 

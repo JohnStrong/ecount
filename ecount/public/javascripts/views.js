@@ -62,51 +62,9 @@ ecount.factory('ElectionStatistics', function($http) {
 	};
 });
 
-ecount.service('Map', function(ElectorialDivisions, ElectionStatistics) {
+ecount.factory('MapStyle', function() {
 
-	var DEFAULT_ZOOM_LEVEL = 7;
-	var EVENT_ZOOM_LEVEL = 8;
-
-	var map = L.map('imap-view');
-	var geojson;
-	var electionId = 1;
-
-	var info = (function() {
-
-		var i = L.control();
-
-		i.onAdd = function (map) {
-		    this._div = L.DomUtil.create('div', 'imap-info'); // create a div with a class "info"
-		    this.update('<h4>click on a county to view some election statistics</h4>');
-		    return this._div;
-		};
-
-		// method that we will use to update the control based on feature properties passed
-		i.update = function (markup) {
-		    this._div.innerHTML = markup;
-		};
-
-		i.addTo(map);
-		return i;
-	})();
-
-	var layer = (function() {
-		var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png';
-		var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
-			'Imagery &copy; 2012 CloudMade';
-		var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
-
-		return L.tileLayer(URL, {
-			attribution: ATTRIBUTION,
-			key: API_KEY
-		}).addTo(map);
-	})();
-
-	var setView = function(position) {
-		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
-	};
-
-	var style = function(feature) {
+	return function(feature) {
 
 		var DEFAULT_WEIGHT = 2;
         var DEFAULT_OPACITY = 0.5;
@@ -124,91 +82,208 @@ ecount.service('Map', function(ElectorialDivisions, ElectionStatistics) {
 	        fillOpacity: DEFAULT_FILL_OPACITY
 	    };
 	};
+});
 
-	var interaction = function(feature, layer) {
+ecount.service('MapLayer', function() {
 
+	var imap = L.map('imap-view');
 
-		var HIGHLIGHT_WEIGHT = 3;
-		var HIGHLIGHT_CLICK_COLOR = '#885526';
-		var HIGHLIGHT_FILL_OPACITY = 0.5;
+	var geojson;
 
-		function highlightFeature(e) {
-			var layer = e.target;
+	var gInfo = (function() {
 
-			layer.setStyle({
-				weight: HIGHLIGHT_WEIGHT,
-		        color: HIGHLIGHT_CLICK_COLOR,
-		        fillOpacity: HIGHLIGHT_FILL_OPACITY
+		var i = L.control();
+
+		i.onAdd = function (map) {
+		    this._div = L.DomUtil.create('div', 'imap-info'); // create a div with a class "info"
+		    this.update('<h4>click on a county to view some election statistics</h4>');
+		    return this._div;
+		};
+
+		// method that we will use to update the control based on feature properties passed
+		i.update = function (markup) {
+		    this._div.innerHTML = markup;
+		};
+
+		i.addTo(imap);
+		return i;
+	})();
+
+	var pInfo = (function() {
+
+		var i = L.control();
+
+		i.onAdd = function (map) {
+		    this._div = L.DomUtil.create('div', 'imap-info'); // create a div with a class "info"
+		    this.update('');
+		    return this._div;
+		};
+
+		// method that we will use to update the control based on feature properties passed
+		i.update = function (markup) {
+		    this._div.innerHTML = markup;
+		};
+
+		i.setPosition('bottomleft');
+		i.addTo(imap);
+		return i;
+	})();
+
+	return {
+
+		getMap: function() {
+			return imap;
+		},
+
+		getGeoJson: function() {
+			return geojson;
+		},
+
+		setGeoJson: function(_geo) {
+			geojson = _geo;
+		},
+
+		GeneralElectionStats: function(stats) {
+			var htm = '<h4>Election Statistics</h4>';
+
+			$(stats).each(function(key, data) {
+				htm += '<div class="imap-info-entry">' +
+				'<b>' + data.constituency + ': </b>' +
+				'<p>' +
+				'registered electors: ' + data.registeredElectors + '<br />' +
+				'votes: ' + data.votes + '<br />' +
+				'turnout: ' + data.percentTurnout + '%<br />' +
+				'invalid ballots: ' + data.invalidBallots + '<br />' +
+				'percentage invalid: ' + data.percentInvalid + '%<br />' +
+				'valid ballots: ' + data.validVotes + '<br />' +
+				'percentage valid: ' + data.percentValid + '%<br />' +
+				'</p>' +
+				'</div>';
 			});
 
-			if(!L.Browser.ie && !L.Browser.opera) {
-       			layer.bringToFront();
-   			}
+			gInfo.update(htm);
+		},
+
+		PartyElectionStats: function(stats) {
+
+			var htm = '<h4>Party Results</h4>';
+
+			$(stats).each(function(key, data) {
+				htm += '<div class="imap-info-entry">' +
+				'<b>' + data.partyName + ': </b>' +
+				'<p>' +
+				'first preference votes: ' + data.firstPreferenceVotes + '<br />' +
+				'percentage vote: ' + data.percentageVote + '%<br />' +
+				'seats: ' + data.seats + '<br />'
+				'</p>' +
+				'</div>';
+			});
+
+			pInfo.update(htm);
 		}
+	};
+});
 
-		function resetHighlight(e) {
-			geojson.resetStyle(e.target);
-		}
+ecount.service('Interact', function(ElectorialDivisions, ElectionStatistics, MapLayer, MapStyle) {
 
-		function getElectoralInformation(e){
+	var HIGHLIGHT_WEIGHT = 3;
+	var HIGHLIGHT_CLICK_COLOR = '#885526';
+	var HIGHLIGHT_FILL_OPACITY = 0.5;
 
-			function zoomToFeature() {
-				map.fitBounds(e.target.getBounds());
-			}
+	var map = MapLayer.getMap();
 
-			function drawED(geom) {
-				L.geoJson(geom, {
-					style: style
-				}).addTo(map);
-			}
+	var electionId = 1;
 
-			function electionStats(stats) {
-				var htm = '<h4>Election Statistics</h4>';
+	var layer = (function() {
 
-				$(stats).each(function(key, data) {
-					htm += '<div class="imap-info-entry">' +
-					'<b>' + data.constituency + ': </b>' +
-					'<p>' +
-					'registered electors: ' + data.registeredElectors + '<br />' +
-					'votes: ' + data.votes + '<br />' +
-					'turnout: ' + data.percentTurnout + '%<br />' +
-					'invalid ballots: ' + data.invalidBallots + '<br />' +
-					'percentage invalid: ' + data.percentInvalid + '%<br />' +
-					'valid ballots: ' + data.validVotes + '<br />' +
-					'percentage valid: ' + data.percentValid + '%<br />' +
-					'</p>' +
-					'</div>';
-				});
+		var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/10/443/534.png';
+		var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
+			'Imagery &copy; 2012 CloudMade';
+		var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
 
-				info.update(htm);
-			}
+		return L.tileLayer(URL, {
+			attribution: ATTRIBUTION,
+			key: API_KEY
+		}).addTo(map);
+	})();
 
-			var countyId = feature.properties.id;
+	function highlightFeature(e) {
+		var layer = e.target;
 
-			// electoral divisions
-			ElectorialDivisions(countyId)
-				.success(function(geom) {
-					zoomToFeature();
-					drawED(geom);
-				}).error(function(err) {
-					// defer error
-				});
-
-			ElectionStatistics.generalElectionStats(electionId, countyId)
-				.success(function(stats) {
-					electionStats(stats);
-				})
-				.error(function(err) {
-					// defer error
-				});
-		}
-
-		layer.on({
-			mouseover: highlightFeature,
-			mouseout: resetHighlight,
-			click: getElectoralInformation
+		layer.setStyle({
+			weight: HIGHLIGHT_WEIGHT,
+	        color: HIGHLIGHT_CLICK_COLOR,
+	        fillOpacity: HIGHLIGHT_FILL_OPACITY
 		});
+
+		if(!L.Browser.ie && !L.Browser.opera) {
+   			layer.bringToFront();
+		}
 	}
+
+	function resetHighlight(e) {
+		MapLayer.getGeoJson().resetStyle(e.target);
+	}
+
+	function getElectoralInformation(e){
+
+		function zoomToFeature() {
+			map.fitBounds(e.target.getBounds());
+		}
+
+		function drawED(geom) {
+			L.geoJson(geom, {
+				style: MapStyle
+			}).addTo(map);
+		}
+
+		var countyId = e.target.feature.properties.id;
+
+		// electoral divisions
+		ElectorialDivisions(countyId)
+			.success(function(geom) {
+				zoomToFeature();
+				drawED(geom);
+			}).error(function(err) {
+				// defer error
+			});
+
+		ElectionStatistics.generalElectionStats(electionId, countyId)
+			.success(function(stats) {
+				MapLayer.GeneralElectionStats(stats.general);
+				MapLayer.PartyElectionStats(stats.parties);
+			})
+			.error(function(err) {
+				// defer error
+			});
+	}
+
+
+	return {
+		enable: function(feature, layer) {
+			layer.on({
+				mouseover: highlightFeature,
+				mouseout: resetHighlight,
+				click: getElectoralInformation
+			});
+		},
+
+		setElectionId: function(_id) {
+			electionId = _id;
+		}
+	}
+});
+
+ecount.service('IMap', function(Interact, MapLayer, MapStyle) {
+
+	var map = MapLayer.getMap();
+
+	var DEFAULT_ZOOM_LEVEL = 7;
+	var EVENT_ZOOM_LEVEL = 8;
+
+	var setView = function(position) {
+		map.setView([position.coords.latitude, position.coords.longitude], DEFAULT_ZOOM_LEVEL);
+	};
 
 	return {
 
@@ -217,33 +292,36 @@ ecount.service('Map', function(ElectorialDivisions, ElectionStatistics) {
 		},
 
 		setElectionId: function(_id) {
-			electionId = _id;
+			Interact.setElectionId(_id);
 		},
 
 		drawCounties: function (collection) {
-			geojson = L.geoJson(collection, {
-				style: style,
-				onEachFeature: interaction
+			var geojson = L.geoJson(collection, {
+				style: MapStyle,
+				onEachFeature: Interact.enable
 			}).addTo(map);
+
+			MapLayer.setGeoJson(geojson);
 		}
 	};
 });
 
-function MapController($scope, Map, Counties, CountyBounds, Elections) {
+function MapController($scope, IMap, Counties, CountyBounds, Elections) {
 
 	$scope.initIMap = function() {
 
 		function buildMap(county) {
 			$.when(CountyBounds(county.name))
 				.done(function(countyBounds) {
-					Map.drawCounties(countyBounds);
-					Map.renderMap();
+					IMap.drawCounties(countyBounds);
+					IMap.renderMap();
 				});
 		}
 
 		Counties.success(function(data) {
 
 			counties = data.counties;
+
 			$.each(data.counties, function(key, county) {
 				buildMap(county);
 			});
@@ -269,8 +347,8 @@ function MapController($scope, Map, Counties, CountyBounds, Elections) {
 			.find("button").removeClass("active");
 		$(button).addClass("active");
 
-		var electionId = $(button).closest("span").find("span").text();
-		Map.setElectionId(electionId);
+		var electionId = $(button).closest("div").find("span").text();
+		IMap.setElectionId(electionId);
 	};
 }
 
