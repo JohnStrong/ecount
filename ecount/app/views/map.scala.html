@@ -1,52 +1,35 @@
-<!-- fix centering issue with map -->
-<!-- ensure all counties are downloaded onto the map (database issue)
-<div>
-    <div class="imap-search">
-        <ul class="list-group">
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="county-search col-md-4">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search County by name">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">Find</button>
-                            </span>
-                        </div>
+<div class="row content-container" id="#Map">
+    <div ng-controller="ElectionController">
+        <div id="election-nav-pane" class="col-md-3" ng-init="getElections()">
+            <div class="">
+                <div class="">
+                    <h4>Elections:</h4>
+                </div>
+                <div class="list-group-item">
+                    <div class="radio" ng-repeat="election in elections" class="content-container">
+                        <label>
+                            <span style="visibility:hidden;">{{election.id}}</span>
+                            <input type="radio" ng-click="electionChange($event)">
+                            {{election.title}}
+                        </label>
                     </div>
                 </div>
-            </li>
-        </ul>
-    </div>
-</div> -->
-<div class="row">
-</div>
-<div class="row">
-    <div id="imap" class="content-container">
-        <div id="election-nav-pane" class="col-md-3" ng-init="getElections()">
-             <ul id="election-selections" class="list-group">
-                <li class="list-group-item">
-                    <h4>Select an Election:</h4>
-                </li>
-                <li class="list-group-item">
-                    <ul class="list-group">
-                        <div class="" ng-repeat="election in elections">
-                            <span style="visibility:hidden;">{{election.id}}</span>
-                            <button type="button" class="btn btn-default" ng-click="electionChange($event)">
-                                {{election.title}}
-                            </button>
-                        </div>
-                    </ul>
-                </li>
-            </ul>
+            </div>
         </div>
+    </div>
+    <div ng-controller="MapController">
         <div class="col-md-9">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <div id="map-view" ng-init="initIMap()">
-                        <div id="imap-view" style="height: 580px"></div>
-                    </div>
-                </li>
-            </ul>
+            <div id="imap">
+                <div class="">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div id="map-view" ng-init="initMap()">
+                                <div id="imap-view" style="height: 580px"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

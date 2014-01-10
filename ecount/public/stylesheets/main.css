@@ -40,15 +40,20 @@ ul {
     width: 100%;
 }
 
-#content-main, #top {
+#top {
     clear: both;
     float: none;
-    width: 95%;
+    width: 100%;
     margin: 0 auto;
 }
 
-.wrap {
+.wrap-large {
     width: 90%;
+    margin: 0 auto;
+}
+
+.wrap-small {
+    width: 95%;
     margin: 0 auto;
 }
 

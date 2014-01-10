@@ -55,39 +55,39 @@ object StatsController extends Controller {
     }
   }
 
-  def generalElectionResults(electionId: Long, countyId: Long) = Action.async {
+  def electionResults(electionId: Long, countyId:Long) = Action.async {
 
     val ese = ElectionStatsExtractor.apply(electionId, countyId)
 
     def getGeneralElectionResults = {
       withConnection {  implicit conn => {
-          StatStore.getGeneralElectionStatistics(ese).map(ges => {
-            Json.obj(
-                "constituency" -> ges.constituency,
-                "votes" -> ges.votes,
-                "percentTurnout" -> ges.percentTurnout,
-                "invalidBallots" -> ges.invalidBallots,
-                "percentInvalid" -> ges.percentInvalid,
-                "validVotes" -> ges.validVotes,
-                "percentValid" -> ges.percentValid,
-                "registeredElectors" -> ges.registeredElectors
-            )
-          })
-        }
+        StatStore.getGeneralElectionStatistics(ese).map(ges => {
+          Json.obj(
+            "constituency" -> ges.constituency,
+            "votes" -> ges.votes,
+            "percentTurnout" -> ges.percentTurnout,
+            "invalidBallots" -> ges.invalidBallots,
+            "percentInvalid" -> ges.percentInvalid,
+            "validVotes" -> ges.validVotes,
+            "percentValid" -> ges.percentValid,
+            "registeredElectors" -> ges.registeredElectors
+          )
+        })
+      }
       }
     }
 
     def getPartyElectionResults = {
       withConnection { implicit conn => {
-          StatStore.getPartyElectionStats(ese).map(pges => {
-            Json.obj(
-              "partyName" -> pges.partyName,
-              "firstPreferenceVotes" -> pges.firstPreferenceVotes,
-              "percentageVote" -> pges.percentageVote,
-              "seats" -> pges.seats
-            )
-          })
-        }
+        StatStore.getPartyElectionStats(ese).map(pges => {
+          Json.obj(
+            "partyName" -> pges.partyName,
+            "firstPreferenceVotes" -> pges.firstPreferenceVotes,
+            "percentageVote" -> pges.percentageVote,
+            "seats" -> pges.seats
+          )
+        })
+      }
       }
     }
 
@@ -96,9 +96,11 @@ object StatsController extends Controller {
 
     geResults.zip(peResults).map(p => {
       Ok(Json.obj(
-        "general" -> Json.toJson(p._1),
-        "parties" -> Json.toJson(p._2)
-      ))
-    })
+          "general" -> Json.toJson(p._1),
+          "party" -> Json.toJson(p._2)
+        )
+      )
+     }
+    )
   }
 }

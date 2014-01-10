@@ -6,7 +6,7 @@
     <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/angular.min.js")"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <title>Ecount</title>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
@@ -21,11 +21,21 @@
     <!-- prettify the buttons -->
     <header id="top" class="spacial">
         <nav class="navbar navbar-default navbar-static-top sea top" role="navigation">
-            <a id="brand-link" class="navbar-brand" href="/"><span class="contrast">E-Count</span></a>
-             <ul class="nav navbar-nav navbar-right">
-                <li><a class="navbar-link" data-toggle="modal" data-target="#Register">Register</a></li>
-                <li><a class="navbar-link" data-toggle="modal" data-target="#Sign-in">Sign in</a></li>
-             </ul>
+            <div class="nav-container">
+                <a id="brand-link" class="navbar-brand" href="/"><span class="contrast">E-Count</span></a>
+                 <ul class="nav navbar-nav navbar-right">
+                    <li>
+                      <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Register">
+                        Register
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Sign-in">
+                        Sign in
+                      </button>
+                    </li>
+                 </ul>
+            </div>
         </nav>
     </header>
     <!-- modal popups -->
@@ -73,7 +83,7 @@
     </div>
     <!-- content body -->
     <div id="content-main spacial">
-        <div class="wrap row">
+        <div class="wrap-large row">
             <ul id="main-nav" class="nav nav-tabs">
                 <li id="map" class=""><a href="/feature/map">Map</a></li>
                 <li id="about" class=""><a href="/feature/about">About</a></li>

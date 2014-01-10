@@ -1,0 +1,97 @@
+<div class="wrap-small" ng-init="init()">
+	<div class="" ng-init="electionResults()">
+		<div class="page-header">
+			<h2>2011 General Election</h2>
+		</div>
+		<div class="">
+			<div class="row">
+				<div class="col-md-3">
+					<ul class="nav nav-list">
+						<li class="active list-group-item">
+							<a href="#imap">
+							Map
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							</a>
+						</li>
+						<li class="list-group-item">
+							<a href="#high-level">
+							High-level statistics
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							</a>
+						</li>
+						<li class="list-group-item">
+							<a href="#party">
+							Party statistics
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="col-md-9">
+			        <div id="imap">
+			            <div class="">
+			                <ul class="list-group">
+			                    <li class="list-group-item">
+			                        <div id="map-view" ng-init="initMap()">
+			                            <div id="imap-view" style="height: 580px"></div>
+			                        </div>
+			                    </li>
+			                </ul>
+			            </div>
+			        </div>
+			    </div>
+		    </div>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-9">
+					<div id="high-level" class="general-stats">
+			        	<div class="general-heading">
+			        		<div class="page-header">
+				            	<h2>Hight-level Statistics<small> for Galway-East and Galway-West</small></h2>
+				            </div>
+				            <p class="">
+
+				            </p>
+				        	<ul class="list-group">
+					        	<li class="list-group-item" ng-repeat="g in general">
+					        		<h4 class="list-group-item-heading">{{g.constituency}}</h4>
+					        		<p class="list-group-item-text">
+					        			<b>registered electors:</b> {{g.registeredElectors}} <br/>
+					        			<b>votes:</b> {{g.votes}} <br/>
+					        			<b>turnout:</b> {{g.percentTurnout}}%<br/>
+					        			<b>invalid ballots:</b> {{g.invalidBallots}} <br/>
+					        			<b>percentage invalid:</b> {{g.percentInvalid}}%<br/>
+					        			<b>valid ballots:</b> {{g.validVotes}} <br/>
+					        			<b>percentage valid:</b> {{g.percentValid}}%
+					        		</p>
+					        	</li>
+					        </ul>
+					    </div>
+			        </div>
+					<div id="party" class="party-stats">
+						<div class="general-heading">
+							<div class="page-header">
+			            		<h2>Party Statistics<small> by Political Party, for Galway-East and Galway-West</small></h2>
+			            	</div>
+			            	<p class="">
+
+				            </p>
+				            <ul class="list-group">
+				            	<!-- change this to a constituency title header and table -->
+					        	<li class="list-group-item" ng-repeat="p in party">
+					        		<h4 class="list-group-item-heading">{{p.partyName}}</h4>
+					        		<p class="list-group-item-text">
+					        			<b>first preference votes:</b> {{p.firstPreferenceVotes}}<br/>
+					        			<b>votes:</b> {{p.percentageVote}}% <br/>
+					        			<b>seats:</b> {{p.seats}}
+					        		</p>
+					        	</li>
+					        </ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

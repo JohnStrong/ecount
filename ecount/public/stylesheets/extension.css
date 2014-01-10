@@ -8,20 +8,21 @@ a.contrast {
 
 .sea {
 	border: none;
-	background-color: hsla(220, 10%, 45%, 1);
-	box-shadow: -1px 0px 10px hsla(220, 10%, 45%, 1);
-}
-
-.top {
- margin: 1% 0;
+	background-color: hsla(220, 40%, 100%, 1);
+	box-shadow: -1px 0px 6px hsla(220, 40%, 100%, 1);
+	border-bottom: 2px solid #EEE;
 }
 
 #top a {
-	color: #fff;
+	color: #428BCA;
 }
 
 .content-container {
 	padding: 1% 0;
+}
+
+.nav-container {
+	padding: 0 5%;
 }
 
 .hide {
@@ -53,4 +54,17 @@ a.contrast {
 
 .imap-elec-year:hover {
 	cursor: pointer;
+}
+
+.stats {
+	font: 12px/14px Arial, Helvetica, sans-serif;
+}
+
+.general-heading h4, b {
+	margin: 0 0 2px;
+    color: #777;
+}
+
+.page-header > h1, .page-header > h3 {
+	color: #5A5A5A
 }
