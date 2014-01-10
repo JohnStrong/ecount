@@ -50,23 +50,39 @@
 			        		<div class="page-header">
 				            	<h2>Hight-level Statistics<small> for Galway-East and Galway-West</small></h2>
 				            </div>
-				            <p class="">
-
-				            </p>
-				        	<ul class="list-group">
-					        	<li class="list-group-item" ng-repeat="g in general">
-					        		<h4 class="list-group-item-heading">{{g.constituency}}</h4>
-					        		<p class="list-group-item-text">
-					        			<b>registered electors:</b> {{g.registeredElectors}} <br/>
-					        			<b>votes:</b> {{g.votes}} <br/>
-					        			<b>turnout:</b> {{g.percentTurnout}}%<br/>
-					        			<b>invalid ballots:</b> {{g.invalidBallots}} <br/>
-					        			<b>percentage invalid:</b> {{g.percentInvalid}}%<br/>
-					        			<b>valid ballots:</b> {{g.validVotes}} <br/>
-					        			<b>percentage valid:</b> {{g.percentValid}}%
-					        		</p>
-					        	</li>
-					        </ul>
+				        	<div class="general-group" ng-repeat="g in general">
+					        	<b class="list-group-item-heading">{{g.constituency}}</b>
+				        		<table class="table table-bordered">
+				        			<tr>
+				        				<th>registered electors</th>
+				        				<td>{{g.registeredElectors}}</td>
+				        			</tr>
+				        			<tr>
+				        				<th>votes</th>
+				        				<td>{{g.votes}}</td>
+				        			</tr>
+				        			<tr>
+				        				<th>turnout</th>
+				        				<td>{{g.percentTurnout}}%</td>
+				        			</tr>
+				        			<tr>
+				        				<th>invalid ballots</th>
+				        				<td>{{g.invalidBallots}}</td>
+				        			</tr>
+				        			<tr>
+				        				<th>percentage invalid</th>
+				        				<td>{{g.percentInvalid}}%</td>
+				        			</tr>
+				        			<tr>
+				        				<th>valid ballots</th>
+				        				<td>{{g.validVotes}}</td>
+				        			</tr>
+									<tr>
+										<th>percentage valid</th>
+										<td>{{g.percentValid}}%</td>
+									</tr>
+				        		</table>
+					        </div>
 					    </div>
 			        </div>
 					<div id="party" class="party-stats">
@@ -74,20 +90,23 @@
 							<div class="page-header">
 			            		<h2>Party Statistics<small> by Political Party, for Galway-East and Galway-West</small></h2>
 			            	</div>
-			            	<p class="">
-
-				            </p>
-				            <ul class="list-group">
-				            	<!-- change this to a constituency title header and table -->
-					        	<li class="list-group-item" ng-repeat="p in party">
-					        		<h4 class="list-group-item-heading">{{p.partyName}}</h4>
-					        		<p class="list-group-item-text">
-					        			<b>first preference votes:</b> {{p.firstPreferenceVotes}}<br/>
-					        			<b>votes:</b> {{p.percentageVote}}% <br/>
-					        			<b>seats:</b> {{p.seats}}
-					        		</p>
-					        	</li>
-					        </ul>
+				            <div class="party-group" ng-repeat="p in party">
+				            	<b class="list-group-item-heading">{{p.title}}</b>
+					            <table class="table table-bordered">
+					            	<tbody>
+					            		<th>Constituency</th>
+					            		<th>First preference votes</th>
+					            		<th>votes</th>
+					            		<th>seats</th>
+					            	</tbody>
+					            	<tr ng-repeat="stat in p.stats">
+						        		<th>{{stat.partyName}}</th>
+						        		<td>{{stat.firstPreferenceVotes}}</td>
+						        		<td>{{stat.percentageVote}}%</td>
+						        		<td>{{stat.seats}}</td>
+						        	</tr>
+						        </table>
+						    </div>
 						</div>
 					</div>
 				</div>

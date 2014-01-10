@@ -8,22 +8,10 @@ import play.api.mvc._
 import persistence.PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
 import persistence.StatStore
-import play.api.libs.json.Json
+import play.api.libs.json._
 
-class ElectionStatsExtractor {
-  var electionId:Long = _
-  var countyId:Long = _
-}
+import models._
 
-object ElectionStatsExtractor {
-  def apply(electionId: Long, countyId: Long) =  {
-    val electionSE = new ElectionStatsExtractor
-    electionSE.electionId = electionId
-    electionSE.countyId = countyId
-
-    electionSE
-  }
-}
 object StatsController extends Controller {
 
   def lveRegisterMatureMale = TODO
@@ -79,13 +67,22 @@ object StatsController extends Controller {
 
     def getPartyElectionResults = {
       withConnection { implicit conn => {
-        StatStore.getPartyElectionStats(ese).map(pges => {
+        StatStore.getCountyConstituencies(countyId).map(c => {
+
+          val pse = PartyStatsExtractor.apply(c.id, electionId)
+
           Json.obj(
-            "partyName" -> pges.partyName,
-            "firstPreferenceVotes" -> pges.firstPreferenceVotes,
-            "percentageVote" -> pges.percentageVote,
-            "seats" -> pges.seats
-          )
+            "title" -> c.title,
+            "stats" ->
+              StatStore.getPartyElectionStats(pse).map(pges => {
+                Json.obj(
+                  "partyName" -> pges.partyName,
+                  "firstPreferenceVotes" -> pges.firstPreferenceVotes,
+                  "percentageVote" -> pges.percentageVote,
+                  "seats" -> pges.seats
+                )
+              })
+           )
         })
       }
       }
