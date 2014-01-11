@@ -101,103 +101,52 @@ ecount.factory('MapStyle', function() {
 	};
 });
 
-ecount.service('MapCore', function() {
 
-	var imap = L.map('imap-view');
+ecount.factory('VendorTileLayer', function() {
 
-	return {
+	var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png';
+	var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
+		'Imagery &copy; 2012 CloudMade';
+	var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
 
-		getMap: function() {
-			return imap;
-		}
-	};
-});
+	return function(map) {
+		return L.tileLayer(URL, {
+			attribution: ATTRIBUTION,
+			key: API_KEY
+		}).addTo(map);
+	}
+})
 
-ecount.service('IMap', function(MapCore) {
-
-	var map = MapCore.getMap();
-	var geoJson;
-
-	var DEFAULT_ZOOM_LEVEL = 6.7;
-	var EVENT_ZOOM_LEVEL = 8;
-
-	var setView = function(position) {
-		map.setView([position[0], position[1]], DEFAULT_ZOOM_LEVEL);
-	};
-
-	return {
-
-		draw: function (collection, coords, props) {
-			setView(coords);
-
-			geoJson = L.geoJson(collection, {
-				style: props.style,
-				onEachFeature: props.event
-			}).addTo(map);
-		},
-
-		drawCounty: function(collection, props) {
-			geoJson = L.geoJson(collection, {
-				style: props.style
-			}).addTo(map);
-		},
-
-		getGeoJson: function() {
-			return geoJson;
-		}
-	};
-});
-
-ecount.factory('SharedMapService', function($rootScope, IMap, Counties,
-	CountyBounds, ElectoralDivisions, MapStyle, MapCore) {
-
-	var IRELAND_LAT = 53.40;
-	var IRELAND_LON = -8;
+ecount.factory('SharedMapService', function($rootScope, Counties,
+	CountyBounds, MapStyle, VendorTileLayer) {
 
 	var HIGHLIGHT_WEIGHT = 2;
 	var HIGHLIGHT_CLICK_COLOR = '#555';
 	var HIGHLIGHT_FILL_OPACITY = 0.5;
 
-	var map = MapCore.getMap();
+	var IRELAND_LAT = 53.40;
+	var IRELAND_LON = -8;
+	var IRELAND_ZOOM = 7;
+
 	var electionId = 1;
 
-	var layer = (function() {
-
-		var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png';
-		var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
-			'Imagery &copy; 2012 CloudMade';
-		var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
-
-		return L.tileLayer(URL, {
-			attribution: ATTRIBUTION,
-			key: API_KEY,
-			z: 10,
-			x: 443,
-			y: 543
-		}).addTo(map);
-
-	})();
-
-	function zoomToFeature(bounds) {
-		map.fitBounds(bounds);
-	}
-
 	function highlightFeature(e) {
-		var layer = e.target;
 
-		layer.setStyle({
+		var l = e.target;
+
+		l.setStyle({
 			weight: HIGHLIGHT_WEIGHT,
 	        color: HIGHLIGHT_CLICK_COLOR,
 	        fillOpacity: HIGHLIGHT_FILL_OPACITY
 		});
 
 		if(!L.Browser.ie && !L.Browser.opera) {
-   			layer.bringToFront();
+   			l.bringToFront();
 		}
 	}
 
 	function resetHighlight(e) {
-		IMap.getGeoJson().resetStyle(e.target);
+		$rootScope.geoJson.resetStyle(e.target);
 	}
 
 	function getElectoralInformation(e){
@@ -207,61 +156,53 @@ ecount.factory('SharedMapService', function($rootScope, IMap, Counties,
 		$rootScope.$broadcast('selection', args);
 	}
 
-	function buildCountry(county, layer) {
-		$.when(CountyBounds(county.name))
-			.done(function(countyBounds) {
-				IMap.draw(countyBounds,
-					[IRELAND_LAT, IRELAND_LON],
-					{
-						"event": layer,
-						"style": MapStyle
-					}
-			);
-		});
-	}
-
-	function buildCounty(eds) {
-		IMap.draw(eds, { "style": MapStyle });
-	}
-
-	$rootScope.enableInteraction = function(feature, layer) {
+	function enableInteraction(feature, layer) {
 		layer.on({
 			mouseover: highlightFeature,
 			mouseout: resetHighlight,
 			click: getElectoralInformation
 		});
-	},
+	};
+
+	function draw(geom) {
+		$rootScope.geoJson = L.geoJson(geom, {
+			style: MapStyle,
+			onEachFeature: enableInteraction
+		}).addTo($rootScope.map);
+	}
 
 	$rootScope.electionId = function(_id) {
 		electionId = _id;
-	},
+	};
+
+	$rootScope.setUpMap = function() {
+		$rootScope.map = L.map('map-view',
+			{
+				"center": [IRELAND_LAT, IRELAND_LON],
+				"zoom" : IRELAND_ZOOM
+			}
+		);
+
+		$rootScope.layer = VendorTileLayer($rootScope.map);
+	};
 
 	$rootScope.drawCountry = function() {
-
-		var ei = this.enableInteraction;
 
 		Counties.success(function(data) {
 
 			counties = data.counties;
 
 			$.each(data.counties, function(key, county) {
-				buildCountry(county, ei);
+				$.when(CountyBounds(county.name))
+				.done(function(countyBounds) {
+					draw(countyBounds)
+				});
 			});
 
 		}).error(function(err) {
 			// defer error
 		});
-	},
-
-	$rootScope.drawCounty = function(cid) {
-
-		ElectoralDivisions(cid)
-		.success(function(eds) {
-			buildCounty(eds)
-		}).error(function(err) {
-			// defer error
-		});
-	}
+	};
 });
 
 function ElectionController($scope, SharedMapService, Elections) {
@@ -275,7 +216,6 @@ function ElectionController($scope, SharedMapService, Elections) {
 	}
 
 	$scope.electionChange = function($event) {
-
 		var button = $event.target;
 		var electionId = $(button).closest("div").find("span").text();
 		$scope.electionId(electionId);
@@ -286,6 +226,7 @@ function ElectionController($scope, SharedMapService, Elections) {
 function MapController($scope, $route, $routeParams, $location, $http, SharedMapService) {
 
 	$scope.initMap = function() {
+		$scope.setUpMap();
 		$scope.drawCountry();
 	};
 
@@ -301,7 +242,7 @@ function MapController($scope, $route, $routeParams, $location, $http, SharedMap
 	});
 }
 
-function CountyController($scope, $routeParams, Elections) {
+function CountyController($scope, $routeParams, Elections, ElectoralDivisions, MapStyle, VendorTileLayer) {
 
 	$scope.init = function() {
 		$scope.countyId = $routeParams.cid;
@@ -309,7 +250,23 @@ function CountyController($scope, $routeParams, Elections) {
 	}
 
 	$scope.initMap = function() {
-		console.log("render county view for imap", $scope);
+
+		var COUNTY_ZOOM = 12;
+
+		ElectoralDivisions($scope.countyId).success(function(geom) {
+
+			$scope.map = L.map('county-map-view', { "zoom" : COUNTY_ZOOM });
+			$scope.layer = VendorTileLayer($scope.map);
+
+			var geoJson = L.geoJson(geom, {
+    			style: MapStyle
+			}).addTo($scope.map);
+
+			$scope.map.fitBounds(geoJson.getBounds());
+		})
+		.error(function(err) {
+			//defer error
+		});
 	}
 
 	$scope.electionResults = function() {
