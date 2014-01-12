@@ -1,4 +1,5 @@
 <div class="wrap-small" ng-init="init()">
+	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/vis.css")"/>
 	<div class="" ng-init="electionResults()">
 		<div class="page-header">
 			<h2>2011 General Election</h2>
@@ -6,7 +7,7 @@
 		<div class="">
 			<div class="row">
 				<div class="col-md-3">
-					<ul class="nav nav-list">
+					<ul id="section-links" class="nav nav-list">
 						<li class="active list-group-item">
 							<a href="#imap">
 							Map
@@ -14,8 +15,8 @@
 							</a>
 						</li>
 						<li class="list-group-item">
-							<a href="#high-level">
-							High-level statistics
+							<a href="#overview">
+							Overview
 							<span class="glyphicon glyphicon-chevron-right"></span>
 							</a>
 						</li>
@@ -26,6 +27,11 @@
 							</a>
 						</li>
 					</ul>
+					<script>
+						$('a').click('#section-links', function(e) {
+							//todo
+						});
+					</script>
 				</div>
 				<div class="col-md-9">
 			        <div id="imap">
@@ -45,10 +51,10 @@
 				<div class="col-md-3">
 				</div>
 				<div class="col-md-9">
-					<div id="high-level" class="general-stats">
+					<div id="overview" class="general-stats">
 			        	<div class="general-heading">
 			        		<div class="page-header">
-				            	<h2>High-level Statistics<small> for Galway-East and Galway-West</small></h2>
+				            	<h2>Overview</h2>
 				            </div>
 				        	<div class="general-group" ng-repeat="g in general">
 					        	<b class="list-group-item-heading">{{g.constituency}}</b>
@@ -88,13 +94,15 @@
 					<div id="party" class="party-stats">
 						<div class="general-heading">
 							<div class="page-header">
-			            		<h2>Party Statistics<small> by Political Party, for Galway-East and Galway-West</small></h2>
+			            		<h2>Party Statistics</h2>
 			            	</div>
-				            <div class="party-group" ng-repeat="p in party">
-				            	<b class="list-group-item-heading">{{p.title}}</b>
+				            <div class="party-group">
+				            	<!--<b class="list-group-item-heading">{{c.title}}</b>-->
+				            	<div id="party-vis" width="802" height="400"></div>
+					            <!--
 					            <table class="table table-bordered">
 					            	<tbody>
-					            		<th>Constituency</th>
+					            		<th>Party</th>
 					            		<th>First preference votes</th>
 					            		<th>votes</th>
 					            		<th>seats</th>
@@ -106,6 +114,7 @@
 						        		<td>{{stat.seats}}</td>
 						        	</tr>
 						        </table>
+						        -->
 						    </div>
 						</div>
 					</div>

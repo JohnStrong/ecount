@@ -242,7 +242,89 @@ function MapController($scope, $route, $routeParams, $location, $http, SharedMap
 	});
 }
 
-function CountyController($scope, $routeParams, Elections, ElectoralDivisions, MapStyle, VendorTileLayer) {
+ecount.factory('Visualization', function() {
+
+	var margin = [20, 30, 80];
+    var width = 802 - margin[0] - margin[0];
+    var height = 304 - margin[0] - margin[1];
+
+    var xval = function(d) { return d.partyName; };
+    var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+    var xmap = function(d) { return xs(xval(d)); };
+    var xAxis = d3.svg.axis().scale(xs).orient("bottom");
+
+    var yval = function(d) { return d.firstPreferenceVotes; };
+    var ys = d3.scale.linear().range([height, 0]);
+    var ymap = function(d) { return ys(yval(d)); };
+    var yAxis = d3.svg.axis().scale(ys).orient("left");
+
+    var setColor = function(d) {
+    	var color;
+		switch(d.partyName) {
+			case 'Fine Gael':
+				color = '#013668';
+				break;
+			case 'Fianna Fail':
+				color = '#2D4E2F';
+				break;
+			case 'Sinn Fein':
+				color = '#006837';
+				break;
+			case 'Labour Party':
+				color = '#BF1D24'
+				break;
+			case 'Green Party':
+				color = '##818181';
+				break;
+			case 'Others':
+				color = '#DF1D4A';
+				break;
+			default:
+				color = 'steelblue'
+				break;
+		}
+
+		return color;
+    }
+
+    return function(data, title) {
+
+	    var svg = d3.select("#party-vis").append("svg")
+    		.attr("width", width + margin[0] + margin[2])
+    		.attr("height", height + margin[0] + margin[1])
+    		.append("g")
+    		.attr("transform", "translate(" + margin[2] + "," + margin[0] + ")");
+
+    	xs.domain(data.map(xval));
+  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
+
+    	svg.append("g")
+    		.attr("class", "x axis")
+    		.attr("transform", "translate(0," + height + ")")
+    		.call(xAxis);
+
+    	svg.append("g")
+			.attr("class", "y axis")
+    		.call(yAxis)
+    		.append("text")
+			.attr("y", 6)
+			.attr("x", 5)
+			.attr("dy", ".80em")
+			.style("text-anchor", "start")
+			.text("# first preference votes - " + title);
+
+    	svg.selectAll(".bar")
+    		.data(data)
+    		.enter().append("rect")
+    		.attr("x", xmap)
+    		.attr("width", xs.rangeBand)
+    		.attr("y", ymap)
+    		.attr("height", function(d) { return height - ymap(d); })
+    		.style("fill", setColor);
+    }
+});
+
+function CountyController($scope, $routeParams, Elections, ElectoralDivisions, MapStyle, VendorTileLayer, Visualization) {
 
 	$scope.init = function() {
 		$scope.countyId = $routeParams.cid;
@@ -273,8 +355,15 @@ function CountyController($scope, $routeParams, Elections, ElectoralDivisions, M
 
 		Elections.generalElectionStats($scope.electionId, $scope.countyId)
 		.success(function(stats) {
+
 			$scope.general = stats.general;
-			$scope.party = stats.party;
+			$scope.constituency = stats.party;
+
+			$.each(stats.party, function(k, party) {
+				if(party.stats.length > 0) {
+					Visualization(party.stats, party.title);
+				}
+			});
 		})
 		.error(function(err) {
 			// defer error
