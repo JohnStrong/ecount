@@ -82,35 +82,36 @@
         </div>
       </div>
     </div>
+    <script src="@routes.Assets.at("javascripts/imap-geo.js")"></script>
+    <script src="@routes.Assets.at("javascripts/imap-election.js")"></script>
+    <script src="@routes.Assets.at("javascripts/imap-style.js")"></script>
+    <script src="@routes.Assets.at("javascripts/imap-county.js")"></script>
+    <script src="@routes.Assets.at("javascripts/imap-base.js")"></script>
+    <script src="@routes.Assets.at("javascripts/views.js")"></script>
     <!-- content body -->
     <div id="content-main spacial">
         <div class="wrap-large row">
             <ul id="main-nav" class="nav nav-tabs">
-                <li id="map" class=""><a href="/feature/map">Map</a></li>
-                <li id="about" class=""><a href="/feature/about">About</a></li>
+                <li id="home" class="active"><a href="/">Home</a></li>
+                <li id="map" class=""><a href="/map">Map</a></li>
+                <li id="about" class=""><a href="/about">About</a></li>
             </ul>
-
             <div ng-view id="interactive-main" class="spacial">
-                <div class="jumbotron">
-                  <h1>Welcome to E-count</h1>
-                  <p>...</p>
-                  <p><a href="/about" class="btn btn-primary btn-lg" role="button">Take a Tour</a></p>
-                </div>
+                <home-feature-directive></home-feature-directive>
             </div>
         </div>
-    </div>
-    <script>
-        $("li").click('#main-nav', function(e) {
-            $(this).parent().children().removeClass("active");
-            $(this).addClass("active");
-        });
+        <script>
+          var navs = $("#main-nav").children();
 
-        $("#brand-link").click(function(e) {
-            console.log("clicked");
-            $("#main-nav").children().removeClass("active");
-        });
-    </script>
-        <script src="@routes.Assets.at("javascripts/views.js")"></script>
+          $("li").click('#main-nav', function(e) {
+            $(navs).each(function(k, n) {
+              $(n).removeClass("active");
+            });
+
+            $(this).addClass("active");
+          });
+        </script>
+    </div>
     <footer id="credits">
         <!-- awks will go here -->
     </footer>

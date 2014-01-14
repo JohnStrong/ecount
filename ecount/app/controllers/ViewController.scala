@@ -16,11 +16,15 @@ object ViewController extends Controller {
   }
 
   def home = Action {
-    Ok(views.html.index.render())
+    Ok(views.html.home.render())
   }
 
   def map = Action {
     Ok(views.html.map.render())
+  }
+
+  def counties = Action {
+    Ok(views.html.counties.render())
   }
 
   def county = Action {
@@ -31,4 +35,11 @@ object ViewController extends Controller {
     Ok(views.html.about.render())
   }
 
+  def election = Action {
+    Ok(views.html.election.render())
+  }
+
+  def imap = Action {
+    Ok(views.html.imap.render())
+  }
 }

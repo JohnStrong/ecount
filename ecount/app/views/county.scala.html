@@ -7,31 +7,7 @@
 		<div class="">
 			<div class="row">
 				<div class="col-md-3">
-					<ul id="section-links" class="nav nav-list">
-						<li class="active list-group-item">
-							<a href="#imap">
-							Map
-							<span class="glyphicon glyphicon-chevron-right"></span>
-							</a>
-						</li>
-						<li class="list-group-item">
-							<a href="#overview">
-							Overview
-							<span class="glyphicon glyphicon-chevron-right"></span>
-							</a>
-						</li>
-						<li class="list-group-item">
-							<a href="#party">
-							Party statistics
-							<span class="glyphicon glyphicon-chevron-right"></span>
-							</a>
-						</li>
-					</ul>
-					<script>
-						$('a').click('#section-links', function(e) {
-							//todo
-						});
-					</script>
+					<link-directive></link-directive>
 				</div>
 				<div class="col-md-9">
 			        <div id="imap">
@@ -59,36 +35,37 @@
 				        	<div class="general-group">
 				        		<stat-tab>
 				        			<stat-pane ng-repeat="g in general" title="{{g.constituency}}">
-						        	<table class="table table-striped">
-					        			<tr>
-					        				<th>registered electors</th>
-					        				<td>{{g.registeredElectors}}</td>
-					        			</tr>
-					        			<tr>
-					        				<th>votes</th>
-					        				<td>{{g.votes}}</td>
-					        			</tr>
-					        			<tr>
-					        				<th>turnout</th>
-					        				<td>{{g.percentTurnout}}%</td>
-					        			</tr>
-					        			<tr>
-					        				<th>invalid ballots</th>
-					        				<td>{{g.invalidBallots}}</td>
-					        			</tr>
-					        			<tr>
-					        				<th>percentage invalid</th>
-					        				<td>{{g.percentInvalid}}%</td>
-					        			</tr>
-					        			<tr>
-					        				<th>valid ballots</th>
-					        				<td>{{g.validVotes}}</td>
-					        			</tr>
-										<tr>
-											<th>percentage valid</th>
-											<td>{{g.percentValid}}%</td>
-										</tr>
-					        		</table>
+							        	<table class="gen-table table">
+						        			<tr>
+						        				<th>registered electors</th>
+						        				<td>{{g.registeredElectors}}</td>
+						        			</tr>
+						        			<tr>
+						        				<th>votes</th>
+						        				<td>{{g.votes}}</td>
+						        			</tr>
+						        			<tr>
+						        				<th>turnout</th>
+						        				<td>{{g.percentTurnout}}%</td>
+						        			</tr>
+						        			<tr>
+						        				<th>invalid ballots</th>
+						        				<td>{{g.invalidBallots}}</td>
+						        			</tr>
+						        			<tr>
+						        				<th>percentage invalid</th>
+						        				<td>{{g.percentInvalid}}%</td>
+						        			</tr>
+						        			<tr>
+						        				<th>valid ballots</th>
+						        				<td>{{g.validVotes}}</td>
+						        			</tr>
+											<tr>
+												<th>percentage valid</th>
+												<td>{{g.percentValid}}%</td>
+											</tr>
+						        		</table>
+						        	</stat-pane>
 				        		</stat-tab>
 					        </div>
 					    </div>

@@ -1,35 +1,8 @@
 <div class="row content-container" id="#Map">
-    <div ng-controller="ElectionController">
-        <div id="election-nav-pane" class="col-md-3" ng-init="getElections()">
-            <div class="">
-                <div class="">
-                    <h4>Elections:</h4>
-                </div>
-                <div class="list-group-item">
-                    <div class="radio" ng-repeat="election in elections" class="content-container">
-                        <label>
-                            <span style="visibility:hidden;">{{election.id}}</span>
-                            <input type="radio" ng-click="electionChange($event)">
-                            {{election.title}}
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-3">
+        <election-directive></election-directive>
     </div>
-    <div ng-controller="MapController">
-        <div class="col-md-9">
-            <div id="imap">
-                <div class="">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <div id="map-view" ng-init="initMap()">
-                                <div id="imap-view" style="height: 580px"></div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-9">
+        <imap-directive></imap-directive>
     </div>
 </div>
