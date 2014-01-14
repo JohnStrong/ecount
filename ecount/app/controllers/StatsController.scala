@@ -43,8 +43,7 @@ object StatsController extends Controller {
     }
   }
 
-  def electionResults(electionId: Long, countyId:Long) = Action.async {
-
+  def electionResultsGeneral(electionId:Long, countyId:Long) = Action.async {
     val ese = ElectionStatsExtractor.apply(electionId, countyId)
 
     def getGeneralElectionResults = {
@@ -64,6 +63,16 @@ object StatsController extends Controller {
       }
       }
     }
+
+    val geResults = scala.concurrent.Future{ getGeneralElectionResults }
+
+    geResults.map{ g => {
+        Ok(Json.toJson(g))
+      }
+    }
+  }
+
+  def electionResultsParty(electionId: Long, countyId:Long) = Action.async {
 
     def getPartyElectionResults = {
       withConnection { implicit conn => {
@@ -88,15 +97,10 @@ object StatsController extends Controller {
       }
     }
 
-    val geResults = scala.concurrent.Future { getGeneralElectionResults }
     val peResults =  scala.concurrent.Future { getPartyElectionResults }
 
-    geResults.zip(peResults).map(p => {
-      Ok(Json.obj(
-          "general" -> Json.toJson(p._1),
-          "party" -> Json.toJson(p._2)
-        )
-      )
+    peResults.map(p => {
+      Ok(Json.toJson(p))
      }
     )
   }

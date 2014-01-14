@@ -2,10 +2,6 @@
 	fill: blue;
 }
 
-.x.axis path {
-	display: none;
-}
-
 .axis path, .axis line {
   fill: none;
   stroke: #222222;

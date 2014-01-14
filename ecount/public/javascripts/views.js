@@ -50,17 +50,24 @@ ecount.factory('ElectoralDivisions', function($http) {
 });
 
 ecount.factory('ElectionStatistics', function($http) {
+
 	var ALL_COUNTY_COUNSTITUENCIES_URL = '/stats/elections/const/'
 	var ALL_ELECTIONS_URL = '/stats/elections/';
-	var GENERAL_ELECTION_STATS_URL = '/stats/elections/';
+	var ELECTION_STATS_GENERAL_URL = '/stats/elections/general/';
+	var ELECTION_STATS_PARTY_URL = '/stats/elections/party/';
 
 	return {
 		elections: function() {
 			return $http.get(ALL_ELECTIONS_URL);
 		},
 
-		generalElectionStats: function(electionId, countyId) {
-			return $http.get(GENERAL_ELECTION_STATS_URL
+		electionStatsGeneral: function(electionId, countyId) {
+			return $http.get(ELECTION_STATS_GENERAL_URL
+				+ electionId + '/' + countyId);
+		},
+
+		electionStatsParty: function(electionId, countyId) {
+			return $http.get(ELECTION_STATS_PARTY_URL
 				+ electionId + '/' + countyId);
 		}
 	};
@@ -73,8 +80,12 @@ ecount.service('Elections', function($http, ElectionStatistics, ElectoralDivisio
 			return ElectionStatistics.elections();
 		},
 
-		generalElectionStats: function(electionId, countyId) {
-			return ElectionStatistics.generalElectionStats(electionId, countyId)
+		electionStatsGeneral: function(electionId, countyId) {
+			return ElectionStatistics.electionStatsGeneral(electionId, countyId);
+		},
+
+		electionStatsParty: function(electionId, countyId) {
+			return ElectionStatistics.electionStatsParty(electionId, countyId);
 		}
 	}
 });
@@ -223,7 +234,8 @@ function ElectionController($scope, SharedMapService, Elections) {
 }
 
 
-function MapController($scope, $route, $routeParams, $location, $http, SharedMapService) {
+function MapController($scope, $route, $routeParams, $location,
+	$http, SharedMapService) {
 
 	$scope.initMap = function() {
 		$scope.setUpMap();
@@ -242,28 +254,37 @@ function MapController($scope, $route, $routeParams, $location, $http, SharedMap
 	});
 }
 
-ecount.factory('Visualization', function() {
+ecount.factory('Visualize', function() {
 
-	var margin = [20, 30, 80];
-    var width = 802 - margin[0] - margin[0];
+	var margin = [20, 40, 80, 60];
+    var width = 760 - margin[3] - margin[3];
     var height = 304 - margin[0] - margin[1];
 
-    var xval = function(d) { return d.partyName; };
     var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-    var xmap = function(d) { return xs(xval(d)); };
-    var xAxis = d3.svg.axis().scale(xs).orient("bottom");
-
-    var yval = function(d) { return d.firstPreferenceVotes; };
     var ys = d3.scale.linear().range([height, 0]);
-    var ymap = function(d) { return ys(yval(d)); };
+
+    var xval = function(d) { return d.partyName; };
+
+    var xAxis = d3.svg.axis().scale(xs).orient("bottom");
     var yAxis = d3.svg.axis().scale(ys).orient("left");
 
-    var setColor = function(d) {
+    var initSVGContainer = function() {
+    	var svg = d3.select("#party-vis").append("svg")
+			.attr("width", width + margin[0] + margin[2])
+			.attr("height", height + margin[0] + margin[1])
+			.append("g")
+			.attr("transform", "translate(" + margin[2] + "," + margin[0] + ")");
+
+		return svg;
+    };
+
+    var setColor = function(_color) {
     	var color;
-		switch(d.partyName) {
-			case 'Fine Gael':
-				color = '#013668';
-				break;
+
+    	switch(_color) {
+    		case 'Fine Gael':
+    			color = '#013668';
+    			break;
 			case 'Fianna Fail':
 				color = '#2D4E2F';
 				break;
@@ -271,60 +292,141 @@ ecount.factory('Visualization', function() {
 				color = '#006837';
 				break;
 			case 'Labour Party':
-				color = '#BF1D24'
+				color = '#BF1D24';
 				break;
 			case 'Green Party':
-				color = '##818181';
+				color = '#818181';
 				break;
 			case 'Others':
 				color = '#DF1D4A';
 				break;
 			default:
-				color = 'steelblue'
+				color = '#0136CA';
 				break;
-		}
+			}
 
 		return color;
-    }
+    };
 
-    return function(data, title) {
+    return {
 
-	    var svg = d3.select("#party-vis").append("svg")
-    		.attr("width", width + margin[0] + margin[2])
-    		.attr("height", height + margin[0] + margin[1])
-    		.append("g")
-    		.attr("transform", "translate(" + margin[2] + "," + margin[0] + ")");
+    	init: function(constituencyTitle) {
+    		this.constituencyTitle = constituencyTitle;
+    	},
 
-    	xs.domain(data.map(xval));
-  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
+    	yTitle: function(d, title) {
+    		d.append("text")
+				.attr("y", 6)
+				.attr("x", 5)
+				.attr("dy", ".80em")
+				.style("text-anchor", "start")
+				.text(title);
+		},
 
-    	svg.append("g")
-    		.attr("class", "x axis")
-    		.attr("transform", "translate(0," + height + ")")
-    		.call(xAxis);
+		drawBar: function(d, map) {
 
-    	svg.append("g")
-			.attr("class", "y axis")
-    		.call(yAxis)
-    		.append("text")
-			.attr("y", 6)
-			.attr("x", 5)
-			.attr("dy", ".80em")
-			.style("text-anchor", "start")
-			.text("# first preference votes - " + title);
+			var TRANSITION_DELAY = 300;
 
-    	svg.selectAll(".bar")
-    		.data(data)
-    		.enter().append("rect")
-    		.attr("x", xmap)
-    		.attr("width", xs.rangeBand)
-    		.attr("y", ymap)
-    		.attr("height", function(d) { return height - ymap(d); })
-    		.style("fill", setColor);
-    }
+			d.attr("x", map.x)
+	    		.attr("width", xs.rangeBand)
+	    		.transition().duration(TRANSITION_DELAY)
+	    		.delay(function (d,i){ return i * TRANSITION_DELAY;})
+	    		.attr("y", map.y)
+	    		.attr("height", function(d) { return height - map.y(d); })
+	    		.style("fill", function(d) { return setColor(d.partyName); });
+		},
+
+    	firstPreferenceVotes: function(data) {
+
+    		var svg = initSVGContainer();
+
+    		xs.domain(data.map(xval));
+
+			var yval = function(d) { return d.firstPreferenceVotes; };
+
+	  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
+
+	  		var xmap = function(d) { return xs(xval(d)); };
+			var ymap = function(d) { return ys(yval(d)); };
+
+			svg.append("g")
+	    		.attr("class", "x axis")
+	    		.attr("transform", "translate(0," + height + ")")
+	    		.call(xAxis);
+
+	    	svg.append("g")
+				.attr("class", "y axis")
+	    		.call(yAxis)
+	    		.call(this.yTitle, "# first preference votes - " + this.constituencyTitle);
+
+	    	svg.selectAll(".bar")
+	    		.data(data)
+	    		.enter().append("rect")
+	    		.call(this.drawBar, {x: xmap, y: ymap});
+    	},
+
+    	percentageVote: function(data) {
+
+    		var svg = initSVGContainer();
+
+    		var yval = function(d) { return d.percentageVote; };
+
+			xs.domain(data.map(xval));
+	  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
+
+	  		var xmap = function(d) { return xs(xval(d)); };
+			var ymap = function(d) { return ys(yval(d)); };
+
+			svg.append("g")
+	    		.attr("class", "x axis")
+	    		.attr("transform", "translate(0," + height + ")")
+	    		.call(xAxis);
+
+	    	svg.append("g")
+				.attr("class", "y axis")
+	    		.call(yAxis)
+	    		.call(this.yTitle, "% votes recieved - " +
+	    			this.constituencyTitle);
+
+	    	svg.selectAll(".bar")
+	    		.data(data)
+	    		.enter().append("rect")
+	    		.call(this.drawBar, {x: xmap, y: ymap});
+    	},
+
+    	seats: function(data) {
+
+    		var svg = initSVGContainer();
+
+    		var yval = function(d) { return d.seats; };
+
+    		xs.domain(data.map(xval));
+			ys.domain([0, ( 1.15 * d3.max(data, yval))]);
+
+	  		var xmap = function(d) { return xs(xval(d)); };
+			var ymap = function(d) { return ys(yval(d)); };
+
+			svg.append("g")
+	    		.attr("class", "x axis")
+	    		.attr("transform", "translate(0," + height + ")")
+	    		.call(xAxis);
+
+	    	svg.append("g")
+				.attr("class", "y axis")
+	    		.call(yAxis)
+	    		.call(this.yTitle, "# of seats - " + this.constituencyTitle);
+
+			svg.selectAll(".bar")
+	    		.data(data)
+	    		.enter().append("rect")
+	    		.call(this.drawBar, {x: xmap, y: ymap});
+    	}
+
+    };
 });
 
-function CountyController($scope, $routeParams, Elections, ElectoralDivisions, MapStyle, VendorTileLayer, Visualization) {
+function CountyController($scope, $routeParams, Elections,
+	ElectoralDivisions, MapStyle, VendorTileLayer, Visualize) {
 
 	$scope.init = function() {
 		$scope.countyId = $routeParams.cid;
@@ -353,15 +455,27 @@ function CountyController($scope, $routeParams, Elections, ElectoralDivisions, M
 
 	$scope.electionResults = function() {
 
-		Elections.generalElectionStats($scope.electionId, $scope.countyId)
+		Elections.electionStatsGeneral($scope.electionId, $scope.countyId)
 		.success(function(stats) {
+			$scope.general = stats;
+		})
+		.error(function(err) {
+			// defer error
+		});
 
-			$scope.general = stats.general;
-			$scope.constituency = stats.party;
+		Elections.electionStatsParty($scope.electionId, $scope.countyId)
+		.success(function(data) {
 
-			$.each(stats.party, function(k, party) {
+			$.each(data, function(k, party) {
 				if(party.stats.length > 0) {
-					Visualization(party.stats, party.title);
+
+					var stats = party.stats
+					var constituencyTitle = party.title;
+
+					Visualize.init(constituencyTitle);
+					Visualize.firstPreferenceVotes(stats);
+					Visualize.percentageVote(stats);
+					Visualize.seats(stats);
 				}
 			});
 		})
