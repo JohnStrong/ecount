@@ -86,9 +86,11 @@ object StatsController extends Controller {
               StatStore.getPartyElectionStats(pse).map(pges => {
                 Json.obj(
                   "partyName" -> pges.partyName,
+                  "partyStats" -> Json.obj(
                   "firstPreferenceVotes" -> pges.firstPreferenceVotes,
                   "percentageVote" -> pges.percentageVote,
                   "seats" -> pges.seats
+                  )
                 )
               })
            )

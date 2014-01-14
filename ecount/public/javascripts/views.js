@@ -28,6 +28,15 @@ var ecount = angular.module('Ecount', ['ngRoute'],
 	$locationProvider.html5Mode(true);
 });
 
+/****************************
+ *
+ *	MAP FEATURE
+ *
+ ****************************/
+
+/********************************
+ *	AJAX COUNTY/ELECTION FACTORY
+ *******************************/
 ecount.factory('Counties', function($http) {
 	return $http.get('/tallysys/map/counties');
 });
@@ -254,6 +263,16 @@ function MapController($scope, $route, $routeParams, $location,
 	});
 }
 
+
+/****************************
+ *
+ *	COUNTY FEATURE
+ *
+ ****************************/
+
+/****************************
+ *	D3 VISUALIZATION FACTORY
+ ****************************/
 ecount.factory('Visualize', function() {
 
 	var margin = [20, 40, 80, 60];
@@ -268,8 +287,8 @@ ecount.factory('Visualize', function() {
     var xAxis = d3.svg.axis().scale(xs).orient("bottom");
     var yAxis = d3.svg.axis().scale(ys).orient("left");
 
-    var initSVGContainer = function() {
-    	var svg = d3.select("#party-vis").append("svg")
+    var initSVGContainer = function(elem) {
+    	var svg = d3.select(elem).append("svg")
 			.attr("width", width + margin[0] + margin[2])
 			.attr("height", height + margin[0] + margin[1])
 			.append("g")
@@ -310,7 +329,8 @@ ecount.factory('Visualize', function() {
 
     return {
 
-    	init: function(constituencyTitle) {
+    	init: function(d, constituencyTitle) {
+    		this.data = d;
     		this.constituencyTitle = constituencyTitle;
     	},
 
@@ -327,27 +347,29 @@ ecount.factory('Visualize', function() {
 
 			var TRANSITION_DELAY = 300;
 
-			d.attr("x", map.x)
-	    		.attr("width", xs.rangeBand)
+			d.attr("x",  map.x)
+				.attr("y", function(d) { height - 0.5; })
+				.attr("width", xs.rangeBand)
 	    		.transition().duration(TRANSITION_DELAY)
 	    		.delay(function (d,i){ return i * TRANSITION_DELAY;})
-	    		.attr("y", map.y)
 	    		.attr("height", function(d) { return height - map.y(d); })
+	    		.attr("y", map.y)
 	    		.style("fill", function(d) { return setColor(d.partyName); });
 		},
 
-    	firstPreferenceVotes: function(data) {
+    	firstPreferenceVotes: function(elem) {
 
-    		var svg = initSVGContainer();
+    		var svg = initSVGContainer(elem);
+    		var data = this.data;
 
     		xs.domain(data.map(xval));
 
-			var yval = function(d) { return d.firstPreferenceVotes; };
+    		var yval = function(d) { return d.partyStats.firstPreferenceVotes; };
 
 	  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
 
 	  		var xmap = function(d) { return xs(xval(d)); };
-			var ymap = function(d) { return ys(yval(d)); };
+	  		var ymap = function(d) { return ys(yval(d)); };
 
 			svg.append("g")
 	    		.attr("class", "x axis")
@@ -357,25 +379,26 @@ ecount.factory('Visualize', function() {
 	    	svg.append("g")
 				.attr("class", "y axis")
 	    		.call(yAxis)
-	    		.call(this.yTitle, "# first preference votes - " + this.constituencyTitle);
+	    		.call(this.yTitle, "# first preference votes");
 
 	    	svg.selectAll(".bar")
 	    		.data(data)
 	    		.enter().append("rect")
-	    		.call(this.drawBar, {x: xmap, y: ymap});
+	    		.call(this.drawBar, { x: xmap, y: ymap });
     	},
 
-    	percentageVote: function(data) {
+    	percentageVote: function(elem) {
 
-    		var svg = initSVGContainer();
+    		var svg = initSVGContainer(elem);
+    		var data = this.data;
 
-    		var yval = function(d) { return d.percentageVote; };
+    		var yval = function(d) { return d.partyStats.percentageVote; };
 
 			xs.domain(data.map(xval));
 	  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
 
 	  		var xmap = function(d) { return xs(xval(d)); };
-			var ymap = function(d) { return ys(yval(d)); };
+	  		var ymap = function(d) { return ys(yval(d)); };
 
 			svg.append("g")
 	    		.attr("class", "x axis")
@@ -385,26 +408,26 @@ ecount.factory('Visualize', function() {
 	    	svg.append("g")
 				.attr("class", "y axis")
 	    		.call(yAxis)
-	    		.call(this.yTitle, "% votes recieved - " +
-	    			this.constituencyTitle);
+	    		.call(this.yTitle, "% votes recieved");
 
 	    	svg.selectAll(".bar")
 	    		.data(data)
 	    		.enter().append("rect")
-	    		.call(this.drawBar, {x: xmap, y: ymap});
+	    		.call(this.drawBar, {x: xmap, y: ymap });
     	},
 
-    	seats: function(data) {
+    	seats: function(elem) {
 
-    		var svg = initSVGContainer();
+    		var svg = initSVGContainer(elem);
+    		var data = this.data;
 
-    		var yval = function(d) { return d.seats; };
+    		var yval = function(d) { return d.partyStats.seats; };
 
     		xs.domain(data.map(xval));
 			ys.domain([0, ( 1.15 * d3.max(data, yval))]);
 
 	  		var xmap = function(d) { return xs(xval(d)); };
-			var ymap = function(d) { return ys(yval(d)); };
+	  		var ymap = function(d) { return ys(yval(d)); };
 
 			svg.append("g")
 	    		.attr("class", "x axis")
@@ -414,19 +437,90 @@ ecount.factory('Visualize', function() {
 	    	svg.append("g")
 				.attr("class", "y axis")
 	    		.call(yAxis)
-	    		.call(this.yTitle, "# of seats - " + this.constituencyTitle);
+	    		.call(this.yTitle, "# of seats won");
 
 			svg.selectAll(".bar")
 	    		.data(data)
 	    		.enter().append("rect")
-	    		.call(this.drawBar, {x: xmap, y: ymap});
+	    		.call(this.drawBar, {x: xmap, y: ymap });
     	}
 
     };
 });
 
+/****************************
+ *	STAT TAB DIRECTIVES
+ ****************************/
+ecount.directive('statTab', function() {
+	return {
+		restrict: 'E',
+		transclude: true,
+		scope: {},
+		controller: function($scope) {
+			var panes = $scope.panes = [];
+
+			$scope.select = function(pane) {
+				angular.forEach(panes, function(pane) {
+					pane.selected = false;
+				});
+
+				pane.selected = true;
+			};
+
+			this.addPane = function(pane) {
+				if (panes.length == 0) {
+					$scope.select(pane);
+				}
+
+				panes.push(pane);
+			};
+		},
+
+		template: '<div class="tabbable">' +
+		    '<ul class="nav nav-tabs">' +
+		    '<li ng-repeat="pane in panes" ng-class="{active:pane.selected}">' +
+		    '<a href="" ng-click="select(pane)">{{pane.title}}</a>' +
+		    '</li>' +
+		    '</ul>' +
+		    '<div class="tab-content" ng-transclude></div>' +
+		    '</div>'
+	};
+});
+
+ecount.directive('statPane', function() {
+	return {
+		require: '^statTab',
+		restrict: 'E',
+		transclude: 'true',
+		scope: {
+			title: '@'
+		},
+		link: function(scope, element, attrs, tabsCtrl) {
+			tabsCtrl.addPane(scope);
+		},
+		template: '<div class="tab-pane"' +
+		'ng-show="selected" ng-transclude>' +
+    	'</div>'
+	};
+});
+
+/****************************
+ *	D3 PARTY STAT DIRECTIVE
+ ****************************/
+ ecount.directive('visDirective',function(Visualize) {
+	return function(scope, element, attr) {
+		Visualize.init(scope.c.stats, scope.c.title);
+		Visualize.firstPreferenceVotes(element[0]);
+		Visualize.percentageVote(element[0]);
+		Visualize.seats(element[0]);
+	};
+});
+
+/****************************
+ *	COUNTY CONTROLLER
+ ****************************/
 function CountyController($scope, $routeParams, Elections,
-	ElectoralDivisions, MapStyle, VendorTileLayer, Visualize) {
+	ElectoralDivisions, MapStyle, VendorTileLayer) {
 
 	$scope.init = function() {
 		$scope.countyId = $routeParams.cid;
@@ -465,17 +559,11 @@ function CountyController($scope, $routeParams, Elections,
 
 		Elections.electionStatsParty($scope.electionId, $scope.countyId)
 		.success(function(data) {
+			$scope.constituencies = [];
 
 			$.each(data, function(k, party) {
 				if(party.stats.length > 0) {
-
-					var stats = party.stats
-					var constituencyTitle = party.title;
-
-					Visualize.init(constituencyTitle);
-					Visualize.firstPreferenceVotes(stats);
-					Visualize.percentageVote(stats);
-					Visualize.seats(stats);
+					$scope.constituencies.push(party);
 				}
 			});
 		})
@@ -491,25 +579,4 @@ function AboutController($scope) {
 
 function HomeController($scope) {
 
-}
-
-/** STATISTICS SERVICE **/
-ecount.factory('GeneralStats', function($http){
-
-	return {
-		liveRegister: function() {
-			return $.getJSON(
-				'/stats/general/register/mature/m',
-				'/stats/general/register/mature/f',
-				'/stats/general/register/young/m',
-				'/stats/general/register/young/f')
-		}
-	};
-});
-
-function StatBankController($scope, GeneralStats) {
-	$.when(GeneralStats.liveRegister())
-	.done(function(mm, mf, ym, yf) {
-		console.log(mm, mf, ym, yf);
-	});
 }
