@@ -1,4 +1,13 @@
-var electionBase = angular.module('IMap.Statistics', []);
+var electionBase = angular.module('IMap.election', []);
+
+electionBase.factory('ElectoralDivisions', function($http) {
+
+	var ELECTION_BOUNDS_REQ_URL = '/tallysys/map/divisions/';
+
+	return function(countyId) {
+		return $http.get(ELECTION_BOUNDS_REQ_URL + countyId);
+	};
+});
 
 electionBase.factory('ElectionStatistics', function($http) {
 
@@ -8,7 +17,6 @@ electionBase.factory('ElectionStatistics', function($http) {
 	var ELECTION_STATS_PARTY_URL = '/stats/elections/party/';
 
 	return {
-
 		elections: function() {
 			return $http.get(ALL_ELECTIONS_URL);
 		},
@@ -25,7 +33,7 @@ electionBase.factory('ElectionStatistics', function($http) {
 	};
 });
 
-electionBase.service('Elections', function($http, ElectionStatistics) {
+electionBase.service('Elections', function($http, ElectionStatistics, ElectoralDivisions) {
 
 	return {
 		getElections: function() {

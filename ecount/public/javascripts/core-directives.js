@@ -1,36 +1,6 @@
-var ecount = angular.module('Ecount', ['ngRoute', 'IMap.base', 'IMap.county'],
+var directives = angular.module('Core.Directive', ['IMap.Vis']);
 
-	function($routeProvider, $locationProvider) {
-
-		$routeProvider.when('/', {
-			templateUrl: '/home',
-			controller: HomeController,
-			controllerAs: 'home'
-		});
-		$routeProvider.when('/map', {
-			templateUrl: '/map'
-		});
-		$routeProvider.when('/about', {
-			templateUrl: '/about',
-			controller: AboutController,
-			controllerAs: 'about'
-		});
-		$routeProvider.when('/map/county', {
-			templateUrl: '/map/county',
-			controller: CountyController,
-			controllerAs: 'county'
-		});
-
-	// configure html5 to get links working on jsfiddle
-	$locationProvider.html5Mode(true);
-});
-
- /***********************************
- *
- *			DIRECTIVES
- *
- ***********************************/
-ecount.directive('statTab', function() {
+directives.directive('statTab', function() {
 	return {
 		restrict: 'E',
 		transclude: true,
@@ -66,7 +36,7 @@ ecount.directive('statTab', function() {
 	};
 });
 
-ecount.directive('statPane', function() {
+directives.directive('statPane', function() {
 	return {
 		require: '^statTab',
 		restrict: 'E',
@@ -83,7 +53,7 @@ ecount.directive('statPane', function() {
 	};
 });
 
-ecount.directive('homeFeatureDirective', function() {
+directives.directive('homeFeatureDirective', function() {
 	return {
 		restrict: 'E',
 		controller: HomeController,
@@ -91,7 +61,7 @@ ecount.directive('homeFeatureDirective', function() {
 	};
 });
 
- ecount.directive('electionDirective', function() {
+ directives.directive('electionDirective', function() {
  	return {
  		restrict: 'E',
  		controller: ElectionController,
@@ -99,7 +69,7 @@ ecount.directive('homeFeatureDirective', function() {
  	};
  });
 
-ecount.directive('imapDirective', function() {
+directives.directive('imapDirective', function() {
 	return {
 		restrict: 'E',
 		controller: MapController,
@@ -107,7 +77,7 @@ ecount.directive('imapDirective', function() {
 	};
 });
 
-ecount.directive('linkDirective', function() {
+directives.directive('linkDirective', function() {
 	var links = [
 		{title: 'Map', link: 'imap'},
 		{title: 'Overview', link: 'overview'},
@@ -136,7 +106,7 @@ ecount.directive('linkDirective', function() {
 	}
 });
 
-ecount.directive('visDirective',function(Visualize) {
+directives.directive('visDirective',function(Visualize) {
 	return function(scope, element, attr) {
 		Visualize.init(scope.c.stats, scope.c.title);
 		Visualize.firstPreferenceVotes(element[0]);
@@ -144,20 +114,3 @@ ecount.directive('visDirective',function(Visualize) {
 		Visualize.seats(element[0]);
 	};
 });
-
-
-
-/************************************
- *
- *				FACTORY
- *
- ************************************/
-
-
-function AboutController($scope) {
-
-}
-
-function HomeController($scope) {
-
-}

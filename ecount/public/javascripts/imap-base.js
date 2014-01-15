@@ -1,15 +1,10 @@
-var imap = angular.module('IMap.base', ['IMap.style', 'IMap.election', 'IMap.geo']);
+var imap = angular.module('IMap.Base', ['IMap.Vis', 'IMap.Statistics', 'IMap.Geo']);
 
-imap.factory('SharedMapService', function($rootScope, Counties,
-	CountyBounds, MapStyle, VendorTileLayer) {
+imap.factory('SharedMapService', function($rootScope, MapStyle, VendorTileLayer) {
 
 	var HIGHLIGHT_WEIGHT = 2;
 	var HIGHLIGHT_CLICK_COLOR = '#555';
 	var HIGHLIGHT_FILL_OPACITY = 0.5;
-
-	var IRELAND_LAT = 53.40;
-	var IRELAND_LON = -8;
-	var IRELAND_ZOOM = 7;
 
 	var electionId = 1;
 
@@ -47,82 +42,37 @@ imap.factory('SharedMapService', function($rootScope, Counties,
 		});
 	};
 
-	function draw(geom) {
-		$rootScope.geoJson = L.geoJson(geom, {
-			style: MapStyle,
-			onEachFeature: enableInteraction
-		}).addTo($rootScope.map);
-	}
+	return {
 
-	$rootScope.electionId = function(_id) {
-		electionId = _id;
-	};
+		electionId: function(_id) {
+			electionId = _id;
+		},
 
-	$rootScope.setUpMap = function() {
-		$rootScope.map = L.map('map-view',
-			{
-				"center": [IRELAND_LAT, IRELAND_LON],
-				"zoom" : IRELAND_ZOOM
+		setMap: function(_map) {
+			$rootScope.map = _map
+			$rootScope.layer = VendorTileLayer($rootScope.map);
+		},
+
+		draw: function(_geom) {
+			function d() {
+				$rootScope.geoJson = L.geoJson(_geom, {
+					style: MapStyle,
+					onEachFeature: enableInteraction
+				}).addTo($rootScope.map);
 			}
-		);
 
-		$rootScope.layer = VendorTileLayer($rootScope.map);
-	};
+			return {
+				counties: function() {
+					d();
+				},
 
-	$rootScope.drawCountry = function() {
+				electoralDivisions: function() {
+					d();
 
-		Counties.success(function(data) {
-
-			counties = data.counties;
-
-			$.each(data.counties, function(key, county) {
-				$.when(CountyBounds(county.name))
-				.done(function(countyBounds) {
-					draw(countyBounds)
-				});
-			});
-
-		}).error(function(err) {
-			// defer error
-		});
+					var bounds = $rootScope.geoJson.getBounds();
+					$rootScope.map.fitBounds(bounds);
+				}
+			};
+		}
 	};
 });
-
-function ElectionController($scope, SharedMapService, Elections) {
-
-	$scope.getElections = function() {
-		Elections.getElections().success(function(data) {
-			$scope.elections = data;
-		}).error(function(err) {
-			// defer error
-		});
-	}
-
-	$scope.electionChange = function($event) {
-		var button = $event.target;
-		var electionId = $(button).closest("div").find("span").text();
-		$scope.electionId(electionId);
-	};
-}
-
-function MapController($scope, $route, $routeParams, $location,
-	$http, SharedMapService) {
-
-	$scope.initMap = function() {
-		$scope.setUpMap();
-		$scope.drawCountry();
-	};
-
-	$scope.$on('selection', function(e, args) {
-
-		var countyId = args[0].feature.properties.id;
-		var electionId = args[1];
-
-		console.log(args);
-
-		$location.path('/map/county')
-			.search({'cid' : countyId, 'eid': electionId});
-
-		$route.reload();
-	});
-}

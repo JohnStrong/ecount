@@ -38,7 +38,7 @@ object MapStore {
       """
   }
 
-  val getCountyBounds = new SelectListBy[String, CountyGeom] {
+  val getCountyBounds = new SelectList[CountyGeom] {
 
     resultMap = new ResultMap[CountyGeom] {
       result(property = "id", column = "county_id")
@@ -46,11 +46,10 @@ object MapStore {
     }
     def xsql =
       """
-        SELECT ST_asGeoJson(ST_Transform(st_setSrid(ST_SIMPLIFY(cb.geom, 60), 29902), 4326)),
+        SELECT ST_asGeoJson(ST_Transform(st_setSrid(ST_SIMPLIFY(cb.geom, 80), 29902), 4326)),
         c.county_id
         FROM counties as c, county_boundries as cb
-        WHERE c.county = #{countyName}
-        AND c.county = cb.countyname
+        WHERE c.county = cb.countyname
       """
   }
 

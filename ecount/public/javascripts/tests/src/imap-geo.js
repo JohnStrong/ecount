@@ -1,4 +1,4 @@
-var geo = angular.module('IMap.Geo', []);
+var geo = angular.module('IMap.geo', []);
 
 geo.factory('VendorTileLayer', function() {
 
@@ -15,16 +15,14 @@ geo.factory('VendorTileLayer', function() {
 	}
 });
 
-geo.factory('CountyBounds', function($http) {
-	var COUNTY_BOUNDS_REQ_URL = '/tallysys/map/county/';
-	return $http.get(COUNTY_BOUNDS_REQ_URL);
+geo.factory('Counties', function($http) {
+	return $http.get('/tallysys/map/counties');
 });
 
-geo.factory('ElectoralDivisions', function($http) {
+geo.factory('CountyBounds', function() {
+	var COUNTY_BOUNDS_REQ_URL = '/tallysys/map/county/';
 
-	var ELECTION_BOUNDS_REQ_URL = '/tallysys/map/divisions/';
-
-	return function(countyId) {
-		return $http.get(ELECTION_BOUNDS_REQ_URL + countyId);
+	return function(county) {
+		return $.getJSON(COUNTY_BOUNDS_REQ_URL + county);
 	};
 });

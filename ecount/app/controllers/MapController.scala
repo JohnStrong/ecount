@@ -40,11 +40,11 @@ object MapController extends Controller {
       ))
     }
   }
-  def countyBounds(countyName: String) = Action.async {
+  def countyBounds() = Action.async {
 
     def getAndGroupCounties = {
       withConnection { implicit conn =>
-        MapStore.getCountyBounds(countyName).map(ctd => {
+        MapStore.getCountyBounds().map(ctd => {
           Json.obj(
             "type" -> "Feature",
             "geometry" ->  Json.parse(ctd.geom),

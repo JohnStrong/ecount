@@ -1,6 +1,28 @@
-var countyMap = angular.module('IMap.county', ['IMap.style', 'IMap.election', 'IMap.geo']);
+var vis = angular.module('IMap.Vis', []);
 
-countyMap.factory('Visualize', function() {
+vis.factory('MapStyle', function() {
+
+	return function(feature) {
+
+		var DEFAULT_WEIGHT = 2;
+        var DEFAULT_OPACITY = 0.5;
+        var DEAULT_COLOR = '#888888';
+        var DEAULT_FILL_COLOR = '#265588';
+        var DEAULT_DASH_ARRAY = '3';
+        var DEFAULT_FILL_OPACITY = 0.2;
+
+	    return {
+	        weight: DEFAULT_WEIGHT,
+	        opacity: DEFAULT_OPACITY,
+	        color: DEAULT_COLOR,
+	        fillColor: DEAULT_FILL_COLOR,
+	        dashArray: DEAULT_DASH_ARRAY,
+	        fillOpacity: DEFAULT_FILL_OPACITY
+	    };
+	};
+});
+
+vis.factory('Visualize', function() {
 
 	var margin = [20, 40, 80, 60];
     var width = 760 - margin[3] - margin[3];
@@ -25,6 +47,7 @@ countyMap.factory('Visualize', function() {
     };
 
     var setColor = function(_color) {
+
     	var color;
 
     	switch(_color) {
@@ -171,60 +194,5 @@ countyMap.factory('Visualize', function() {
 	    		.enter().append("rect")
 	    		.call(this.drawBar, {x: xmap, y: ymap });
     	}
-
     };
 });
-
-function CountyController($scope, $routeParams, Elections,
-	ElectoralDivisions, MapStyle, VendorTileLayer) {
-
-	$scope.init = function() {
-		$scope.countyId = $routeParams.cid;
-		$scope.electionId = $routeParams.eid;
-	}
-
-	$scope.initMap = function() {
-
-		var COUNTY_ZOOM = 12;
-
-		ElectoralDivisions($scope.countyId).success(function(geom) {
-
-			$scope.map = L.map('county-map-view', { "zoom" : COUNTY_ZOOM });
-			$scope.layer = VendorTileLayer($scope.map);
-
-			var geoJson = L.geoJson(geom, {
-    			style: MapStyle
-			}).addTo($scope.map);
-
-			$scope.map.fitBounds(geoJson.getBounds());
-		})
-		.error(function(err) {
-			//defer error
-		});
-	}
-
-	$scope.electionResults = function() {
-
-		Elections.electionStatsGeneral($scope.electionId, $scope.countyId)
-		.success(function(stats) {
-			$scope.general = stats;
-		})
-		.error(function(err) {
-			// defer error
-		});
-
-		Elections.electionStatsParty($scope.electionId, $scope.countyId)
-		.success(function(data) {
-			$scope.constituencies = [];
-
-			$.each(data, function(k, party) {
-				if(party.stats.length > 0) {
-					$scope.constituencies.push(party);
-				}
-			});
-		})
-		.error(function(err) {
-			// defer error
-		});
-	}
-}
