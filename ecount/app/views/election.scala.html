@@ -1,16 +1,11 @@
 <div id="election-nav-pane" ng-init="getElections()">
     <div class="">
-        <div class="">
-            <h4>Elections:</h4>
-        </div>
-        <div class="list-group-item">
-            <div class="radio" ng-repeat="election in elections" class="content-container">
-                <label>
-                    <span style="visibility:hidden;">{{election.id}}</span>
-                    <input type="radio" ng-click="electionChange($event)">
-                    {{election.title}}
-                </label>
-            </div>
-        </div>
+    	<ul class="nav nav-list well">
+	        <li class="nav-header">Election</li>
+	        <li>
+		        <select ng-model="election" class="form-control" ng-options="election.title for election in elections">
+		        </select>
+		    </li>
+	    </ul>
     </div>
 </div>

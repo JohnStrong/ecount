@@ -1,9 +1,5 @@
-<div class="wrap-small" ng-init="init()">
-	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/vis.css")"/>
+<div class="" ng-init="init()">
 	<div class="" ng-init="electionResults()">
-		<div class="page-header">
-			<h2>2011 General Election</h2>
-		</div>
 		<div class="">
 			<div class="row">
 				<div class="col-md-3">
@@ -78,25 +74,9 @@
 				            <div class="party-group">
 				            	<stat-tab>
 				            		<stat-pane ng-repeat="c in constituencies" title="{{c.title}}">
-				            			<div id="{{c.title}}" width="760" height="400" vis-directive></div>
+				            			<div id="{{c.title}}" width="800" height="400" vis-directive></div>
 				            		</stat-pane>
 				            	</stat-tab>
-					            <!--
-					            <table class="table table-bordered">
-					            	<tbody>
-					            		<th>Party</th>
-					            		<th>First preference votes</th>
-					            		<th>votes</th>
-					            		<th>seats</th>
-					            	</tbody>
-					            	<tr ng-repeat="stat in p.stats">
-						        		<th>{{stat.partyName}}</th>
-						        		<td>{{stat.firstPreferenceVotes}}</td>
-						        		<td>{{stat.percentageVote}}%</td>
-						        		<td>{{stat.seats}}</td>
-						        	</tr>
-						        </table>
-						        -->
 						    </div>
 						</div>
 					</div>

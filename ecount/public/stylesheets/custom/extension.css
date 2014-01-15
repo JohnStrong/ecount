@@ -1,20 +1,55 @@
+.animate-tab.ng-enter,
+.animate-tab.ng-leave {
+	position: relative;
+	-webkit-transition: 0.5s linear all; /* Chrome */
+	transition: 0.5s linear all;
+}
+
+.animate-tab.ng-enter {
+	bottom: -20px;
+	opacity: 0;
+}
+
+.animate-tab.ng-enter-active {
+	bottom: 0px;
+	opacity: 1;
+}
+
+.animate-tab.ng-leave {
+	opacity: 1;
+}
+
+.animate-tab.ng-leave-active {
+	opacity: 0;
+}
+
+.nav-header {
+	color: #888888;
+}
+
 .county-search {
 	margin: 0 auto;
 }
 
-a.contrast {
-	cursor: pointer;
-}
-
 .sea {
 	border: none;
-	background-color: hsla(220, 40%, 100%, 1);
-	box-shadow: -1px 0px 6px hsla(220, 40%, 100%, 1);
 	border-bottom: 2px solid #EEE;
+}
+
+.spacial {
+	padding: .6% 0;
+}
+
+#top nav {
+	background-color: #FFF;
 }
 
 #top a {
 	color: #428BCA;
+}
+
+#top button {
+	color: #AAA;
 }
 
 .content-container {

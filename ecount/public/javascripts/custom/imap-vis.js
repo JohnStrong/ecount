@@ -7,7 +7,7 @@ vis.factory('MapStyle', function() {
 		var DEFAULT_WEIGHT = 2;
         var DEFAULT_OPACITY = 0.5;
         var DEAULT_COLOR = '#888888';
-        var DEAULT_FILL_COLOR = '#265588';
+        var DEAULT_FILL_COLOR = '#428BCA';
         var DEAULT_DASH_ARRAY = '3';
         var DEFAULT_FILL_OPACITY = 0.2;
 
@@ -22,10 +22,22 @@ vis.factory('MapStyle', function() {
 	};
 });
 
+vis.factory('Layer', function() {
+	var info = L.control();
+
+	info.onAdd = function (map) {
+	    this._div = L.DomUtil.create('div', 'info'); 
+	    this.update();
+	    return this._div;
+	};
+
+	return info;
+});
+
 vis.factory('Visualize', function() {
 
 	var margin = [20, 40, 80, 60];
-    var width = 760 - margin[3] - margin[3];
+    var width = 800 - margin[3] - margin[3];
     var height = 304 - margin[0] - margin[1];
 
     var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1);
@@ -88,7 +100,7 @@ vis.factory('Visualize', function() {
     		d.append("text")
 				.attr("y", 6)
 				.attr("x", 5)
-				.attr("dy", ".80em")
+				.attr("dy", ".5em")
 				.style("text-anchor", "start")
 				.text(title);
 		},

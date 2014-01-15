@@ -1,45 +1,13 @@
 package controllers
 
-/**
- * Created with IntelliJ IDEA.
- * User: User 1
- * Date: 02/01/14
- * Time: 16:18
- * To change this template use File | Settings | File Templates.
- */
-
 import persistence.MapStore
 import persistence.PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.json._
 import play.api.mvc._
 import play.api.libs.json.Json
 
 object MapController extends Controller {
 
-  def counties = Action.async {
-
-    val getCountyNames  = {
-      withConnection { implicit conn =>
-        MapStore.getAllCounties() map { county => {
-            Json.obj(
-              "id" -> county.id,
-              "name" -> county.name
-            )
-          }
-        }
-      }
-    }
-
-    val countyList = scala.concurrent.Future { getCountyNames }
-    countyList.map { countiesFuture =>
-
-      Ok(Json.obj(
-        "type" -> "counties",
-        "counties" -> countiesFuture
-      ))
-    }
-  }
   def countyBounds() = Action.async {
 
     def getAndGroupCounties = {
@@ -73,7 +41,7 @@ object MapController extends Controller {
             "geometry" ->  Json.parse(ed.geometry),
             "properties" -> Json.obj(
               "id" -> ed.id,
-              "name" -> ed.name,
+              "name" -> ed.label,
               "county" -> ed.county
             )
           )

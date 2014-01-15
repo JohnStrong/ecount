@@ -1,4 +1,4 @@
-var ecount = angular.module('Ecount', ['ngRoute', 'Core.Directive', 'IMap.Base'],
+var ecount = angular.module('Ecount', ['ngRoute', 'ngAnimate','Core.Directive', 'IMap.Base'],
 
 	function($routeProvider, $locationProvider) {
 
@@ -25,42 +25,30 @@ var ecount = angular.module('Ecount', ['ngRoute', 'Core.Directive', 'IMap.Base']
 	$locationProvider.html5Mode(true);
 });
 
+//1 to 2
+
 function ElectionController($scope, SharedMapService, Elections) {
+	$scope.elections = [];
 
 	$scope.getElections = function() {
 		Elections.getElections().success(function(data) {
 			$scope.elections = data;
+			$scope.election = $scope.elections[0];
 		}).error(function(err) {
 			// defer error
 		});
 	}
-
-	$scope.electionChange = function($event) {
-		var button = $event.target;
-		var electionId = $(button).closest("div").find("span").text();
-		$scope.electionId(electionId);
-	};
 }
 
-function MapController($scope, $route, $routeParams, $location, CountyBounds, SharedMapService) {
+function MapController($scope, $route, $routeParams, $location, GeomAPI, SharedMapService) {
 
-	var IRELAND_LAT = 53.40;
-	var IRELAND_LON = -8;
-	var IRELAND_ZOOM = 7;
+	var IRELAND_ZOOM = 9;
 
 	$scope.initMap = function() {
-
-		CountyBounds.success(function(geom) {
+		GeomAPI.countyBounds().success(function(geom) {
 			
-			SharedMapService.setMap(L.map(
-				'map-view',
-				{
-					"center": [IRELAND_LAT, IRELAND_LON],
-					"zoom" : IRELAND_ZOOM
-				}
-			));
-
-			SharedMapService.draw(geom).counties();
+			SharedMapService.setMap('map-view', { "zoom": IRELAND_ZOOM});
+			SharedMapService.draw(geom);
 
 		}).error(function(err) {
 			// defer error
@@ -69,17 +57,19 @@ function MapController($scope, $route, $routeParams, $location, CountyBounds, Sh
 
 	$scope.$on('selection', function(e, args) {
 
-		var countyId = args[0].feature.properties.id;
-		var electionId = args[1];
+		var countyId = $scope.county.feature.properties.id;
+		var electionId = $scope.election.id;
 
 		$location.path('/map/county')
-			.search({'cid' : countyId, 'eid': electionId});
+			.search({ 'eid': electionId, 'cid' : countyId });
 
 		$route.reload();
 	});
 }
 
-function CountyController($scope, $routeParams, Elections, ElectoralDivisions, SharedMapService) {
+function CountyController($scope, $routeParams, Elections, GeomAPI, SharedMapService) {
+
+	var COUNTY_ZOOM = 12;
 
 	$scope.init = function() {
 		$scope.countyId = $routeParams.cid;
@@ -88,11 +78,10 @@ function CountyController($scope, $routeParams, Elections, ElectoralDivisions, S
 
 	$scope.initMap = function() {
 
-		var COUNTY_ZOOM = 12;
+		GeomAPI.electoralDivisions($scope.countyId).success(function(geom) {
 
-		ElectoralDivisions($scope.countyId).success(function(geom) {
-			SharedMapService.setMap(L.map('county-map-view', { "zoom" : COUNTY_ZOOM }));
-			SharedMapService.draw(geom).electoralDivisions();
+			SharedMapService.setMap('county-map-view', { "zoom": COUNTY_ZOOM });
+			SharedMapService.draw(geom);
 		})
 		.error(function(err) {
 			//defer error
@@ -123,6 +112,13 @@ function CountyController($scope, $routeParams, Elections, ElectoralDivisions, S
 			// defer error
 		});
 	}
+}
+
+function VisualizationController($scope, $element, Visualize) {
+	Visualize.init($scope.c.stats, $scope.c.title);
+	Visualize.firstPreferenceVotes($element[0]);
+	Visualize.percentageVote($element[0]);
+	Visualize.seats($element[0]);
 }
 
 function AboutController($scope) {

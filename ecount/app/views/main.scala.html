@@ -7,6 +7,7 @@
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/angular.min.js")"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-route.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular-animate.js"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/d3.v3.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <title>Ecount</title>
@@ -15,27 +16,33 @@
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
     <![endif]-->
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/extension.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/main.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/extension.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/vis.css")"/>
 </head>
 <body id="main">
+	<script type="text/javascript">
+		"use strict";
+	</script>
     <!-- prettify the buttons -->
-    <header id="top" class="spacial">
-        <nav class="navbar navbar-default navbar-static-top sea top" role="navigation">
+    <header id="top">
+        <nav class="navbar navbar-default navbar-static-top sea spacial top" role="navigation">
             <div class="nav-container">
-                <a id="brand-link" class="navbar-brand" href="/"><span class="contrast">E-Count</span></a>
-                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                      <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Register">
-                        Register
-                      </button>
-                    </li>
-                    <li>
-                      <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Sign-in">
-                        Sign in
-                      </button>
-                    </li>
-                 </ul>
+                <a id="brand-link" class="navbar-brand" href="">
+                <span class="contrast">E-Count</span>
+                </a>
+                <ul class="nav navbar-nav navbar-right">
+	                <li>
+	                  <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Register">
+	                    Register
+	                  </button>
+	                </li>
+	                <li>
+	                  <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Sign-in">
+	                    Sign in
+	                  </button>
+	                </li>
+                </ul>
             </div>
         </nav>
     </header>
@@ -82,12 +89,12 @@
         </div>
       </div>
     </div>
-    <script src="@routes.Assets.at("javascripts/imap-geo.js")"></script>
-    <script src="@routes.Assets.at("javascripts/imap-election.js")"></script>
-    <script src="@routes.Assets.at("javascripts/imap-vis.js")"></script>
-    <script src="@routes.Assets.at("javascripts/imap-base.js")"></script>
-    <script src="@routes.Assets.at("javascripts/core-directives.js")"></script>
-    <script src="@routes.Assets.at("javascripts/core-controllers.js")"></script>
+    <script src="@routes.Assets.at("javascripts/custom/imap-geo.js")"></script>
+    <script src="@routes.Assets.at("javascripts/custom/imap-election.js")"></script>
+    <script src="@routes.Assets.at("javascripts/custom/imap-vis.js")"></script>
+    <script src="@routes.Assets.at("javascripts/custom/imap-base.js")"></script>
+    <script src="@routes.Assets.at("javascripts/custom/core-directives.js")"></script>
+    <script src="@routes.Assets.at("javascripts/custom/core-controllers.js")"></script>
     <!-- content body -->
     <div id="content-main spacial">
         <div class="wrap-large row">
@@ -100,16 +107,18 @@
                 <home-feature-directive></home-feature-directive>
             </div>
         </div>
-        <script>
-          var navs = $("#main-nav").children();
+        <script type="text/javascript">
+			(function() {
+				var navs = $("#main-nav").children();
 
-          $("li").click('#main-nav', function(e) {
-            $(navs).each(function(k, n) {
-              $(n).removeClass("active");
-            });
+				$("li").click('#main-nav', function(e) {
+				    $(navs).each(function(k, n) {
+				      $(n).removeClass("active");
+				    });
 
-            $(this).addClass("active");
-          });
+				    $(this).addClass("active");
+				});
+			})();
         </script>
     </div>
     <footer id="credits">

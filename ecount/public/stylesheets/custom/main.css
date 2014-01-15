@@ -5,7 +5,7 @@
 
 @font-face {
     font-family: 'Quicksand';
-    src: url('./../font/Quicksand-Regular.otf');
+    src: url('./../../font/Quicksand-Regular.otf');
 }
 
 * {
@@ -55,10 +55,6 @@ ul {
 .wrap-small {
     width: 95%;
     margin: 0 auto;
-}
-
-.spacial {
-    padding: 1% 0;
 }
 
 /**

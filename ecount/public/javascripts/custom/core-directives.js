@@ -1,4 +1,4 @@
-var directives = angular.module('Core.Directive', ['IMap.Vis']);
+var directives = angular.module('Core.Directive', []);
 
 directives.directive('statTab', function() {
 	return {
@@ -85,6 +85,7 @@ directives.directive('linkDirective', function() {
 	];
 
 	var template = '<ul id="section-links" class="nav nav-list well">' +
+		'<li class="nav-header">Quick Links</li>' +
 		'<li class="active" ng-repeat="link in links">' +
 		'<a href="" ng-click="goToLink(link)">' +
 		'{{link.title}}'
@@ -103,14 +104,11 @@ directives.directive('linkDirective', function() {
 			}
 		},
 		template: template
-	}
+	};
 });
 
-directives.directive('visDirective',function(Visualize) {
-	return function(scope, element, attr) {
-		Visualize.init(scope.c.stats, scope.c.title);
-		Visualize.firstPreferenceVotes(element[0]);
-		Visualize.percentageVote(element[0]);
-		Visualize.seats(element[0]);
+directives.directive('visDirective',function() {
+	return {
+		controller: VisualizationController
 	};
 });

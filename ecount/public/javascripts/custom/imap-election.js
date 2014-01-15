@@ -2,10 +2,10 @@ var electionBase = angular.module('IMap.Statistics', []);
 
 electionBase.factory('ElectionStatistics', function($http) {
 
-	var ALL_COUNTY_COUNSTITUENCIES_URL = '/stats/elections/const/'
-	var ALL_ELECTIONS_URL = '/stats/elections/';
-	var ELECTION_STATS_GENERAL_URL = '/stats/elections/general/';
-	var ELECTION_STATS_PARTY_URL = '/stats/elections/party/';
+	var ALL_COUNTY_COUNSTITUENCIES_URL = '/api/elections/const/'
+	var ALL_ELECTIONS_URL = '/api/elections/';
+	var ELECTION_STATS_GENERAL_URL = '/api/elections/general/';
+	var ELECTION_STATS_PARTY_URL = '/api/elections/party/';
 
 	return {
 

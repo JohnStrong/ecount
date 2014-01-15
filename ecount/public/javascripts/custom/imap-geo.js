@@ -15,16 +15,18 @@ geo.factory('VendorTileLayer', function() {
 	}
 });
 
-geo.factory('CountyBounds', function($http) {
-	var COUNTY_BOUNDS_REQ_URL = '/tallysys/map/county/';
-	return $http.get(COUNTY_BOUNDS_REQ_URL);
-});
+geo.factory('GeomAPI', function($http) {
 
-geo.factory('ElectoralDivisions', function($http) {
+	var COUNTY_BOUNDS_REQ_URL = '/map/geo/county/';
+	var ELECTION_BOUNDS_REQ_URL = '/map/geo/county/divisions/';
 
-	var ELECTION_BOUNDS_REQ_URL = '/tallysys/map/divisions/';
+	return {
+		countyBounds: function() {
+			return $http.get(COUNTY_BOUNDS_REQ_URL);
+		},
 
-	return function(countyId) {
-		return $http.get(ELECTION_BOUNDS_REQ_URL + countyId);
+		electoralDivisions: function(countyId) {
+			return $http.get(ELECTION_BOUNDS_REQ_URL + countyId);
+		}
 	};
 });
