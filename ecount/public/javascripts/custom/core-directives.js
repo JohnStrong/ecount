@@ -56,7 +56,7 @@ directives.directive('statPane', function() {
 directives.directive('homeFeatureDirective', function() {
 	return {
 		restrict: 'E',
-		controller: HomeController,
+		controller: 'HomeController',
 		templateUrl: '/home'
 	};
 });
@@ -64,7 +64,7 @@ directives.directive('homeFeatureDirective', function() {
  directives.directive('electionDirective', function() {
  	return {
  		restrict: 'E',
- 		controller: ElectionController,
+ 		controller: 'ElectionController',
  		templateUrl: '/election'
  	};
  });
@@ -72,7 +72,7 @@ directives.directive('homeFeatureDirective', function() {
 directives.directive('imapDirective', function() {
 	return {
 		restrict: 'E',
-		controller: MapController,
+		controller: 'MapController',
 		templateUrl: '/imap'
 	};
 });
@@ -109,6 +109,6 @@ directives.directive('linkDirective', function() {
 
 directives.directive('visDirective',function() {
 	return {
-		controller: VisualizationController
+		controller: 'VisualizationController'
 	};
 });
