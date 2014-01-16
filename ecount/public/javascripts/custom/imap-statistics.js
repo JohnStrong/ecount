@@ -2,6 +2,7 @@ var electionBase = angular.module('IMap.Statistics', []);
 
 electionBase.factory('ElectionStatistics', ['$http',
 	function($http) {
+
 		var ALL_COUNTY_COUNSTITUENCIES_URL = '/api/elections/const/'
 		var ALL_ELECTIONS_URL = '/api/elections/';
 		var ELECTION_STATS_GENERAL_URL = '/api/elections/general/';

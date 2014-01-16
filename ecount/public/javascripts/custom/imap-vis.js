@@ -26,7 +26,7 @@ vis.factory('Layer', function() {
 	var info = L.control();
 
 	info.onAdd = function (map) {
-	    this._div = L.DomUtil.create('div', 'info'); 
+	    this._div = L.DomUtil.create('div', 'info');
 	    this.update();
 	    return this._div;
 	};

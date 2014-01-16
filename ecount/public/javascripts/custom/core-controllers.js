@@ -72,6 +72,9 @@ ecount.controller('CountyController', ['$scope', '$routeParams', 'ElectionStatis
 
 		var COUNTY_ZOOM = 12;
 
+		$scope.countyId = null;
+		$scope.electionId = null;
+
 		$scope.init = function() {
 			$scope.countyId = $routeParams.cid;
 			$scope.electionId = $routeParams.eid;
