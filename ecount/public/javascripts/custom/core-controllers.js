@@ -25,7 +25,7 @@ var ecount = angular.module('Ecount', ['ngRoute', 'ngAnimate','Core.Directive', 
 //1 to 2
 ecount.controller('ElectionController', ['$scope', 'SharedMapService', 'ElectionStatistics',
 	function($scope, SharedMapService, ElectionStatistics) {
-		$scope.elections = [];
+		$scope.elections = [1];
 
 		$scope.getElections = function() {
 			ElectionStatistics.getElections().success(function(data) {
@@ -113,7 +113,7 @@ ecount.controller('CountyController', ['$scope', '$routeParams', 'ElectionStatis
 				});
 			})
 			.error(function(err) {
-				// defer error
+				console.log(err);
 			});
 		}
 	}

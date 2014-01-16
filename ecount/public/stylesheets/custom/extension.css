@@ -40,6 +40,10 @@
 	padding: .6% 0;
 }
 
+.container.spacial {
+	padding: 10px;
+}
+
 #top nav {
 	background-color: #FFF;
 }
