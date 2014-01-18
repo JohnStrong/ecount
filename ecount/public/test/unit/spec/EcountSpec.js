@@ -15,7 +15,9 @@ describe('Ecount Application', function() {
 	beforeEach(angular.mock.module('Ecount', function($provide) {
 
 		mockElectionStatisticsFactory = {
-			getElections: jasmine.createSpy()
+			getElections: jasmine.createSpy(),
+			getElectionStatsGeneral: jasmine.createSpy(),
+			getElectionStatsParty: jasmine.createSpy()
 		};
 
 		mockSharedMapServiceFactory = {
@@ -62,7 +64,9 @@ describe('Ecount Application', function() {
 			scope = $rootScope.$new();
 
 			$controller('ElectionController', {
-				$scope: scope
+				$scope: scope,
+				SharedMapService: mockSharedMapServiceFactory,
+				ElectionStatistics: mockElectionStatisticsFactory
 			});
 		}));
 
@@ -82,6 +86,19 @@ describe('Ecount Application', function() {
 		it('should contain an empty elections array', function() {
 			expect(scope.elections.length).toEqual(0);
 		});
+
+		it('can get an instance of the ElectionStatistics factory', function() {
+			expect(mockElectionStatisticsFactory).toBeDefined();
+		});
+
+		it('can get an instance of the SharedMapService factory', function() {
+			expect(mockSharedMapServiceFactory).toBeDefined();
+		});
+
+		it("should call election statistics factory when getElections is called", function() {
+			scope.getElections();
+			expect(mockElectionStatisticsFactory.getElections).toHaveBeenCalled();
+		});
 	});
 
 // udacity
@@ -90,18 +107,44 @@ describe('Ecount Application', function() {
 
 	describe('MapController', function() {
 
-		var scope;
+		var MOCK_COUNTY_ID = 12;
+		var MOCK_ELECTION_ID = 1;
 
-		beforeEach(inject(function($rootScope, $controller) {
+		var scope, route, routeParams, location;
+
+		beforeEach(inject(function($rootScope, $controller, $injector) {
+
 			scope = $rootScope.$new();
+			route = $injector.get('$route');
+			routeParams = $injector.get('$routeParams');
+			location = $injector.get('$location');
+
+			scope.county = {
+				'id': MOCK_COUNTY_ID
+			};
+
+			scope.election = {
+				'id': MOCK_ELECTION_ID
+			};
+
+			route.reload = jasmine.createSpy();
+			location.search = jasmine.createSpy();
 
 			$controller('MapController', {
 				$scope: scope,
-				$route: {},
-				$routeParams: {}
+				$route: route,
+				$routeParams: routeParams,
+				$location: location
 			});
 
 		}));
+
+		it("should load new county view whenever an election is selected", function() {
+			scope.loadCountyView();
+
+			expect(location.search).toHaveBeenCalled();
+			expect(route.reload).toHaveBeenCalled();
+		});
 	});
 
 	describe('CountyController', function() {

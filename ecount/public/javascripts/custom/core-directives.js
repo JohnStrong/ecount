@@ -77,6 +77,35 @@ directives.directive('imapDirective', function() {
 	};
 });
 
+directives.directive('descriptionDirective', function() {
+	return {
+		restrict: 'E',
+		transclude: true,
+		controller: function($scope) {
+			var tables = [];
+
+			this.addTable = function(scope) {
+				tables.push(scope);
+			};
+		},
+		template: '<ul class="" ng-transclude></ul>'
+	};
+});
+
+directives.directive('itemDirective', function() {
+	return {
+		require: '^descriptionDirective',
+		restrict: 'E',
+		transclude: true,
+		link: function(scope, element, attrs, descCtrl) {
+			descCtrl.addTable(scope);
+		},
+		template: '<span class="spacial">' +
+		'<div ng-transclude></div>' +
+		'</span>'
+	};
+});
+
 directives.directive('linkDirective', function() {
 	var links = [
 		{title: 'Map', link: 'imap'},

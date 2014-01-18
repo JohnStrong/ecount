@@ -1,11 +1,30 @@
 var imap = angular.module('IMap.Base', ['IMap.Vis', 'IMap.Statistics', 'IMap.Geo']);
 
-imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer',
+imap.service('InfoControl', function() {
+	return function() {
+		this.info = L.control();
+
+		this.onAdd = function() {
+
+		};
+
+		this.update = function(props) {
+			this._div.innerHTML = props ? '<h4>' + props.name + '</h4>' :
+				'hover over a DED';
+		};
+	}
+});
+
+imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer', 'InfoControl',
 	function($rootScope, MapStyle, VendorTileLayer) {
 
 		var HIGHLIGHT_WEIGHT = 2;
 		var HIGHLIGHT_CLICK_COLOR = '#555';
 		var HIGHLIGHT_FILL_OPACITY = 0.5;
+
+		var map = null;
+		var layer = null;
+		var geoJson = null;
 
 		function enableInteraction(feature, layer) {
 
@@ -19,18 +38,19 @@ imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer',
 			        fillOpacity: HIGHLIGHT_FILL_OPACITY
 				});
 
+
 				if(!L.Browser.ie && !L.Browser.opera) {
 		   			l.bringToFront();
 				}
 			}
 
 			function resetHighlight(e) {
-				$rootScope.geoJson.resetStyle(e.target);
+				geoJson.resetStyle(e.target);
 			}
 
 			function getElectoralInformation(e){
-				$rootScope.county = e.target;
-				$rootScope.$broadcast('selection');
+				$rootScope.target = e.target.feature.properties;
+				$rootScope.$digest();
 			}
 
 			layer.on({
@@ -41,9 +61,7 @@ imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer',
 		};
 
 		function removeMap() {
-			var map = $rootScope.map;
-
-			if(map !== undefined) {
+			if(map !== null) {
 				map.remove();
 			}
 		}
@@ -51,27 +69,24 @@ imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer',
 		return {
 
 			setMap: function(mapId, props) {
+
 				removeMap();
 
 				var zoom = props.zoom || 7;
 
-				$rootScope.map = L.map(mapId, {"zoom" : zoom });
-				$rootScope.layer = VendorTileLayer($rootScope.map);
+				map = L.map(mapId, {"zoom" : zoom });
+				layer = VendorTileLayer(map);
 			},
 
 			draw: function(_geom) {
 
-				$rootScope.geoJson = L.geoJson(_geom, {
+				geoJson = L.geoJson(_geom, {
 					style: MapStyle,
 					onEachFeature: enableInteraction
-				}).addTo($rootScope.map);
+				}).addTo(map);
 
-				var bounds = $rootScope.geoJson.getBounds();
-				$rootScope.map.fitBounds(bounds);
-			},
-
-			attachMapEvent: function(type, _event) {
-				// TODO
+				var bounds = geoJson.getBounds();
+				map.fitBounds(bounds);
 			}
 		};
 	}

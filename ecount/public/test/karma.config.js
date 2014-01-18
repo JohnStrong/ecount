@@ -3,12 +3,12 @@
 
 module.exports = function(config) {
 
-  var webdriverConfig = {
+  /*var webdriverConfig = {
     hostname: 'ondemand.saucelabs.com',
     port: 80 ,
     user: 'jstrong1',
     pwd: 'aa4c7ca9-227d-49b7-9d48-2564c21afce4'
-  }
+  }*/
 
   config.set({
 
@@ -22,12 +22,14 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'test/javascript/unit/lib/angular/angular.js',
-      'test/javascript/unit/lib/angular/angular-mocks.js',
-      'test/javascript/unit/lib/angular/angular-animate.js',
-      'test/javascript/unit/lib/angular/angular-route.js',
-      'public/javascripts/custom/*.js',
-      'test/javascript/unit/spec/*.js',
+      'lib/angular/angular.js',
+      'lib/angular/angular-mocks.js',
+      'lib/angular/angular-animate.js',
+      'lib/angular/angular-route.js',
+      '../javascripts/jquery-2.0.min.js',
+      '../javascripts/bootstrap.min.js',
+      '../javascripts/custom/*.js',
+      'unit/spec/*.js',
     ],
 
 
@@ -67,6 +69,7 @@ module.exports = function(config) {
     // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
+    /*
     customLaunchers: {
         'Firefox': {
             base: 'WebDriver',
@@ -75,6 +78,7 @@ module.exports = function(config) {
             name: 'Karma'
         }
     },
+    */
 
     browsers: ['Firefox'],
 
