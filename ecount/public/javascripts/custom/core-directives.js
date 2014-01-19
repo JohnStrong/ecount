@@ -72,10 +72,19 @@ directives.directive('homeFeatureDirective', function() {
 directives.directive('imapDirective', function() {
 	return {
 		restrict: 'E',
-		controller: 'MapController',
+		link: function(scope, elem, attrs) {
+			console.log(scope);
+		},
 		templateUrl: '/imap'
 	};
 });
+
+directives.directive('imapCountyDirective', function() {
+	return {
+		restrict: 'E',
+		templateUrl: '/imap/county'
+	};
+})
 
 directives.directive('descriptionDirective', function() {
 	return {
@@ -100,9 +109,7 @@ directives.directive('itemDirective', function() {
 		link: function(scope, element, attrs, descCtrl) {
 			descCtrl.addTable(scope);
 		},
-		template: '<span class="spacial">' +
-		'<div ng-transclude></div>' +
-		'</span>'
+		templateUrl: '/view/template/constituency-table'
 	};
 });
 

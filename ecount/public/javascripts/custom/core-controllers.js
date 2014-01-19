@@ -8,7 +8,8 @@ var ecount = angular.module('Ecount',
 			controller: 'HomeController'
 		});
 		$routeProvider.when('/map', {
-			templateUrl: '/map'
+			templateUrl: '/map',
+			controller: 'MapController'
 		});
 		$routeProvider.when('/about', {
 			templateUrl: '/about',
@@ -64,7 +65,6 @@ ecount.controller('MapController',
 			var electionId = $scope.election.id;
 
 			$location.path('/map/county/' + electionId + '/' + countyId);
-				//.search({ 'eid' : electionId, 'cid' : countyId });
 
 			$route.reload();
 		}
@@ -138,9 +138,6 @@ ecount.controller('CountyController',
 				var eid = $scope.electionId;
 				var cid = $scope.countyId;
 				var did = newVal.id;
-
-				$location.path('/map/county/' + eid + '/' + cid + '/' + did);
-				$route.reload();
 			}
 
 			if(newVal !== oldVal) {

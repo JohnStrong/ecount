@@ -1,9 +1,6 @@
 package controllers
 
 import play.api.mvc._
-import persistence.PersistenceContext._
-import persistence.StatStore
-import play.api.libs.json.Json
 
 /**
  * @define
@@ -41,5 +38,9 @@ object ViewController extends Controller {
 
   def imap = Action {
     Ok(views.html.imap.render())
+  }
+
+  def imapCounty = Action {
+    Ok(views.html.imapCounty.render())
   }
 }

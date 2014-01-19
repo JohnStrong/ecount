@@ -72,7 +72,7 @@ imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer', '
 
 				removeMap();
 
-				var zoom = props.zoom || 7;
+				var zoom = props.zoom || 12;
 
 				map = L.map(mapId, {"zoom" : zoom });
 				layer = VendorTileLayer(map);

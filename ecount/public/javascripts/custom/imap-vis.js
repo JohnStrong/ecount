@@ -37,7 +37,7 @@ vis.factory('Layer', function() {
 vis.factory('Visualize', function() {
 
 	var margin = [20, 40, 80, 60];
-    var width = 800 - margin[3] - margin[3];
+    var width = 705 - margin[3] - margin[3];
     var height = 304 - margin[0] - margin[1];
 
     var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1);
