@@ -28,7 +28,7 @@ object MapStore {
 
     def xsql = <xsql>
       SELECT ST_ASGEOJSON(
-        ST_TRANSFORM(ST_SETSRID(ST_SIMPLIFY(geom, 20), 29902), 4326)) as geom
+        ST_TRANSFORM(ST_SETSRID(geom, 29902), 4326)) as geom
       FROM electoral_divisions
       WHERE gid = #{{id}}
     </xsql>

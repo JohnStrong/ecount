@@ -1,38 +1,9 @@
-var vis = angular.module('IMap.Vis', []);
+var vis = angular.module('Ecount.Map.County.Vis', []);
 
-vis.factory('MapStyle', function() {
-
-	var DEFAULT_WEIGHT = 2;
-    var DEFAULT_OPACITY = 0.5;
-    var DEAULT_COLOR = '#888888';
-    var DEAULT_FILL_COLOR = '#428BCA';
-    var DEAULT_DASH_ARRAY = '3';
-    var DEFAULT_FILL_OPACITY = 0.2;
-
-	var base = {
-		weight: DEFAULT_WEIGHT,
-		opacity: DEFAULT_OPACITY,
-    	color: DEAULT_COLOR,
-    	fillColor: DEAULT_FILL_COLOR,
-    	dashArray: DEAULT_DASH_ARRAY,
-    	fillOpacity: DEFAULT_FILL_OPACITY
-    };
-
-    return {
-        base: base
-    };
-});
-
-vis.factory('Layer', function() {
-	var info = L.control();
-
-	info.onAdd = function (map) {
-	    this._div = L.DomUtil.create('div', 'info');
-	    this.update();
-	    return this._div;
+vis.directive('visDirective',function() {
+	return {
+		controller: 'VisualizationController'
 	};
-
-	return info;
 });
 
 vis.factory('Visualize', function() {
@@ -209,3 +180,13 @@ vis.factory('Visualize', function() {
     	}
     };
 });
+
+vis.controller('VisualizationController',
+	['$scope', '$element', 'Visualize',
+	function($scope, $element, Visualize)	{
+		Visualize.init($scope.c.stats, $scope.c.title);
+		Visualize.firstPreferenceVotes($element[0]);
+		Visualize.percentageVote($element[0]);
+		Visualize.seats($element[0]);
+	}
+]);

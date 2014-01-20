@@ -1,15 +1,17 @@
 <div class="">
 	<div class="">
 		<div class="">
-			<div class="row content-container">
+			<div class="row content-container" ng-controller="ElectionStatController">
 				<div class="col-md-4">
-					<election-stat-directive>
-						<item-directive ng-repeat="g in general"></item-directive>
-					</election-stat-directive>
+					<ul>
+						<div ng-init="electionResults.general()">
+							<constituency-table-directive ng-repeat="g in general"></constituency-table-directive>
+						</div>
+					</ul>
 				</div>
 				<div class="col-md-8">
 					<div ng-switch on="renderPath[2]">
-						<div ng-switch-when="ded">
+						<div ng-switch-when="ded" ng-init="electionResults.party()">
 							<district-directive></district-directive>
 						</div>
 						<div ng-switch-when="ed">

@@ -1,22 +1,44 @@
-var imap = angular.module('IMap.Base', ['IMap.Vis', 'IMap.Statistics', 'IMap.Geo']);
+var mapUtil = angular.module('Map.Util', []);
 
-imap.service('InfoControl', function() {
+mapUtil.factory('VendorTileLayer', function() {
 
-	return function() {
-		this.info = L.control();
+	var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png';
+	var ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
+		'Imagery &copy; 2012 CloudMade';
+	var API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
 
-		this.onAdd = function() {
-
-		};
-
-		this.update = function(props) {
-			this._div.innerHTML = props ? '<h4>' + props.name + '</h4>' :
-				'hover over a DED';
-		};
+	return function(map) {
+		return L.tileLayer(URL, {
+			attribution: ATTRIBUTION,
+			key: API_KEY
+		}).addTo(map);
 	}
 });
 
-imap.factory('SharedMapService',
+mapUtil.factory('GeomAPI', ['$http',
+	function($http) {
+
+		var COUNTY_BOUNDS_REQ_URL = '/map/geo/county/';
+		var ELECTORAL_DIVISIONS_REQ_URL = '/map/geo/county/divisions/';
+		var ELECTORAL_DIVISION_REQ_URL = '/map/geo/county/division/'
+
+		return {
+			countyBounds: function() {
+				return $http.get(COUNTY_BOUNDS_REQ_URL);
+			},
+
+			electoralDivisions: function(countyId) {
+				return $http.get(ELECTORAL_DIVISIONS_REQ_URL + countyId);
+			},
+
+			electoralDivision: function(gid) {
+				return $http.get(ELECTORAL_DIVISION_REQ_URL + gid);
+			}
+		};
+	}
+]);
+
+mapUtil.factory('SharedMapService',
 	['$rootScope', 'VendorTileLayer',
 	function($rootScope, VendorTileLayer) {
 

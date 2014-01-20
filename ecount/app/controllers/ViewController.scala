@@ -11,40 +11,4 @@ object ViewController extends Controller {
   def index = Action {
     Ok(views.html.main())
   }
-
-  def home = Action {
-    Ok(views.html.home.render())
-  }
-
-  def map = Action {
-    Ok(views.html.map.render())
-  }
-
-  def counties = Action {
-    Ok(views.html.counties.render())
-  }
-
-  def county = Action {
-    Ok(views.html.county.render())
-  }
-
-  def about = Action {
-    Ok(views.html.about.render())
-  }
-
-  def election = Action {
-    Ok(views.html.election.render())
-  }
-
-  def mapBase = Action {
-    Ok(views.html.mapBase.render())
-  }
-
-  def mapDistricts = Action {
-    Ok(views.html.mapCounty.render())
-  }
-
-  def mapED = Action {
-    Ok(views.html.mapDED.render())
-  }
 }
