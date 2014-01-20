@@ -1,5 +1,91 @@
 var directives = angular.module('Core.Directive', []);
 
+directives.directive('homeDirective', function() {
+	return {
+		restrict: 'E',
+		templateUrl: '/home'
+	}
+});
+
+directives.directive('mapDirective', function() {
+	return {
+		restrict: 'E',
+		controller: 'MapController',
+		templateUrl: '/map'
+	}
+});
+
+directives.directive('aboutDirective', function() {
+	return {
+		restrict: 'E',
+		controller: 'AboutController',
+		templateUrl: '/about',
+	}
+})
+
+ directives.directive('electionDirective', function() {
+ 	return {
+ 		restrict: 'E',
+ 		controller: 'ElectionController',
+ 		templateUrl: '/election'
+ 	};
+ });
+
+directives.directive('mapBaseDirective', function() {
+	return {
+		restrict: 'E',
+		controller: 'MapBaseController',
+		templateUrl: '/map/base'
+	};
+});
+
+directives.directive('countyDirective', function() {
+	return {
+		restrict: 'E',
+		controller: 'CountyController',
+		templateUrl: '/map/county'
+	}
+})
+
+directives.directive('districtDirective', function() {
+	return {
+		transclude: true,
+		restrict: 'E',
+		controller: 'DistrictController',
+		templateUrl: '/map/county/districts'
+	};
+});
+
+directives.directive('edDirective', function() {
+	return {
+		transclude: true,
+		restrict: 'E',
+		controller: 'DEDController',
+		templateUrl: '/map/county/ed'
+	};
+})
+
+directives.directive('electionStatDirective', function() {
+	return {
+		restrict: 'E',
+		transclude: true,
+		controller: 'ElectionStatController',
+		templateUrl: "/templates/electionStat.html"
+	};
+});
+
+directives.directive('itemDirective', function() {
+	return {
+		require: '^electionStatDirective',
+		restrict: 'E',
+		transclude: true,
+		link: function(scope, element, attrs, eleCtrl) {
+			eleCtrl.addTable(scope);
+		},
+		templateUrl: '/templates/constituencyTable.html'
+	};
+});
+
 directives.directive('statTab', function() {
 	return {
 		restrict: 'E',
@@ -25,14 +111,7 @@ directives.directive('statTab', function() {
 			};
 		},
 
-		template: '<div class="tabbable">' +
-		    '<ul class="nav nav-tabs">' +
-		    '<li ng-repeat="pane in panes" ng-class="{active:pane.selected}">' +
-		    '<a href="" ng-click="select(pane)">{{pane.title}}</a>' +
-		    '</li>' +
-		    '</ul>' +
-		    '<div class="tab-content" ng-transclude></div>' +
-		    '</div>'
+		templateUrl: '/templates/statTab.html'
 	};
 });
 
@@ -40,106 +119,14 @@ directives.directive('statPane', function() {
 	return {
 		require: '^statTab',
 		restrict: 'E',
-		transclude: 'true',
+		transclude: true,
 		scope: {
 			title: '@'
 		},
 		link: function(scope, element, attrs, tabsCtrl) {
 			tabsCtrl.addPane(scope);
 		},
-		template: '<div class="tab-pane"' +
-		'ng-show="selected" ng-transclude>' +
-    	'</div>'
-	};
-});
-
-directives.directive('homeFeatureDirective', function() {
-	return {
-		restrict: 'E',
-		controller: 'HomeController',
-		templateUrl: '/home'
-	};
-});
-
- directives.directive('electionDirective', function() {
- 	return {
- 		restrict: 'E',
- 		controller: 'ElectionController',
- 		templateUrl: '/election'
- 	};
- });
-
-directives.directive('imapDirective', function() {
-	return {
-		restrict: 'E',
-		link: function(scope, elem, attrs) {
-			console.log(scope);
-		},
-		templateUrl: '/imap'
-	};
-});
-
-directives.directive('imapCountyDirective', function() {
-	return {
-		restrict: 'E',
-		templateUrl: '/imap/county'
-	};
-})
-
-directives.directive('descriptionDirective', function() {
-	return {
-		restrict: 'E',
-		transclude: true,
-		controller: function($scope) {
-			var tables = [];
-
-			this.addTable = function(scope) {
-				tables.push(scope);
-			};
-		},
-		template: '<ul class="" ng-transclude></ul>'
-	};
-});
-
-directives.directive('itemDirective', function() {
-	return {
-		require: '^descriptionDirective',
-		restrict: 'E',
-		transclude: true,
-		link: function(scope, element, attrs, descCtrl) {
-			descCtrl.addTable(scope);
-		},
-		templateUrl: '/view/template/constituency-table'
-	};
-});
-
-directives.directive('linkDirective', function() {
-	var links = [
-		{title: 'Map', link: 'imap'},
-		{title: 'Overview', link: 'overview'},
-		{title: 'Party Statistics', link: 'party'}
-	];
-
-	var template = '<ul id="section-links" class="nav nav-list well">' +
-		'<li class="nav-header">Quick Links</li>' +
-		'<li class="active" ng-repeat="link in links">' +
-		'<a href="" ng-click="goToLink(link)">' +
-		'{{link.title}}'
-		'<span class="glyphicon glyphicon-chevron-right"></span>' +
-		'</a>' +
-		'</li>' +
-		'</ul>'
-
-	return {
-		restrict: 'E',
-		controller: function($scope, $location) {
-			$scope.links = links;
-
-			$scope.goToLink = function(link) {
-				$location.path().path('#' + link.link);
-			}
-		},
-		template: template
+		templateUrl: '/templates/statPane.html'
 	};
 });
 

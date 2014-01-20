@@ -1,8 +1,12 @@
 <div class="row content-container" id="Map">
-	<div class="col-md-4">
-		<!-- todo -->
-	</div>
-	<div class="col-md-8">
-	    <imap-directive></imap-directive>
+	<div class="col-md-12">
+		<div ng-switch on="renderPath[1]">
+			<div ng-switch-when="base">
+	    		<map-base-directive></map-base-directive>
+	    	</div>
+	    	<div ng-switch-when="county">
+            	<county-directive></county-directive>
+        	</div>
+	    </div>
 	</div>
 </div>

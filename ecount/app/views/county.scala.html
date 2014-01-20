@@ -1,15 +1,20 @@
-<div class="" ng-init="init()">
-	<div class="" ng-init="electionResults()">
+<div class="">
+	<div class="">
 		<div class="">
 			<div class="row content-container">
 				<div class="col-md-4">
-					<description-directive>
+					<election-stat-directive>
 						<item-directive ng-repeat="g in general"></item-directive>
-					</description-directive>
+					</election-stat-directive>
 				</div>
 				<div class="col-md-8">
-					<div>
-						<imap-county-directive></imap-county-directive>
+					<div ng-switch on="renderPath[2]">
+						<div ng-switch-when="ded">
+							<district-directive></district-directive>
+						</div>
+						<div ng-switch-when="ed">
+							<ed-directive></ed-directive>
+						</div>
 					</div>
 				</div>
 		    </div>

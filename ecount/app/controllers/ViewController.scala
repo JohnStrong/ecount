@@ -36,11 +36,15 @@ object ViewController extends Controller {
     Ok(views.html.election.render())
   }
 
-  def imap = Action {
-    Ok(views.html.imap.render())
+  def mapBase = Action {
+    Ok(views.html.mapBase.render())
   }
 
-  def imapCounty = Action {
-    Ok(views.html.imapCounty.render())
+  def mapDistricts = Action {
+    Ok(views.html.mapCounty.render())
+  }
+
+  def mapED = Action {
+    Ok(views.html.mapDED.render())
   }
 }

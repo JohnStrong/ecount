@@ -1,6 +1,7 @@
 var imap = angular.module('IMap.Base', ['IMap.Vis', 'IMap.Statistics', 'IMap.Geo']);
 
 imap.service('InfoControl', function() {
+
 	return function() {
 		this.info = L.control();
 
@@ -15,8 +16,9 @@ imap.service('InfoControl', function() {
 	}
 });
 
-imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer', 'InfoControl',
-	function($rootScope, MapStyle, VendorTileLayer) {
+imap.factory('SharedMapService',
+	['$rootScope', 'VendorTileLayer',
+	function($rootScope, VendorTileLayer) {
 
 		var HIGHLIGHT_WEIGHT = 2;
 		var HIGHLIGHT_CLICK_COLOR = '#555';
@@ -49,8 +51,8 @@ imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer', '
 			}
 
 			function getElectoralInformation(e){
-				$rootScope.target = e.target.feature.properties;
-				$rootScope.$digest();
+				var target = e.target.feature.properties;
+				$rootScope.$broadcast("target-change", [target]);
 			}
 
 			layer.on({
@@ -78,10 +80,10 @@ imap.factory('SharedMapService', ['$rootScope', 'MapStyle', 'VendorTileLayer', '
 				layer = VendorTileLayer(map);
 			},
 
-			draw: function(_geom) {
+			draw: function(_geom, _style) {
 
 				geoJson = L.geoJson(_geom, {
-					style: MapStyle,
+					style: _style,
 					onEachFeature: enableInteraction
 				}).addTo(map);
 

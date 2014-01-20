@@ -33,7 +33,7 @@ object MapController extends Controller {
   // loads ED coordinates in Geo-Json format for a county by countyId
   def electoralDivisions(countyId: Long) = Action.async {
 
-    def getEDByCountyId =
+    def getEDsByCountyId =
       withConnection { implicit conn =>
         MapStore.getElectoralDivisions(countyId).map(ed => {
           Json.obj(
@@ -48,7 +48,7 @@ object MapController extends Controller {
         })
       }
 
-    val edByCounty = scala.concurrent.Future { getEDByCountyId }
+    val edByCounty = scala.concurrent.Future { getEDsByCountyId }
 
     edByCounty.map{ i =>
       Ok( Json.obj(
@@ -59,6 +59,27 @@ object MapController extends Controller {
     }
   }
 
-  // load county statistics in interactive map view
-  def loadCountyStats(countyId: Long) = TODO
+  def electoralDivision(gid: Long) = Action.async {
+
+    def getDedById =
+      withConnection {  implicit conn =>
+         MapStore.getElectoralDivision(gid).map(ed => {
+           Json.obj(
+             "type" -> "Feature",
+             "geometry" -> Json.parse(ed)
+           )
+          }
+         )
+      }
+
+    val ded = scala.concurrent.Future { getDedById }
+
+    ded.map { i =>
+       Ok(Json.obj(
+          "type" -> "FeatureCollection",
+          "features" -> Json.toJson(i)
+        )
+       )
+    }
+  }
 }

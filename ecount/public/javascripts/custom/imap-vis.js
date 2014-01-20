@@ -2,24 +2,25 @@ var vis = angular.module('IMap.Vis', []);
 
 vis.factory('MapStyle', function() {
 
-	return function(feature) {
+	var DEFAULT_WEIGHT = 2;
+    var DEFAULT_OPACITY = 0.5;
+    var DEAULT_COLOR = '#888888';
+    var DEAULT_FILL_COLOR = '#428BCA';
+    var DEAULT_DASH_ARRAY = '3';
+    var DEFAULT_FILL_OPACITY = 0.2;
 
-		var DEFAULT_WEIGHT = 2;
-        var DEFAULT_OPACITY = 0.5;
-        var DEAULT_COLOR = '#888888';
-        var DEAULT_FILL_COLOR = '#428BCA';
-        var DEAULT_DASH_ARRAY = '3';
-        var DEFAULT_FILL_OPACITY = 0.2;
+	var base = {
+		weight: DEFAULT_WEIGHT,
+		opacity: DEFAULT_OPACITY,
+    	color: DEAULT_COLOR,
+    	fillColor: DEAULT_FILL_COLOR,
+    	dashArray: DEAULT_DASH_ARRAY,
+    	fillOpacity: DEFAULT_FILL_OPACITY
+    };
 
-	    return {
-	        weight: DEFAULT_WEIGHT,
-	        opacity: DEFAULT_OPACITY,
-	        color: DEAULT_COLOR,
-	        fillColor: DEAULT_FILL_COLOR,
-	        dashArray: DEAULT_DASH_ARRAY,
-	        fillOpacity: DEFAULT_FILL_OPACITY
-	    };
-	};
+    return {
+        base: base
+    };
 });
 
 vis.factory('Layer', function() {
