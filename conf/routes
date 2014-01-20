@@ -1,0 +1,39 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Main routes
+GET     /                                  controllers.ViewController.index
+
+# Auth specific routes
+POST    /auth/sign-in                       controllers.AccountController.signIn
+
+POST    /auth/register                      controllers.AccountController.register
+
+# Statistics specific routes
+GET     /api/general/register/mature/m    controllers.StatsController.lveRegisterMatureMale
+
+GET     /api/general/register/mature/f    controllers.StatsController.lveRegisterMatureFemale
+
+GET     /api/general/register/young/m     controllers.StatsController.lveRegisterYoungMale
+
+GET     /api/general/register/young/f     controllers.StatsController.lveRegisterYoungFemale
+
+GET     /api/elections/                   controllers.StatsController.electionEntries
+
+GET     /api/elections/general/:eid/:cid  controllers.StatsController.electionResultsGeneral(eid:Long, cid:Long)
+
+GET     /api/elections/party/:eid/:cid    controllers.StatsController.electionResultsParty(eid:Long, cid:Long)
+
+# Map Specific
+GET     /map/geo/county/                    controllers.MapController.countyBounds()
+
+GET     /map/geo/county/divisions/:cid      controllers.MapController.electoralDivisions(cid:Long)
+
+GET     /map/geo/county/division/:gid       controllers.MapController.electoralDivision(gid:Long)
+
+# Template Loader
+GET     /templates/*file                    controllers.TemplateAssetsController.at(file)
+
+# resources from the /public folder to the /assets URL path
+GET     /assets/*file                       controllers.Assets.at(path="/public", file)
