@@ -6,7 +6,9 @@ libraryDependencies ++= Seq(
     jdbc,
     anorm,
     cache,
-    "postgresql" % "postgresql" % "9.1-901.jdbc4"
+    "postgresql" % "postgresql" % "9.1-901.jdbc4",
+    "org.mybatis" % "mybatis" % "3.1.1",
+  	"org.mybatis" % "mybatis-guice" % "3.3"
 )
 
 play.Project.playScalaSettings
