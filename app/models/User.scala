@@ -4,7 +4,6 @@ package models
  * Created by User 1 on 22/01/14.
  */
 class User {
-   var name:String = _
    var email:String = _
    var constituency:String = _
 }
@@ -12,6 +11,13 @@ class User {
 object User {
 
   def apply(user:User) {
-    Some(user.name, user.email, user.constituency)
+    Some(user.email, user.constituency)
+  }
+
+  def apply(email: String, constituency: String) = {
+    val u = new User
+    u.email = email
+    u.constituency = constituency
+    u
   }
 }

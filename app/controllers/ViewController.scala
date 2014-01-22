@@ -14,24 +14,43 @@ import persistence.PersistenceContext._
  */
 
 sealed trait Auth
+
 case class LoginData(email:String, password:String) extends Auth
-case class RegisterData(name:String, email:String, password:String) extends Auth
+
+case class RegisterData(
+username: String,
+email:String,
+constituency:String,
+password: String,
+confirmPassword: String) extends Auth
 
 object ViewController extends Controller {
 
-  val loginForm = Form(
+  val loginForm: Form[LoginData] = Form(
     mapping(
       "email" -> text,
       "password" -> text
     )(LoginData.apply)(LoginData.unapply)
   )
 
-  val registerForm = Form(
+  val registerForm: Form[RegisterData] = Form(
     mapping(
-      "name" -> text,
+      "username" -> text,
       "email" -> text,
-      "password" -> text
-    )(RegisterData.apply)(RegisterData.unapply)
+      "constituency" -> text,
+      "password" -> tuple(
+        "main" -> text(minLength=8, maxLength=16),
+        "confirm" -> text
+      ).verifying(
+        "Passwords don't match", password => password._1 == password._2
+      )
+    )
+    {
+      (username, email, constituency, password) => RegisterData(username, email, constituency, password._1, password._2)
+    }
+    {
+      (rd) => Some(rd.username, rd.email, rd.constituency, (rd.password, rd.confirmPassword))
+    }
   )
 
   def index = Action {
@@ -51,8 +70,7 @@ object ViewController extends Controller {
         formWithErrors => {
           BadRequest(views.html.main(formWithErrors, registerForm))
         },
-      loginData => {
-          // todo: hash input password and compare with entries in the database
+        loginData => {
           val userEmail = loginData.email
           getAccountDetails(userEmail) match {
             case Some(u) => Ok(views.html.portal(u))
@@ -66,9 +84,9 @@ object ViewController extends Controller {
   def register = Action {
     implicit request => {
 
-      def insertNewAccount() = {
+      def insertNewAccount(user: models.User) = {
         withConnection { implicit conn =>
-          // todo: implement update user table with new account
+          AccountStore.insertNewAccount(user)
         }
       }
 
@@ -77,8 +95,10 @@ object ViewController extends Controller {
           BadRequest(views.html.main(loginForm, formWithErrors))
         },
         registerData => {
-          // todo: update users table with new entry after hashing password
-          Redirect(routes.ViewController.confirmation(registerData.email))
+          val user = models.User.apply(registerData.email, registerData.constituency)
+          insertNewAccount(user)
+
+          Redirect(routes.ViewController.confirmation(user.email))
         }
       )
     }

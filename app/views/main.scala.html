@@ -33,112 +33,129 @@
     </header>
     <!-- content body -->
     <body id="content-main">
-        <div class="content">
-            <div class="promo">
-                <div class="jumbotron">
-                    <h1>Online Tally System</h1>
-                    <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-                    </p>
-                </div>
-                <div class="tease">
-                    <p><a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#register-modal" role="button">Try it out!</a></p>
-                </div>
-            </div>
-            <div class="info">
-                <div class="text-promo">
-                    <h1>What is Ecount?</h1>
-                    <ul class="info-list">
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                    </ul>
-                </div>
-                <div class="text-promo">
-                    <h1>Why is it Good?</h1>
-                    <ul class="info-list">
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                    </ul>
+        <div class="promo">
+            <div class="content">
+                <div class="promo-inner">
+                    <div class="jumbotron">
+                        <h1>Online Tally System</h1>
+                        <p class="lead">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+                        </p>
+                    </div>
+                    <div class="tease">
+                        <p>
+                            <a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#register-modal" role="button">
+                                Try it out!
+                            </a>
+                        </p>
+                    </div>
                 </div>
             </div>
-            <!-- Auth Modals -->
-            <div class="modal fade" id="register-modal" role="dialog" tab-index="-1"  aria-labelledby="register-label" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="register-label">Register</h4>
-                        </div>
-                        @helper.form(action = routes.ViewController.register) {
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    @helper.input(registerForm("name")) { (id, name, value, args) =>
-                                        <input type="text" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
-                                    }
-                                </div>
-                                <div class="form-group">
-                                    @helper.input(registerForm("email")) { (id, name, value, args) =>
-                                        <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
-                                    }
-                                </div>
-                                <div class="form-group">
-                                    @helper.input(registerForm("password")) { (id, name, value, args) =>
-                                        <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
-                                    }
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Confirm</button>
-                            </div>
-                        }
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-            </div>
-            <div class="modal fade" id="login-modal" role="dialog" tab-index="-1"  aria-labelledby="login-label" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="login-label">Login</h4>
-                        </div>
-                        @helper.form(action = routes.ViewController.login) {
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    @helper.input(loginForm("email")) { (id, name, value, args) =>
-                                        <input type="email" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-                                    }
-                                </div>
-                                <div class="form-group">
-                                    @helper.input(loginForm("password")) { (id, name, value, args) =>
-                                        <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-                                    }
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Continue</button>
-                            </div>
-                        }
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-            </div><!-- /.modal -->
-
         </div>
+        <div class="info">
+            <div class="content">
+                <div class="text-promo">
+                    <h1 class="page-header">What is Ecount?</h1>
+                    <ul class="info-list">
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                    </ul>
+                </div>
+                <div class="text-promo">
+                    <h1 class="page-header">Why is it Good?</h1>
+                    <ul class="info-list">
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Auth Modals -->
+        <div class="modal fade" id="register-modal" role="dialog" tab-index="-1"  aria-labelledby="register-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="register-label">Register</h4>
+                    </div>
+                    @helper.form(action = routes.ViewController.register) {
+                        <div class="modal-body">
+                            <div class="form-group">
+                                @helper.input(registerForm("username")) { (id, name, value, args) =>
+                                    <input type="text" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @helper.input(registerForm("email")) { (id, name, value, args) =>
+                                    <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @helper.input(registerForm("constituency")) { (id, name, value, args) =>
+                                    <input type="text" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @helper.input(registerForm("password")) { (id, name, value, args) =>
+                                    <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @helper.input(registerForm("confirm password")) { (id, name, value, args) =>
+                                    <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    }
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+        <div class="modal fade" id="login-modal" role="dialog" tab-index="-1"  aria-labelledby="login-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="login-label">Login</h4>
+                    </div>
+                    @helper.form(action = routes.ViewController.login) {
+                        <div class="modal-body">
+                            <div class="form-group">
+                                @helper.input(loginForm("email")) { (id, name, value, args) =>
+                                    <input type="email" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @helper.input(loginForm("password")) { (id, name, value, args) =>
+                                    <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Continue</button>
+                        </div>
+                    }
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </body>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/promo/home.js")"></script>
     <footer id="credits">

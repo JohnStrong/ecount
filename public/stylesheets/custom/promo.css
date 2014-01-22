@@ -1,10 +1,14 @@
 .promo {
+	background-color: #428BCA;
+}
+
+.promo-inner {
 	padding: 10px 0;
 	height: 420px;
 	position: relative;
 }
 
-.jumbotron {
+.promo-inner .jumbotron {
 	position: absolute;
 	width: 520px;
 	bottom: 10px;
@@ -12,7 +16,7 @@
 	background-color: #428BCA;
 }
 
-.jumbotron h1, 
+.jumbotron h1,
 .jumbotron p {
 	color: #EEE;
 }
@@ -39,22 +43,20 @@
 }
 
 .info {
-	width: 780px;
 	clear: both;
+	min-height: 210px;
 }
 
-.text-promo h1, 
+.text-promo h1,
 .text-promo p {
 	color: #222;
 }
 
 .info .text-promo:nth-child(1) {
-	width: 375px;
 	float: left;
 }
 
 .info .text-promo:nth-child(2) {
-	width: 375px;
 	float: right;
 }
 
