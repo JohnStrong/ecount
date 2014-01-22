@@ -1,3 +1,5 @@
+@(user: models.User)
+
 <!DOCTYPE !html>
 <html ng-app="Ecount" ng-controller="AppController" lang="en">
 <head>
@@ -10,7 +12,7 @@
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/angular-animate.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/angular-route.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/d3.v3.min.js")"></script>
-	<title>Ecount</title>
+	<title>Welcome @user.name</title>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/main.css")"/>

@@ -19,6 +19,7 @@ object PersistenceContext {
 
   conf ++= MapStore
   conf ++= StatStore
+  conf ++= AccountStore
 
   val store = conf.createPersistenceContext
 

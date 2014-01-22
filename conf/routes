@@ -3,12 +3,14 @@
 # ~~~~
 
 # Main routes
-GET     /                                   controllers.ViewController.index
+GET     /                                 controllers.ViewController.index
 
 # Auth specific routes
-POST    /auth/login                         controllers.AccountController.login
+POST    /auth/login                       controllers.ViewController.login
 
-POST    /auth/register                      controllers.AccountController.register
+POST    /auth/register                    controllers.ViewController.register
+
+GET     /confirmation                     controllers.ViewController.confirmation(email: String)
 
 # Statistics specific routes
 GET     /api/general/register/mature/m    controllers.StatsController.lveRegisterMatureMale

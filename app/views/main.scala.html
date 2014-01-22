@@ -83,7 +83,7 @@
                             <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="register-label">Register</h4>
                         </div>
-                        @helper.form(action = routes.AccountController.register) {
+                        @helper.form(action = routes.ViewController.register) {
                             <div class="modal-body">
                                 <div class="form-group">
                                     @helper.input(registerForm("name")) { (id, name, value, args) =>
@@ -116,7 +116,7 @@
                             <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="login-label">Login</h4>
                         </div>
-                        @helper.form(action = routes.AccountController.login) {
+                        @helper.form(action = routes.ViewController.login) {
                             <div class="modal-body">
                                 <div class="form-group">
                                     @helper.input(loginForm("email")) { (id, name, value, args) =>
