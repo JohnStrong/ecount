@@ -8,7 +8,7 @@ import play.api.mvc._
 
 object AccountController extends Controller {
 
-  def signIn = TODO
+  def login = TODO
 
   def register = TODO
 }

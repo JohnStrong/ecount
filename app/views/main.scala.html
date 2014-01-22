@@ -1,139 +1,148 @@
+@(loginForm: Form[LoginData], registerForm: Form[RegisterData])
+
 <!DOCTYPE html>
 <html ng-app='Ecount' ng-controller="AppController" lang="en">
 <head>
     <meta charset="UTF-8" >
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
-    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/angular.min.js")"></script>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/angular-animate.min.js")"></script>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/angular-route.min.js")"></script>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/d3.v3.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <title>Ecount</title>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
-    <!--[if lte IE 8]>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
-    <![endif]-->
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/main.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/extension.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/vis.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/promo.css")"/>
 </head>
 <body id="main">
-	<script type="text/javascript">
-		"use strict";
-	</script>
-    <div class="spacial container">
-        <header id="top">
-            <nav class="navbar navbar-default navbar-static-top sea spacial top" role="navigation">
-                <div class="nav-container">
-                    <a id="brand-link" class="navbar-brand" href="">
-                        <span class="brand contrast">E-Count</span>
-                    </a>
-                    <ul class="nav navbar-nav navbar-right">
-    	                <li>
-    	                  <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Register">
-    	                    Register
-    	                  </button>
-    	                </li>
-    	                <li>
-    	                  <button type="button" class="btn btn-link navbar-link" data-toggle="modal" data-target="#Sign-in">
-    	                    Sign in
-    	                  </button>
-    	                </li>
+	<header class="home-header">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="nav-container">
+                <a id="brand-link" class="navbar-brand" href="">
+                    <span class="brand contrast">E-Count</span>
+                </a>
+                <ul class="nav navbar-nav navbar-right">
+	                <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a data-toggle="modal" data-target="#login-modal" href="#">Login</a></li>
+                            <li><a data-toggle="modal" data-target="#register-modal" href="#">Register</a></li>
+                        </ul>
+	                </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- content body -->
+    <body id="content-main">
+        <div class="content">
+            <div class="promo">
+                <div class="jumbotron">
+                    <h1>Online Tally System</h1>
+                    <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+                    </p>
+                </div>
+                <div class="tease">
+                    <p><a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#register-modal" role="button">Try it out!</a></p>
+                </div>
+            </div>
+            <div class="info">
+                <div class="text-promo">
+                    <h1>What is Ecount?</h1>
+                    <ul class="info-list">
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
                     </ul>
                 </div>
-            </nav>
-        </header>
-        <!-- modal popups -->
-        <div class="modal fade" id="Sign-in" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Sign in</h4>
-              </div>
-              <form role="form" method="POST" action="/auth/sign-in">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Email</label>
-                        <input type="email" class="form-control" id="user-email" placeholder="user email">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Password</label>
-                        <input type="password" class="form-control" id="user-pass" placeholder="user password">
-                    </div>
-                </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="modal fade" id="Register" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Register</h4>
-              </div>
-              <div class="modal-body">
-                <p>One fine body&hellip;</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script src="@routes.Assets.at("javascripts/custom/ecount/map/util/map-util.js")"></script>
-        <script src="@routes.Assets.at("javascripts/custom/ecount/map/county/map-county-vis.js")"></script>
-        <script src="@routes.Assets.at("javascripts/custom/ecount/map/election/map-elections.js")"></script>
-        <script src="@routes.Assets.at("javascripts/custom/ecount/map/base/map.js")"></script>
-        <script src="@routes.Assets.at("javascripts/custom/ecount/map/county/map-county.js")"></script>
-        <script src="@routes.Assets.at("javascripts/custom/ecount/core/ecount.js")"></script>
-        <!-- content body -->
-        <div id="content-main spacial">
-            <div class="wrap-large row">
-                <ul id="main-nav" class="nav nav-tabs">
-                    <li id="home" class="active"><a href="#/home">Home</a></li>
-                    <li id="map" class=""><a href="#/map">Map</a></li>
-                    <li id="about" class=""><a href="#/about">About</a></li>
-                </ul>
-                <div id="interactive-main" class="spacial">
-                    <div ng-switch on="renderPath[0]">
-                        <div ng-switch-when="home">
-                            <home-directive></home-directive>
-                        </div>
-                        <div ng-switch-when="map">
-                            <map-directive></map-directive>
-                        </div>
-                        <div ng-switch-when="about">
-                            <about-directive></about-directive>
-                        </div>
-                    </div>
+                <div class="text-promo">
+                    <h1>Why is it Good?</h1>
+                    <ul class="info-list">
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                        <li>
+                           orem ipsum dolor sit amet, consectetur adipisicing elit
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <script type="text/javascript">
-    			(function() {
-    				var navs = $("#main-nav").children();
+            <!-- Auth Modals -->
+            <div class="modal fade" id="register-modal" role="dialog" tab-index="-1"  aria-labelledby="register-label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="register-label">Register</h4>
+                        </div>
+                        @helper.form(action = routes.AccountController.register) {
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    @helper.input(registerForm("name")) { (id, name, value, args) =>
+                                        <input type="text" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    @helper.input(registerForm("email")) { (id, name, value, args) =>
+                                        <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    @helper.input(registerForm("password")) { (id, name, value, args) =>
+                                        <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                    }
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Confirm</button>
+                            </div>
+                        }
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div>
+            <div class="modal fade" id="login-modal" role="dialog" tab-index="-1"  aria-labelledby="login-label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="login-label">Login</h4>
+                        </div>
+                        @helper.form(action = routes.AccountController.login) {
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    @helper.input(loginForm("email")) { (id, name, value, args) =>
+                                        <input type="email" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+                                    }
+                                </div>
+                                <div class="form-group">
+                                    @helper.input(loginForm("password")) { (id, name, value, args) =>
+                                        <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+                                    }
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Continue</button>
+                            </div>
+                        }
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
 
-    				$("li").click('#main-nav', function(e) {
-    				    $(navs).each(function(k, n) {
-    				      $(n).removeClass("active");
-    				    });
-
-    				    $(this).addClass("active");
-    				});
-    			})();
-            </script>
         </div>
-        <footer id="credits">
-            <!-- awks will go here -->
-        </footer>
-    </div>
+    </body>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/promo/home.js")"></script>
+    <footer id="credits">
+        <!-- awks will go here -->
+    </footer>
 </body>
 </html>

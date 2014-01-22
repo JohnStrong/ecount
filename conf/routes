@@ -3,10 +3,10 @@
 # ~~~~
 
 # Main routes
-GET     /                                  controllers.ViewController.index
+GET     /                                   controllers.ViewController.index
 
 # Auth specific routes
-POST    /auth/sign-in                       controllers.AccountController.signIn
+POST    /auth/login                         controllers.AccountController.login
 
 POST    /auth/register                      controllers.AccountController.register
 

@@ -50,7 +50,7 @@ body {
 	padding: 10px;
 }
 
-#top nav {
+#top nav, #content-main {
 	background-color: #FFF;
 }
 
@@ -118,3 +118,13 @@ table.gen-table tr:nth-child(1) th,
 table.gen-table tr:nth-child(1) td {
 	border-top: none;
 }
+
+.nav.nav-tabs {
+	background-color: #FFF;
+}
+
+.content-body {
+	padding: 10px 0;
+}
+
+/*background-color: #428BCA;*/

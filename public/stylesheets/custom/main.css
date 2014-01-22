@@ -38,31 +38,24 @@ ul {
     clear: both;
     float: none;
     width: 100%;
-    background-color: #428BCA;
 }
 
 .container {
-    width: 96%;
-    min-height: 665px;
-    margin: 20px auto;
+    width: 90%;
+    margin: 0 auto;
     -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
             border-radius: 4px;
-}
-
-.container,
-.container > div,
-.container > footer,
-.container > header,
-.container > nav {
-    background-color: #FFF;
 }
 
 #top {
     clear: both;
     float: none;
     width: 100%;
-    padding: 10px 50px;
+}
+
+#interactive-main {
+    min-height: 665px;
 }
 
 .wrap-large {

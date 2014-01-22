@@ -1,0 +1,24 @@
+/* BASE STYLES FOR HOMEPAGE PROMO */
+body {
+	background-color: #428BCA;
+}
+
+.home-header {
+	background-color: #FFF;
+}
+
+.home-header nav {
+	width: 790px;
+	margin: 0 auto;
+	background-color: #FFF;
+	padding: 10px 20px;
+}
+
+.auth-item {
+	padding-left: 10px;
+}
+
+.content {
+	width: 780px;
+	margin: 0 auto;
+}

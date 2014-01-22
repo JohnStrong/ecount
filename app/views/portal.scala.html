@@ -41,19 +41,6 @@
 	            </div>
 	        </div>
 	    </div>
-	    <script type="text/javascript">
-			(function() {
-				var navs = $("#main-nav").children();
-
-				$("li").click('#main-nav', function(e) {
-				    $(navs).each(function(k, n) {
-				      $(n).removeClass("active");
-				    });
-
-				    $(this).addClass("active");
-				});
-			})();
-	    </script>
 		<script src="@routes.Assets.at("javascripts/custom/ecount/map/util/map-util.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/ecount/map/county/map-county-vis.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/ecount/map/election/map-elections.js")"></script>

@@ -1,0 +1,70 @@
+.promo {
+	padding: 10px 0;
+	height: 420px;
+	position: relative;
+}
+
+.jumbotron {
+	position: absolute;
+	width: 520px;
+	bottom: 10px;
+	left: 10px;
+	background-color: #428BCA;
+}
+
+.jumbotron h1, 
+.jumbotron p {
+	color: #EEE;
+}
+
+.jumbotron h1 {
+	font-size: 48px;
+}
+
+.jumbotron p {
+	font-size: 12px;
+}
+
+.tease {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	padding-top: 48px;
+	padding-bottom: 48px;
+}
+
+.tease .btn {
+	background-color: #55AA11;
+	box-shadow: 1px 0 5px #55DD22;
+}
+
+.info {
+	width: 780px;
+	clear: both;
+}
+
+.text-promo h1, 
+.text-promo p {
+	color: #222;
+}
+
+.info .text-promo:nth-child(1) {
+	width: 375px;
+	float: left;
+}
+
+.info .text-promo:nth-child(2) {
+	width: 375px;
+	float: right;
+}
+
+.info-list {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 5px;
+}
+
+.info-list li {
+	font-size: 0.9em;
+	color: #333;
+}
