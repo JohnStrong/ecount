@@ -51,17 +51,17 @@ ecount.config(
 		}
 );
 
-ecount.directive('homeDirective', function() {
-	return {
-		restrict: 'E',
-		templateUrl: '/templates/core/templates/home.html'
-	}
-});
-
 ecount.directive('aboutDirective', function() {
 	return {
 		restrict: 'E',
 		templateUrl: '/templates/core/templates/about.html',
+	}
+});
+
+ecount.directive('homeDirective', function() {
+	return {
+		restrict: 'E',
+		templateUrl: '/templates/core/templates/home.html'
 	}
 });
 

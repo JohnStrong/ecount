@@ -6,6 +6,7 @@ package service
 
 import play.api.cache.Cache._
 import play.api.Play.current
+import play.api.libs.json.Json
 
 object Cache {
 
@@ -13,7 +14,24 @@ object Cache {
       set("user." + user.id, user)
   }
 
-  def getCachedUser(userId: Long) {
-    // todo
+  def removeCachedUser(userId: String) = {
+     remove(userId)
+  }
+
+  def getUserFromCache(id: Option[String]) = {
+
+    val getCachedUser = {
+      getAs[models.User]("user." + id)
+    }
+
+    getCachedUser.map{user => {
+        Json.obj(
+          "email" -> user.email,
+          "name" -> user.name,
+          "constituency" -> user.constituency,
+          "profession" -> user.profession
+        )
+      }
+    }
   }
 }

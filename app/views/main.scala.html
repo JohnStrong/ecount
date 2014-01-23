@@ -1,4 +1,4 @@
-@(loginForm: Form[LoginData], registerForm: Form[RegisterData])
+@(loginForm: Form[helpers.LoginData], registerForm: Form[helpers.RegisterData])
 
 <!DOCTYPE html>
 <html ng-app='Ecount' ng-controller="AppController" lang="en">
@@ -91,7 +91,7 @@
                         <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                         <h4 class="modal-title" id="register-label">Register</h4>
                     </div>
-                    @helper.form(action = routes.ViewController.register) {
+                    @helper.form(action = routes.AccountAuthController.register) {
                         <div class="modal-body">
                             <div class="form-group">
                                 @helper.input(registerForm("email")) { (id, name, value, args) =>
@@ -124,7 +124,7 @@
                         <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                         <h4 class="modal-title" id="login-label">Login</h4>
                     </div>
-                    @helper.form(action = routes.ViewController.login) {
+                    @helper.form(action = routes.AccountAuthController.login) {
                         <div class="modal-body">
                             <div class="form-group">
                                 @helper.input(loginForm("email")) { (id, name, value, args) =>
