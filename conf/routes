@@ -12,6 +12,8 @@ POST    /auth/register                    controllers.ViewController.register
 
 GET     /confirmation                     controllers.ViewController.confirmation(email: String)
 
+GET     /portal/                          controllers.PortalController.portalHome
+
 # Statistics specific routes
 GET     /api/general/register/mature/m    controllers.StatsController.lveRegisterMatureMale
 

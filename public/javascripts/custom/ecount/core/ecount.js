@@ -8,6 +8,12 @@ ecount.config(
 
 		$routeProvider
 			.when(
+				'/',
+				{
+					redirectTo: '/home'
+				}
+			)
+			.when(
 				'/home',
 				{
 					action: 'home'

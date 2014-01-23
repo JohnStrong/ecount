@@ -4,27 +4,17 @@ import play.api.mvc._
 
 import play.api.data._
 import play.api.data.Forms._
+import service.Cache
 
 import persistence.AccountStore
 import persistence.PersistenceContext._
 
-/**
- * @define
- *    core navigation controller that processes requests to all core features of the application.
- */
-
-sealed trait Auth
-
-case class LoginData(email:String, password:String) extends Auth
-
-case class RegisterData(
-username: String,
-email:String,
-constituency:String,
-password: String,
-confirmPassword: String) extends Auth
+case class LoginData(email:String, password:String)
+case class RegisterData(email:String, password: String)
 
 object ViewController extends Controller {
+
+  val  UNAUTHORIZED_LOGIN_MGS = "invalid login"
 
   val loginForm: Form[LoginData] = Form(
     mapping(
@@ -35,9 +25,7 @@ object ViewController extends Controller {
 
   val registerForm: Form[RegisterData] = Form(
     mapping(
-      "username" -> text,
       "email" -> text,
-      "constituency" -> text,
       "password" -> tuple(
         "main" -> text(minLength=8, maxLength=16),
         "confirm" -> text
@@ -46,12 +34,24 @@ object ViewController extends Controller {
       )
     )
     {
-      (username, email, constituency, password) => RegisterData(username, email, constituency, password._1, password._2)
+      (email, password) => RegisterData(email, password._1)
     }
     {
-      (rd) => Some(rd.username, rd.email, rd.constituency, (rd.password, rd.confirmPassword))
+      registerData => Some(registerData.email, (registerData.password, ""))
     }
   )
+
+  def getAccountDetails(userEmail:String) = {
+    withConnection { implicit conn =>
+      AccountStore.getAccountDetails(userEmail)
+    }
+  }
+
+ def insertNewAccount(userEmail: String) = {
+    withConnection { implicit conn =>
+      AccountStore.insertNewAccount(userEmail)
+    }
+  }
 
   def index = Action {
     Ok(views.html.main(loginForm, registerForm))
@@ -59,13 +59,6 @@ object ViewController extends Controller {
 
   def login() = Action {
     implicit request => {
-
-      def getAccountDetails(userEmail:String) = {
-        withConnection { implicit conn =>
-            AccountStore.getAccountDetails(userEmail)
-        }
-      }
-
       loginForm.bindFromRequest.fold(
         formWithErrors => {
           BadRequest(views.html.main(formWithErrors, registerForm))
@@ -73,32 +66,30 @@ object ViewController extends Controller {
         loginData => {
           val userEmail = loginData.email
           getAccountDetails(userEmail) match {
-            case Some(u) => Ok(views.html.portal(u))
-            case None => Redirect(routes.ViewController.index())
+            case Some(u) =>
+              Cache.cacheUser(u)
+              Redirect(routes.PortalController.portalHome())
+            case None =>
+              Unauthorized(UNAUTHORIZED_LOGIN_MGS)
           }
         }
       )
     }
   }
 
+  def logout = TODO
+
   def register = Action {
     implicit request => {
-
-      def insertNewAccount(user: models.User) = {
-        withConnection { implicit conn =>
-          AccountStore.insertNewAccount(user)
-        }
-      }
-
       registerForm.bindFromRequest.fold(
         formWithErrors => {
           BadRequest(views.html.main(loginForm, formWithErrors))
         },
         registerData => {
-          val user = models.User.apply(registerData.email, registerData.constituency)
-          insertNewAccount(user)
+          var email = registerData.email
+          insertNewAccount(email)
 
-          Redirect(routes.ViewController.confirmation(user.email))
+          Redirect(routes.ViewController.confirmation(email))
         }
       )
     }
