@@ -36,6 +36,6 @@ object Crypto {
     val salt = saltFunction()
     val hash = SHA256(List(unHashed, salt).mkString)
 
-    (hash, salt)
+    (salt, hash)
   }
 }

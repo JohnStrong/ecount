@@ -5,17 +5,18 @@ import persistence.AccountStore
 import models.ibatis._
 
 
-case class NewAccount(email: String, hash: String, salt: String)
+case class NewAccount(email: String, salt: String, hash: String)
 case class UserAccount(email:String, name: String, constituency: String, profession: String)
 
 object AccountDispatcher {
 
- def checkHashWithSalt(userEmail: String, userPassword: String):Boolean = {
+ private def checkHashWithSalt(userEmail: String, userPassword: String):Boolean = {
    withConnection { implicit conn =>
    AccountStore.getAccountSaltAndHash(userEmail) match {
        case Some(accountSaH) => {
-          service.Crypto.hashPassword(
-          userPassword, () => accountSaH.salt).equals(accountSaH.hash)
+          val (salt, hash) = service.Crypto.hashPassword(
+          userPassword, () => accountSaH.salt)
+          hash.equals(accountSaH.hash)
        }
        case _ => false
      }
