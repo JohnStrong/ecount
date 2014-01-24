@@ -1,4 +1,4 @@
-package models
+package models.ibatis.stat
 
 /**
  * Created by User 1 on 10/01/14.

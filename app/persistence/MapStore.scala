@@ -3,6 +3,7 @@ package persistence
 import org.mybatis.scala.mapping._
 
 import models._
+import models.ibatis.map.{CountyElectoralDivision, CountyGeom}
 
 object MapStore {
 

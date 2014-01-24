@@ -1,4 +1,4 @@
-package models
+package models.ibatis.map
 
 /**
  * Created with IntelliJ IDEA.

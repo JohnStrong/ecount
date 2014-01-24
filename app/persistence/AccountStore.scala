@@ -6,7 +6,8 @@ package persistence
 
 import org.mybatis.scala.mapping._
 
-import models.User
+import models.ibatis._
+import models.ibatis.security.AccountSaltAndHash
 
 object AccountStore {
 
@@ -29,12 +30,26 @@ object AccountStore {
     </xsql>
   }
 
-  val insertNewAccount = new Insert[String] {
+  val getAccountSaltAndHash = new SelectOneBy[String, AccountSaltAndHash] {
+
+    resultMap = new ResultMap[AccountSaltAndHash] {
+      result(property = "salt", column = "salt")
+      result(property = "hash", column = "hash")
+    }
+
     def xsql = <xsql>
-      INSERT INTO users (email, verified)
-      VALUES (#{{email}}, false)
+      SELECT salt, hash
+      FROM users
+      WHERE email = #{{email}}
     </xsql>
   }
 
-  def bind = Seq(getAccountDetails, insertNewAccount)
+  val insertNewAccount = new Insert[service.NewAccount] {
+    def xsql = <xsql>
+      INSERT INTO users (email, hash, salt, verified)
+      VALUES (#{{email}}, #{{hash}}, #{{salt}}, false)
+    </xsql>
+  }
+
+  def bind = Seq(getAccountDetails, getAccountSaltAndHash, insertNewAccount)
 }

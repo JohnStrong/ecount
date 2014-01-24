@@ -7,6 +7,9 @@ package persistence
 import org.mybatis.scala.mapping._
 
 import models._
+import models.ibatis.{Election}
+import models.ibatis.stat.{PartyElectionResults, GeneralElectionResults, PartyStatsExtractor, ElectionStatsExtractor}
+import models.ibatis.map.Constituency
 
 object StatStore {
 

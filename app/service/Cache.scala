@@ -7,10 +7,11 @@ package service
 import play.api.cache.Cache._
 import play.api.Play.current
 import play.api.libs.json.Json
+import models.ibatis.User
 
 object Cache {
 
-  def cacheUser(user: models.User) {
+  def cacheUser(user: User) {
       set("user." + user.id, user)
   }
 
@@ -21,7 +22,7 @@ object Cache {
   def getUserFromCache(id: Option[String]) = {
 
     val getCachedUser = {
-      getAs[models.User]("user." + id)
+      getAs[User]("user." + id)
     }
 
     getCachedUser.map{user => {

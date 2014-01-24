@@ -1,4 +1,4 @@
-package models
+package models.ibatis.map
 
 class CountyElectoralDivision {
   var id:Long = _

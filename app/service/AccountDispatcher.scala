@@ -2,21 +2,45 @@ package service
 
 import persistence.PersistenceContext._
 import persistence.AccountStore
+import models.ibatis._
 
-/**
- * Created by User 1 on 23/01/14.
- */
+
+case class NewAccount(email: String, hash: String, salt: String)
+case class UserAccount(email:String, name: String, constituency: String, profession: String)
+
 object AccountDispatcher {
 
-  def getAccountDetails(userEmail:String) = {
+ def checkHashWithSalt(userEmail: String, userPassword: String):Boolean = {
+   withConnection { implicit conn =>
+   AccountStore.getAccountSaltAndHash(userEmail) match {
+       case Some(accountSaH) => {
+          service.Crypto.hashPassword(
+          userPassword, () => accountSaH.salt).equals(accountSaH.hash)
+       }
+       case _ => false
+     }
+   }
+ }
+
+ def getAccountDetails(userEmail: String, userPassword: String):Option[User] = {
     withConnection { implicit conn =>
-      AccountStore.getAccountDetails(userEmail)
+      checkHashWithSalt(userEmail, userPassword) match {
+        case true =>
+          AccountStore.getAccountDetails(userEmail) match {
+            case Some(user) => Some(user)
+            case None => None
+          }
+        case false =>
+            None
+      }
     }
   }
 
-  def insertNewAccount(userEmail: String) = {
+  def insertNewUnverifiedAccount(userEmail: String, unHashedPassword: String) = {
     withConnection { implicit conn =>
-      AccountStore.insertNewAccount(userEmail)
+      val hashedSaltedPassword =  service.Crypto.hashPassword(unHashedPassword)
+      val newUser = NewAccount(userEmail, hashedSaltedPassword._1, hashedSaltedPassword._2)
+      AccountStore.insertNewAccount(newUser)
     }
   }
 }

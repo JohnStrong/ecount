@@ -11,6 +11,7 @@ import persistence.StatStore
 import play.api.libs.json._
 
 import models._
+import models.ibatis.stat.{PartyStatsExtractor, ElectionStatsExtractor}
 
 object StatsController extends Controller {
 

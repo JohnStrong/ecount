@@ -1,27 +1,27 @@
 package controllers
 
-/**
- * Created by User 1 on 06/01/14.
- */
-
 import play.api.mvc._
 
 import helpers.FormHelper
 import service.{Cache, AccountDispatcher}
+import models.ibatis.User
 
 object AccountAuthController extends Controller {
 
   val UNAUTHORIZED_LOGIN_MGS = "invalid login"
   val USER_SESSION_ID_KEY = "user.id"
 
-  def addUserToCache(loginData: helpers.LoginData):Option[String] = {
-    val userEmail = loginData.email
+  def addUserToCache(user: User) = {
+    Cache.cacheUser(user)
+    List("",user.id).mkString
+  }
 
-    AccountDispatcher.getAccountDetails(userEmail) match {
-      case Some(u) =>  {
-        Cache.cacheUser(u)
-        Some(List("",u.id).mkString)
-      }
+  def verifyLoginInformation(loginData: helpers.LoginData) = {
+    val email = loginData.email
+    val password = loginData.password
+
+    AccountDispatcher.getAccountDetails(email, password) match {
+      case Some(u) => Some(addUserToCache(u))
       case _ =>  None
     }
   }
@@ -33,7 +33,7 @@ object AccountAuthController extends Controller {
           BadRequest(views.html.main(formWithErrors, FormHelper.registerForm))
         },
         loginData => {
-          addUserToCache(loginData) match {
+          verifyLoginInformation(loginData) match {
             case Some(id) =>
               Redirect(routes.ViewController.portalHome())
                 .withSession(USER_SESSION_ID_KEY -> id)
@@ -63,7 +63,8 @@ object AccountAuthController extends Controller {
         },
         registerData => {
           var email = registerData.email
-          AccountDispatcher.insertNewAccount(email)
+          val password = registerData.password
+          AccountDispatcher.insertNewUnverifiedAccount(email, password)
           Redirect(routes.ViewController.confirmation(email))
         }
       )

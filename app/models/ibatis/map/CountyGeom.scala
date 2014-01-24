@@ -1,8 +1,5 @@
-package models
+package models.ibatis.map
 
-/**
- * Created by User 1 on 06/01/14.
- */
 class CountyGeom {
   var id:Int = _
   var geom:String = _

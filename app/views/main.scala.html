@@ -94,17 +94,20 @@
                     @helper.form(action = routes.AccountAuthController.register) {
                         <div class="modal-body">
                             <div class="form-group">
-                                @helper.input(registerForm("email")) { (id, name, value, args) =>
+                                @helper.input(
+                                    registerForm("email"),
+                                    '_error -> registerForm.globalError
+                                ) { (id, name, value, args) =>
                                     <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
                                 }
                             </div>
                             <div class="form-group">
-                                @helper.input(registerForm("password")) { (id, name, value, args) =>
+                                @helper.input(registerForm("password.main")) { (id, name, value, args) =>
                                     <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
                                 }
                             </div>
                             <div class="form-group">
-                                @helper.input(registerForm("confirm password")) { (id, name, value, args) =>
+                                @helper.input(registerForm("password.confirm")) { (id, name, value, args) =>
                                     <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
                                 }
                             </div>
@@ -127,7 +130,10 @@
                     @helper.form(action = routes.AccountAuthController.login) {
                         <div class="modal-body">
                             <div class="form-group">
-                                @helper.input(loginForm("email")) { (id, name, value, args) =>
+                                @helper.input(
+                                    loginForm("email"),
+                                    '_error -> loginForm.globalError
+                                ) { (id, name, value, args) =>
                                     <input type="email" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
                                 }
                             </div>
