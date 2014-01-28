@@ -1,4 +1,4 @@
-package persistence
+package persistence.ecount
 
 import org.mybatis.scala.config._
 import org.mybatis.scala.session.Session

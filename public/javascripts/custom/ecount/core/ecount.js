@@ -1,9 +1,10 @@
 var ecount = angular.module('Ecount',
-	['ngRoute', 'ngAnimate',
-	'Ecount.Map', 'Ecount.Map.County',
-	'Ecount.Map.Elections', 'Ecount.Map.County.Vis']);
+	['ngRoute', 'ngAnimate', 'Ecount.Map',
+	'Ecount.Map.County', 'Ecount.Map.Elections',
+	'Ecount.Map.County.Vis']);
 
 ecount.config(
+	['$routeProvider',
 	function($routeProvider) {
 
 		$routeProvider
@@ -49,7 +50,7 @@ ecount.config(
 				}
 			);
 		}
-);
+]);
 
 ecount.directive('aboutDirective', function() {
 	return {
@@ -71,8 +72,8 @@ ecount.controller('AppController',
 
 		var render = function() {
 
-			var renderAction = $route.current.action || "";
-			var renderPath = renderAction.split(".");
+			var renderAction = $route.current.action || '',
+				renderPath = renderAction.split('.');
 
 			$scope.renderAction = renderAction;
 			$scope.renderPath = renderPath;

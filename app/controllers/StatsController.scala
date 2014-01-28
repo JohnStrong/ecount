@@ -5,23 +5,14 @@ package controllers
  */
 
 import play.api.mvc._
-import persistence.PersistenceContext._
+import persistence.ecount.{StatStore, PersistenceContext}
+import PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
-import persistence.StatStore
 import play.api.libs.json._
 
-import models._
-import models.ibatis.stat.{PartyStatsExtractor, ElectionStatsExtractor}
+import models.ecount.stat.{PartyStatsExtractor, ElectionStatsExtractor}
 
 object StatsController extends Controller {
-
-  def lveRegisterMatureMale = TODO
-
-  def lveRegisterMatureFemale = TODO
-
-  def lveRegisterYoungMale = TODO
-
-  def lveRegisterYoungFemale = TODO
 
   def electionEntries = Action.async {
 
@@ -101,7 +92,6 @@ object StatsController extends Controller {
     }
 
     val peResults =  scala.concurrent.Future { getPartyElectionResults }
-
     peResults.map(p => {
       Ok(Json.toJson(p))
      }

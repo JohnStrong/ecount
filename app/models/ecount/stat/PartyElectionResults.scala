@@ -1,4 +1,4 @@
-package models.ibatis.stat
+package models.ecount.stat
 
 /**
  * Created by User 1 on 08/01/14.

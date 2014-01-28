@@ -1,4 +1,4 @@
-package persistence
+package persistence.ecount
 
 /**
  * Created by User 1 on 22/01/14.
@@ -6,8 +6,8 @@ package persistence
 
 import org.mybatis.scala.mapping._
 
-import models.ibatis._
-import models.ibatis.security.AccountSaltAndHash
+import models.ecount._
+import models.ecount.security.AccountSaltAndHash
 
 object AccountStore {
 

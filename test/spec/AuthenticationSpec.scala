@@ -5,8 +5,9 @@ import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 
-import persistence.PersistenceContext._
-import persistence.AccountStore
+import persistence.ecount.{PersistenceContext, AccountStore}
+import PersistenceContext._
+import persistence.ecount.AccountStore
 
 object AuthenticationSpec extends Specification {
 

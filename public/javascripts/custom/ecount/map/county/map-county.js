@@ -1,5 +1,5 @@
 var mapCounty = angular.module('Ecount.Map.County',
-	['Ecount.Map']);
+	['Ecount.Map.Util']);
 
 mapCounty.directive('statTab', function() {
 	return {
@@ -94,17 +94,13 @@ mapCounty.controller('DistrictController',
 	['$scope', 'GeomAPI', 'SharedMapService', 'MapStyle',
 	function($scope, GeomAPI, SharedMapService, MapStyle) {
 
-		var COUNTY_ZOOM = 12;
-		var MAP_VIEW_DOM_ID = 'county-map-view';
+		var COUNTY_ZOOM = 12,
+			MAP_VIEW_DOM_ID = 'county-map-view';
 
 		$scope.initMap = function() {
-			console.log($scope);
-			GeomAPI.electoralDivisions($scope.countyId).success(function(geom) {
+			GeomAPI.electoralDivisions($scope.countyId, function(geom) {
 				SharedMapService.setMap(MAP_VIEW_DOM_ID, { "zoom": COUNTY_ZOOM });
 				SharedMapService.draw(geom, MapStyle.base);
-			})
-			.error(function(err) {
-				//defer error
 			});
 		}
 	}
@@ -114,18 +110,15 @@ mapCounty.controller('DEDController',
 	['$scope', 'SharedMapService', 'GeomAPI', 'MapStyle',
 	function($scope, SharedMapService, GeomAPI, MapStyle) {
 
-		var MAP_VIEW_DOM_ID = 'ded-map-view';
-		var DED_ZOOM = 14;
+		var MAP_VIEW_DOM_ID = 'ded-map-view',
+			DED_ZOOM = 14;
 
 		var gid = $scope.$parent.target.id;
 
 		$scope.initDEDMap = function() {
-			GeomAPI.electoralDivision(gid).success(function(geom) {
-				SharedMapService.setMap(MAP_VIEW_DOM_ID, { "zoom": DED_ZOOM });
+			GeomAPI.electoralDivision(gid, function(geom) {
+				SharedMapService.setMap(MAP_VIEW_DOM_ID, { 'zoom': DED_ZOOM });
 				SharedMapService.draw(geom, MapStyle.base);
-			})
-			.error(function(err) {
-				//defer error
 			});
 		};
 	}

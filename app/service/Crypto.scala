@@ -4,7 +4,7 @@ import java.security._
 
 object Crypto {
 
-  private val SALT_SCRAMBLE_BYTE_SIZE = 20
+  private val SALT_SCRAMBLE_BYTE_SIZE = 32
 
   private def toHex(data:Array[Byte]) = {
 
@@ -16,9 +16,8 @@ object Crypto {
     buff
   }
 
-  def generateSecureSalt() = {
+  private def generateSecureSalt() = {
     val sc:SecureRandom = new SecureRandom()
-    val bytes: Array[Byte] = new Array(SALT_SCRAMBLE_BYTE_SIZE)
     val seed = sc.generateSeed(SALT_SCRAMBLE_BYTE_SIZE)
 
     toHex(seed).toString

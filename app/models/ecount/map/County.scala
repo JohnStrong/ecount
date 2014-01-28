@@ -1,4 +1,4 @@
-package models.ibatis.map
+package models.ecount.map
 
 /**
  * Created with IntelliJ IDEA.

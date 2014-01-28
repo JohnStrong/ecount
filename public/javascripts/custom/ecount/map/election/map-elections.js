@@ -10,18 +10,25 @@ mapElections.factory('ElectionStatistics', ['$http',
 
 		return {
 
-			getElections: function() {
-				return $http.get(ALL_ELECTIONS_URL);
+			getElections: function(callback) {
+				$http.get(ALL_ELECTIONS_URL)
+					.success(function(data) {
+						callback(data);
+					});
 			},
 
-			getElectionStatsGeneral: function(electionId, countyId) {
-				return $http.get(ELECTION_STATS_GENERAL_URL
-					+ electionId + '/' + countyId);
+			getElectionStatsGeneral: function(electionId, countyId, callback) {
+				$http.get(ELECTION_STATS_GENERAL_URL + electionId + '/' + countyId)
+					.success(function(data) {
+						callback(data);
+					});
 			},
 
-			getElectionStatsParty: function(electionId, countyId) {
-				return $http.get(ELECTION_STATS_PARTY_URL
-					+ electionId + '/' + countyId);
+			getElectionStatsParty: function(electionId, countyId, callback) {
+				$http.get(ELECTION_STATS_PARTY_URL + electionId + '/' + countyId)
+					.success(function(data) {
+						callback(data);
+					});
 			}
 		};
 	}
@@ -50,11 +57,9 @@ mapElections.controller('ElectionController',
 		$scope.elections = [];
 
 		$scope.getElections = function() {
-			ElectionStatistics.getElections().success(function(data) {
+			ElectionStatistics.getElections(function(data) {
 				$scope.elections = data;
 				$scope.$parent.election = $scope.elections[0];
-			}).error(function(err) {
-				// defer error
 			});
 		}
 	}
@@ -76,28 +81,23 @@ mapElections.controller('ElectionStatController',
 
 		$scope.electionResults = {
 			general: function() {
-				ElectionStatistics.getElectionStatsGeneral($scope.electionId, $scope.countyId)
-				.success(function(stats) {
-					$scope.general = stats;
-				})
-				.error(function(err) {
-					// defer error
-				});
+				ElectionStatistics.getElectionStatsGeneral(
+					$scope.electionId, $scope.countyId,
+					function(data) {
+						$scope.general = data;
+					});
 			},
 
 			party: function() {
-				ElectionStatistics.getElectionStatsParty($scope.electionId, $scope.countyId)
-				.success(function(data) {
-
-					$.each(data, function(k, party) {
-						if(party.stats.length > 0) {
-							$scope.constituencies.push(party);
-						}
+				ElectionStatistics.getElectionStatsParty(
+					$scope.electionId, $scope.countyId,
+					function(data) {
+						$.each(data, function(k, party) {
+							if(party.stats.length > 0) {
+								$scope.constituencies.push(party);
+							}
+						});
 					});
-				})
-				.error(function(err) {
-					// defer error
-				});
 			}
 		}
 	}

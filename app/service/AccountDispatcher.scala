@@ -1,8 +1,9 @@
 package service
 
-import persistence.PersistenceContext._
-import persistence.AccountStore
-import models.ibatis._
+import persistence.ecount.{PersistenceContext, AccountStore}
+import PersistenceContext._
+import models.ecount._
+import persistence.ecount.AccountStore
 
 
 case class NewAccount(email: String, salt: String, hash: String)
@@ -42,6 +43,12 @@ object AccountDispatcher {
       val hashedSaltedPassword =  service.Crypto.hashPassword(unHashedPassword)
       val newUser = NewAccount(userEmail, hashedSaltedPassword._1, hashedSaltedPassword._2)
       AccountStore.insertNewAccount(newUser)
+    }
+  }
+
+  def getAccountDetailsAfterCacheFailure(userEmail: String):Option[User] = {
+    withConnection { implicit conn =>
+      AccountStore.getAccountDetails(userEmail)
     }
   }
 }

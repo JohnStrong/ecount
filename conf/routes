@@ -12,21 +12,13 @@ GET     /portal/                          controllers.ViewController.portalHome
 GET     /portal/account                   controllers.PortalController.account
 
 # Auth specific routes
-POST    /auth/login                       controllers.AccountAuthController.login
+POST    /auth/login                       controllers.AccountController.login
 
-POST    /auth/register                    controllers.AccountAuthController.register
+POST    /auth/register                    controllers.AccountController.register
 
-GET     /logout                           controllers.AccountAuthController.logout
+GET     /logout                           controllers.AccountController.logout
 
 # Statistics specific routes
-GET     /api/general/register/mature/m    controllers.StatsController.lveRegisterMatureMale
-
-GET     /api/general/register/mature/f    controllers.StatsController.lveRegisterMatureFemale
-
-GET     /api/general/register/young/m     controllers.StatsController.lveRegisterYoungMale
-
-GET     /api/general/register/young/f     controllers.StatsController.lveRegisterYoungFemale
-
 GET     /api/elections/                   controllers.StatsController.electionEntries
 
 GET     /api/elections/general/:eid/:cid  controllers.StatsController.electionResultsGeneral(eid:Long, cid:Long)

@@ -1,12 +1,15 @@
 var accountUtil = angular.module('Ecount.Account.Util', []);
 
-accountUtil.factory('AccountDispatch', 
+accountUtil.factory('AccountDispatch',
 		['$http',
 		function($http) {
 
 			return {
-				getAccountDetails: function() {
-					return $http.get('/portal/account');
+				getAccountDetails: function(callback) {
+					return $http.get('/portal/account')
+						.success(function(user) {
+							callback(user);
+						});
 				}
 			}
 		}

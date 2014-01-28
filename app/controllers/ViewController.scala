@@ -1,6 +1,7 @@
 package controllers
 
 import play.api.mvc._
+import play.filters.csrf._
 
 import helpers.FormHelper
 
@@ -9,8 +10,10 @@ object ViewController extends Controller {
   val UNAUTHORIZED_PORTAL_ACCESS_MG = "Oops, you are not connected"
   val USER_SESSION_ID_KEY = "user.id"
 
-  def index = Action {
-    Ok(views.html.main(FormHelper.loginForm, FormHelper.registerForm))
+  def index = CSRFAddToken {
+    Action { implicit request =>
+      Ok(views.html.main(FormHelper.loginForm, FormHelper.registerForm)).withNewSession
+    }
   }
 
   def portalHome() = Action {

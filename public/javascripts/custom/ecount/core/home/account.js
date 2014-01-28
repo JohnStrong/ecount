@@ -1,4 +1,4 @@
-var account = angular.module('Ecount.Account', 
+var account = angular.module('Ecount.Account',
 	['Ecount.Account.Util']);
 
 account.directive('accountDirective', function() {
@@ -9,20 +9,17 @@ account.directive('accountDirective', function() {
 	}
 });
 
-account.controller('AccountControler', 
-	['$scope', function($scope, AccountDispatch) {
-		
+account.controller('AccountControler',
+	['$scope', 'AccountDispatch',
+	function($scope, AccountDispatch) {
+
 		$scope.user = null;
 
 		$scope.getAccountDetails = function() {
-			AccountDispatch.getAccountDetails()
-				.success(function(data) {
-					console.log(data);
-					$scope.user = data;
-				})
-				.error(function(err) {
-					// defer error
-				});
+			AccountDispatch.getAccountDetails(function(user) {
+				console.log(user);
+				$scope.user = user;
+			});
 		}
 	}
 ]);

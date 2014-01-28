@@ -1,4 +1,4 @@
-package models.ibatis.security
+package models.ecount.security
 
 /**
  * Created by User 1 on 24/01/14.

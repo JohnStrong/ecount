@@ -1,6 +1,7 @@
 package helper.account
 
-import persistence.PersistenceContext._
+import persistence.ecount.PersistenceContext
+import PersistenceContext._
 import helper.ibatis.AccountStore
 
 // can handle all queries to test mybatis contexts

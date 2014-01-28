@@ -8,17 +8,16 @@ vis.directive('visDirective',function() {
 
 vis.factory('Visualize', function() {
 
-	var margin = [20, 40, 80, 60];
-    var width = 705 - margin[3] - margin[3];
-    var height = 304 - margin[0] - margin[1];
+	var margin = [20, 40, 80, 60],
+   		width = 705 - margin[3] - margin[3],
+   		height = 304 - margin[0] - margin[1];
 
-    var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-    var ys = d3.scale.linear().range([height, 0]);
+    var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1),
+    	ys = d3.scale.linear().range([height, 0]),
+   		xval = function(d) { return d.partyName; };
 
-    var xval = function(d) { return d.partyName; };
-
-    var xAxis = d3.svg.axis().scale(xs).orient("bottom");
-    var yAxis = d3.svg.axis().scale(ys).orient("left");
+    var xAxis = d3.svg.axis().scale(xs).orient("bottom"),
+    	yAxis = d3.svg.axis().scale(ys).orient("left");
 
     var initSVGContainer = function(elem) {
     	var svg = d3.select(elem).append("svg")
@@ -152,16 +151,16 @@ vis.factory('Visualize', function() {
 
     	seats: function(elem) {
 
-    		var svg = initSVGContainer(elem);
-    		var data = this.data;
+    		var svg = initSVGContainer(elem),
+    			data = this.data;
 
     		var yval = function(d) { return d.partyStats.seats; };
 
     		xs.domain(data.map(xval));
 			ys.domain([0, ( 1.15 * d3.max(data, yval))]);
 
-	  		var xmap = function(d) { return xs(xval(d)); };
-	  		var ymap = function(d) { return ys(yval(d)); };
+	  		var xmap = function(d) { return xs(xval(d)); },
+	  			ymap = function(d) { return ys(yval(d)); };
 
 			svg.append("g")
 	    		.attr("class", "x axis")

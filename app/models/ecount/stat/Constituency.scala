@@ -1,4 +1,4 @@
-package models.ibatis.map
+package models.ecount.stat
 
 /**
  * Created by User 1 on 10/01/14.

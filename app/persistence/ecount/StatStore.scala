@@ -1,4 +1,4 @@
-package persistence
+package persistence.ecount
 
 /**
  * Created by User 1 on 06/01/14.
@@ -6,10 +6,8 @@ package persistence
 
 import org.mybatis.scala.mapping._
 
-import models._
-import models.ibatis.{Election}
-import models.ibatis.stat.{PartyElectionResults, GeneralElectionResults, PartyStatsExtractor, ElectionStatsExtractor}
-import models.ibatis.map.Constituency
+import models.ecount._
+import models.ecount.stat._
 
 object StatStore {
 

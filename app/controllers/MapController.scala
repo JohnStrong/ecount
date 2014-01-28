@@ -1,11 +1,12 @@
 package controllers
 
-import persistence.MapStore
-import persistence.PersistenceContext._
+import persistence.ecount.{PersistenceContext, MapStore}
+import PersistenceContext._
 
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc._
 import play.api.libs.json.Json
+import persistence.ecount.MapStore
 
 object MapController extends Controller {
 
@@ -31,7 +32,7 @@ object MapController extends Controller {
       "features" -> Json.toJson(i)
     )))
   }
-  // loads ED coordinates in Geo-Json format for a county by countyId
+
   def electoralDivisions(countyId: Long) = Action.async {
 
     def getEDsByCountyId =
