@@ -4,6 +4,7 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
+import service.{AccountDispatcher, Cache}
 
 object ViewController extends Controller {
 
@@ -16,10 +17,20 @@ object ViewController extends Controller {
     }
   }
 
+  def getAccountDetails(sessId: String) = {
+    Cache.getUserFromCache(sessId) match {
+      case Some(user) => Some(user)
+      case _ => AccountDispatcher.getAccountDetailsAfterCacheFailure(sessId)
+    }
+  }
+
   def portalHome() = Action {
     implicit request => {
-      session.get(USER_SESSION_ID_KEY).map { user =>
-        Ok(views.html.portal())
+      session.get(USER_SESSION_ID_KEY).map { sessId =>
+        getAccountDetails(sessId) match {
+          case Some(user) => Ok(views.html.portal(user))
+          case _ => Unauthorized(UNAUTHORIZED_PORTAL_ACCESS_MG)
+        }
       }.getOrElse {
         Unauthorized(UNAUTHORIZED_PORTAL_ACCESS_MG)
       }

@@ -80,8 +80,8 @@ object AuthenticationSuite extends FlatSpec with Matchers {
   "the login service" should "salt and hash users passwords" in {
     val (salt, hash) = getHashAndSalt(USER_LOGIN_PASSWORD)
 
-    assert(salt.getBytes() == CORRECT_SALT_AND_HASH_BYTE_SIZE)
-    assert(hash.getBytes() == CORRECT_SALT_AND_HASH_BYTE_SIZE)
+    assert(salt.getBytes().length == CORRECT_SALT_AND_HASH_BYTE_SIZE)
+    assert(hash.getBytes().length == CORRECT_SALT_AND_HASH_BYTE_SIZE)
   }
 
   it should "match the salt and hashed entries in the corresponding users table entry" in {

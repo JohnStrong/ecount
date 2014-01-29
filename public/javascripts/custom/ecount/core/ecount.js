@@ -52,13 +52,6 @@ ecount.config(
 		}
 ]);
 
-ecount.directive('aboutDirective', function() {
-	return {
-		restrict: 'E',
-		templateUrl: '/templates/core/templates/about.html',
-	}
-});
-
 ecount.directive('homeDirective', function() {
 	return {
 		restrict: 'E',

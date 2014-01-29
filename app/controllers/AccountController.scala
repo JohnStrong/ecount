@@ -4,8 +4,7 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
-import service.{Cache, AccountDispatcher}
-import models.ecount.User
+import service.{Cache, AccountDispatcher, Mail}
 
 object AccountController extends Controller {
 
@@ -14,24 +13,31 @@ object AccountController extends Controller {
 
   private def AuthenticateUser(loginData: helpers.LoginData) = {
 
-    def addUserToCache(user: User) = {
-      Cache.cacheUser(user)
-    }
-
     def verifyLogin = {
       val email = loginData.email
       val password = loginData.password
-
       AccountDispatcher.getAccountDetails(email, password)
     }
 
     verifyLogin match {
-     case Some(user) =>
-       addUserToCache(user)
-       Redirect(routes.ViewController.portalHome())
+     case Some(user) => {
+       Cache.cacheUser(user)
+       Redirect(routes.ViewController.portalHome)
          .withSession(USER_SESSION_ID_KEY -> user.email)
+     }
      case _ =>
        Unauthorized(UNAUTHORIZED_LOGIN_MGS)
+    }
+  }
+
+  private def successfulRegistration(email: String, password: String) = {
+    AccountDispatcher.isUniqueAccount(email) match {
+      case true =>
+        val update = AccountDispatcher.insertNewUnverifiedAccount(email, password)
+        //Mail.sendEmailVerification(email)
+        Some(update)
+      case false =>
+        None
     }
   }
 
@@ -58,8 +64,9 @@ object AccountController extends Controller {
     }
   }
 
-  def register = Action {
-    implicit request => {
+  // todo: do something better when user fails the unique account check
+  def register =  CSRFCheck {
+    Action { implicit request => {
       FormHelper.registerForm.bindFromRequest.fold(
         formWithErrors => {
           BadRequest(views.html.main(FormHelper.loginForm, formWithErrors))
@@ -67,10 +74,16 @@ object AccountController extends Controller {
         registerData => {
           var email = registerData.email
           val password = registerData.password
-          AccountDispatcher.insertNewUnverifiedAccount(email, password)
-          Redirect(routes.ViewController.confirmation(email))
+          successfulRegistration(email, password) match {
+            case Some(i) =>
+              Redirect(routes.ViewController.confirmation(email))
+            case _ =>
+              BadRequest(views.html.main(
+                FormHelper.loginForm, FormHelper.registerForm))
+          }
         }
       )
-    }
+     }
+   }
   }
 }

@@ -38,6 +38,15 @@ object AccountDispatcher {
     }
   }
 
+  def isUniqueAccount(userEmail: String) = {
+    withConnection { implicit conn =>
+      AccountStore.getAccountDetails(userEmail) match {
+        case Some(user) => false
+        case None => true
+      }
+    }
+  }
+
   def insertNewUnverifiedAccount(userEmail: String, unHashedPassword: String) = {
     withConnection { implicit conn =>
       val hashedSaltedPassword =  service.Crypto.hashPassword(unHashedPassword)

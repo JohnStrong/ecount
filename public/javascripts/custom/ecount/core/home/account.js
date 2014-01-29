@@ -9,17 +9,9 @@ account.directive('accountDirective', function() {
 	}
 });
 
-account.controller('AccountControler',
+account.controller('AccountController',
 	['$scope', 'AccountDispatch',
 	function($scope, AccountDispatch) {
-
-		$scope.user = null;
-
-		$scope.getAccountDetails = function() {
-			AccountDispatch.getAccountDetails(function(user) {
-				console.log(user);
-				$scope.user = user;
-			});
-		}
+		// TODO: implement various account actions
 	}
 ]);

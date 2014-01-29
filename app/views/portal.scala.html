@@ -1,3 +1,5 @@
+@(user: models.ecount.User)
+
 <!DOCTYPE !html>
 <html ng-app="Ecount" ng-controller="AppController" lang="en">
 <head>
@@ -21,21 +23,18 @@
 	<div id="content-main spacial">
 	    <div class="content-body">
 	        <div class="wrap-large row">
+	        	<span class="account-logout"><a href="/logout">Logout</a></span>
 	            <ul id="main-nav" class="nav nav-tabs">
 	                <li id="home" class="active"><a href="#/home">Home</a></li>
 	                <li id="map" class=""><a href="#/map">Map</a></li>
-	                <li id="about" class=""><a href="#/about">About</a></li>
 	            </ul>
 	            <div id="interactive-main" class="spacial">
 	                <div ng-switch on="renderPath[0]">
 	                    <div ng-switch-when="home">
-	                        <home-directive></home-directive>
+							<home-directive></home-directive>
 	                    </div>
 	                    <div ng-switch-when="map">
 	                        <map-directive></map-directive>
-	                    </div>
-	                    <div ng-switch-when="about">
-	                        <about-directive></about-directive>
 	                    </div>
 	                </div>
 	            </div>

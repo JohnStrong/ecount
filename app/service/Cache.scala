@@ -9,7 +9,6 @@ import play.api.Play.current
 import play.api.libs.json.Json
 
 import models.ecount.User
-import persistence.ecount.AccountStore
 
 object Cache {
 
