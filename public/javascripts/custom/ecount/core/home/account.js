@@ -12,6 +12,13 @@ account.directive('accountDirective', function() {
 account.controller('AccountController',
 	['$scope', 'AccountDispatch',
 	function($scope, AccountDispatch) {
-		// TODO: implement various account actions
+
+		$scope.user = null;
+
+		$scope.getAccountDetails = function() {
+			AccountDispatch.getAccountDetails(function(user) {
+				$scope.user = user;
+			});
+		};
 	}
 ]);

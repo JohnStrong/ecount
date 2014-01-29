@@ -9,14 +9,15 @@ GET     /confirmation                     controllers.ViewController.confirmatio
 
 GET     /portal/                          controllers.ViewController.portalHome
 
-GET     /portal/account                   controllers.PortalController.account
-
 # Auth specific routes
 POST    /auth/login                       controllers.AccountController.login
 
 POST    /auth/register                    controllers.AccountController.register
 
 GET     /logout                           controllers.AccountController.logout
+
+# Portal core routes
+GET     /portal/account                   controllers.PortalController.account
 
 # Statistics specific routes
 GET     /api/elections/                   controllers.StatsController.electionEntries

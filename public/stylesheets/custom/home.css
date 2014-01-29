@@ -23,3 +23,13 @@ body {
 	width: 780px;
 	margin: 0 auto;
 }
+
+.form-alert {
+	margin: 0 auto;
+	text-align: center;
+	background-color: #F2DEDE;
+}
+
+.form-alert p {
+	color: #A94442;
+}
