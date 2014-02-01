@@ -1,4 +1,4 @@
-package service
+package service.dispatch
 
 import persistence.ecount.{PersistenceContext, MapStore}
 import PersistenceContext._

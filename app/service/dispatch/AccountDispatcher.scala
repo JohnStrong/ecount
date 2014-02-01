@@ -1,9 +1,12 @@
-package service
+package service.dispatch
 
 import persistence.ecount.{PersistenceContext, AccountStore}
 import PersistenceContext._
 import models.ecount._
 import persistence.ecount.AccountStore
+import models.ecount.account.User
+import service.util.Crypto
+import service.util
 
 
 case class NewAccount(email: String, salt: String, hash: String)
@@ -15,7 +18,7 @@ object AccountDispatcher {
    withConnection { implicit conn =>
    AccountStore.getAccountSaltAndHash(userEmail) match {
        case Some(accountSaH) => {
-          val (salt, hash) = service.Crypto.hashPassword(
+          val (salt, hash) = Crypto.hashPassword(
           userPassword, () => accountSaH.salt)
           hash.equals(accountSaH.hash)
        }
@@ -49,7 +52,7 @@ object AccountDispatcher {
 
   def insertNewUnverifiedAccount(userEmail: String, unHashedPassword: String) = {
     withConnection { implicit conn =>
-      val hashedSaltedPassword =  service.Crypto.hashPassword(unHashedPassword)
+      val hashedSaltedPassword =  util.Crypto.hashPassword(unHashedPassword)
       val newUser = NewAccount(userEmail, hashedSaltedPassword._1, hashedSaltedPassword._2)
       AccountStore.insertNewAccount(newUser)
     }

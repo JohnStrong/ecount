@@ -1,4 +1,4 @@
-package models.ecount
+package models.ecount.stat
 
 /**
  * Created by User 1 on 06/01/14.

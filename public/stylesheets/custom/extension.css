@@ -2,10 +2,6 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
      margin-right:0px;
 }
 
-body {
-	overflow-y: scroll !important;
-}
-
 .nav-header {
 	color: #888888;
 	padding: 10px 0;
@@ -14,11 +10,6 @@ body {
 
 .county-search {
 	margin: 0 auto;
-}
-
-.sea {
-	border: none;
-	border-bottom: 2px solid #EEE;
 }
 
 .spacial {
@@ -102,7 +93,21 @@ table.gen-table tr:nth-child(1) td {
 	background-color: #FFF;
 }
 
+.tab-content {
+	background-color: #FFF;
+}
+
 .content-body {
-	padding: 10px 0;
+	padding: 1% 0;
+	width: 80%;
+	margin: 0 auto;
+}
+
+.account.well {
+	background-color: #FAFAFA;
+}
+
+.account-logout {
+	/* what the hell is property....? */
 }
 

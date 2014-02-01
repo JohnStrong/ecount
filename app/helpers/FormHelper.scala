@@ -2,8 +2,9 @@ package helpers
 
 import play.api.data.Form
 import play.api.data.Forms._
-import service.{Cache, AccountDispatcher}
 import play.api.mvc._
+import service.dispatch.AccountDispatcher
+import service.util.Cache
 
 sealed trait FormBinding
 case class LoginData(email:String, password:String) extends FormBinding

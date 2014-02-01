@@ -2,6 +2,7 @@
 
 body {
 	background-color: #FFF;
+	background-color: #428BAA;
 }
 
 .home-header {
@@ -20,16 +21,6 @@ body {
 }
 
 .content {
-	width: 780px;
+	width: 65%;
 	margin: 0 auto;
-}
-
-.form-alert {
-	margin: 0 auto;
-	text-align: center;
-	background-color: #F2DEDE;
-}
-
-.form-alert p {
-	color: #A94442;
 }

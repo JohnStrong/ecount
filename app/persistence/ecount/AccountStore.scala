@@ -1,13 +1,10 @@
 package persistence.ecount
 
-/**
- * Created by User 1 on 22/01/14.
- */
-
 import org.mybatis.scala.mapping._
 
-import models.ecount._
 import models.ecount.security.AccountSaltAndHash
+import service.dispatch.NewAccount
+import models.ecount.account.User
 
 object AccountStore {
 
@@ -44,7 +41,7 @@ object AccountStore {
     </xsql>
   }
 
-  val insertNewAccount = new Insert[service.NewAccount] {
+  val insertNewAccount = new Insert[NewAccount] {
     def xsql = <xsql>
       INSERT INTO users (email, hash, salt, verified)
       VALUES (#{{email}}, #{{hash}}, #{{salt}}, false)

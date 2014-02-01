@@ -1,4 +1,4 @@
-package service
+package service.util
 
 import java.util._
 import javax.mail._

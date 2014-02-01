@@ -4,7 +4,7 @@
 @import helper.twitterBootstrap._
 
 <!DOCTYPE html>
-<html ng-app='Ecount' ng-controller="AppController" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8" >
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
@@ -96,17 +96,10 @@
                     </div>
                     @form(action = routes.AccountController.register) {
                         <div class="modal-body">
-                            @if(registerForm.hasGlobalErrors) {
-                                <div class="alert form-alert">
-                                    @registerForm.globalError.map { error =>
-                                        <p class="text-danger">@error.message</p>
-                                    }
-                                </div>
-                            }
                             <div class="form-group">
                                 @input(
                                     registerForm("email"),
-                                    '_error -> registerForm.globalError
+                                    '_showErrors -> true
                                 ) { (id, name, value, args) =>
                                     <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
                                 }
@@ -165,18 +158,12 @@
                         <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                         <h4 class="modal-title" id="login-label">Login</h4>
                     </div>
-                    @form(action = routes.AccountController.login()) {
+                    @form(action = routes.AccountController.login) {
                         <div class="modal-body">
-                            @if(loginForm.hasGlobalErrors) {
-                                <div class="alert form-alert">
-                                    @loginForm.globalError.map { error =>
-                                        <p class="text-danger">@error.message</p>
-                                    }
-                                </div>
-                            }
                             <div class="form-group">
                                 @input(
-                                    loginForm("email")
+                                    loginForm("email"),
+                                    '_showErrors -> true
                                 ) { (id, name, value, args) =>
                                     <input type="email" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
                                 }
@@ -199,7 +186,7 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </body>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/promo/home.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/home/main.js")"></script>
     <footer id="credits">
         <!-- awks will go here -->
     </footer>

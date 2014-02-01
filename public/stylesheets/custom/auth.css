@@ -1,0 +1,68 @@
+html {
+	min-height: 100%;
+	position:relative;
+}
+
+body {
+	height: 100%;
+}
+
+.pool {
+	position: absolute;
+	background-color: #428BAA;
+	box-shadow: inset 0 0 4em #428B88;
+	height: 100%;
+	width: 100%;
+}
+.container {
+	width: 55%;
+	margin: 0 auto;
+}
+
+.container {
+	padding-bottom: 2%;
+}
+
+.list-group-item {
+	position: relative;
+}
+
+.auth-body {
+	padding-left: 2%;
+	padding-right: 2%;
+}
+
+.auth-body #login {
+	padding-top: 24%;
+}
+
+.auth-body #register {
+	padding-top: 12%;
+}
+
+.auth-body .list-group-item {
+	box-shadow: 1px 0px 2px #428B88;
+}
+
+.form-heading {
+	width: 100%;
+}
+
+.form-body {
+	padding-left: 1.5%;
+	padding-right: 1.5%;
+}
+
+.error-body {
+
+}
+
+.form-alert {
+	margin: 0 auto;
+	text-align: center;
+	background-color: #F2DEDE;
+}
+
+.form-alert p {
+	color: #A94442;
+}

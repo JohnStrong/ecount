@@ -6,7 +6,6 @@ package persistence.ecount
 
 import org.mybatis.scala.mapping._
 
-import models.ecount._
 import models.ecount.stat._
 
 object StatStore {

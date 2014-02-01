@@ -9,7 +9,7 @@ vis.directive('visDirective',function() {
 vis.factory('Visualize', function() {
 
 	var margin = [20, 40, 80, 60],
-   		width = 705 - margin[3] - margin[3],
+   		width = 595 - margin[3] - margin[3],
    		height = 304 - margin[0] - margin[1];
 
     var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1),

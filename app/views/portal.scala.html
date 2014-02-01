@@ -17,31 +17,40 @@
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/extension.css")"/>
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/vis.css")"/>
 </head>
-<body>
+<body class="pool">
 	<div id="content-main spacial">
 	    <div class="content-body">
-	        <div class="wrap-large row">
-	        	<span class="account-logout"><a href="/logout">Logout</a></span>
-	        	<!-- real time feed for tally results -->
-	            <div id="tally-feed"></div>
-	            <div id="interactive-main" class="spacial">
-					<!--account main-->
-					<account-directive></account-directive>
-					<!-- interactive map view -->
-					<map-directive></map-directive>
-	            </div>
+	        <div class="wrap-large">
+	        	<div class="row">
+	        		<div class="col-md-8"></div>
+	        		<div class="col-md-4">
+	        			<span class="account-logout">
+	        				<a href="/logout" class="primary"><small>Logout</small></a>
+	        			</span>
+	        		</div>
+	        	</div>
+	        	<div class="row">
+		        	<!-- real time feed for tally results -->
+		            <div id="tally-feed"></div>
+		            <div id="interactive-main" class="spacial">
+		            	<!--account main-->
+						<account-directive></account-directive>
+						<!-- interactive map view -->
+						<map-directive></map-directive>
+		            </div>
+		        </div>
 	        </div>
 	    </div>
 	    <!--map dependencies-->
-		<script src="@routes.Assets.at("javascripts/custom/ecount/map/util/map-util.js")"></script>
-		<script src="@routes.Assets.at("javascripts/custom/ecount/map/county/map-county-vis.js")"></script>
-		<script src="@routes.Assets.at("javascripts/custom/ecount/map/election/map-elections.js")"></script>
-		<script src="@routes.Assets.at("javascripts/custom/ecount/map/base/map.js")"></script>
-		<script src="@routes.Assets.at("javascripts/custom/ecount/map/county/map-county.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/map/util/map-util.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county-vis.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/map/election/map-elections.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/map/base/map.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county.js")"></script>
 		<!--account dependencies-->
-		<script src="@routes.Assets.at("javascripts/custom/ecount/core/home/util/account-util.js")"></script>
-		<script src="@routes.Assets.at("javascripts/custom/ecount/core/home/account.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/core/home/util/account-util.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/core/home/account.js")"></script>
 		<!--base module-->
-		<script src="@routes.Assets.at("javascripts/custom/ecount/core/ecount.js")"></script>
+		<script src="@routes.Assets.at("javascripts/custom/portal/core/ecount.js")"></script>
 	</div>
 </body>

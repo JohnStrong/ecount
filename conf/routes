@@ -7,7 +7,9 @@ GET     /                                 controllers.ViewController.index
 
 GET     /confirmation                     controllers.ViewController.confirmation(email: String)
 
-GET     /portal/                          controllers.ViewController.portalHome
+GET     /auth                             controllers.ViewController.auth
+
+GET     /portal                           controllers.ViewController.portalHome
 
 # Auth specific routes
 POST    /auth/login                       controllers.AccountController.login

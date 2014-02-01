@@ -4,8 +4,9 @@ import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 
-import models.ecount.User
-import service.{AccountDispatcher, Cache}
+import service.dispatch.AccountDispatcher
+import models.ecount.account.User
+import service.util.Cache
 
 object PortalController extends Controller {
 
