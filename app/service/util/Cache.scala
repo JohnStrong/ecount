@@ -1,4 +1,4 @@
-package service
+package service.util
 
 /**
  * Created by User 1 on 23/01/14.
@@ -8,7 +8,7 @@ import play.api.cache.Cache._
 import play.api.Play.current
 import play.api.libs.json.Json
 
-import models.ecount.User
+import models.ecount.account.User
 
 object Cache {
 

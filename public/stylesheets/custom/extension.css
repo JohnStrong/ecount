@@ -1,30 +1,5 @@
-.animate-show {
--webkit-transition:all linear 0.5s;
-transition:all linear 0.5s;
-line-height:20px;
-opacity:1;
-padding:10px;
-border:1px solid black;
-background:white;
-}
-
-.animate-show.ng-hide-add,
-.animate-show.ng-hide-remove {
-display:block!important;
-}
-
-.animate-show.ng-hide {
-line-height:0;
-opacity:0;
-padding:0 10px;
-}
-
 body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom {
      margin-right:0px;
-}
-
-body {
-	overflow-y: scroll !important;
 }
 
 .nav-header {
@@ -35,11 +10,6 @@ body {
 
 .county-search {
 	margin: 0 auto;
-}
-
-.sea {
-	border: none;
-	border-bottom: 2px solid #EEE;
 }
 
 .spacial {
@@ -123,8 +93,21 @@ table.gen-table tr:nth-child(1) td {
 	background-color: #FFF;
 }
 
-.content-body {
-	padding: 10px 0;
+.tab-content {
+	background-color: #FFF;
 }
 
-/*background-color: #428BCA;*/
+.content-body {
+	padding: 1% 0;
+	width: 80%;
+	margin: 0 auto;
+}
+
+.account.well {
+	background-color: #FAFAFA;
+}
+
+.account-logout {
+	/* what the hell is property....? */
+}
+

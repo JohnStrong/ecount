@@ -6,6 +6,7 @@ import org.junit.runner._
 
 import helper.account.AccountDispatcher
 import models.ecount.security.AccountSaltAndHash
+import service.util.Crypto
 
 @RunWith(classOf[JUnitRunner])
 object AuthenticationSuite extends FlatSpec with Matchers {
@@ -37,7 +38,7 @@ object AuthenticationSuite extends FlatSpec with Matchers {
   val CORRECT_SALT_AND_HASH_BYTE_SIZE = 32
 
   private def getHashAndSalt(password: String) = {
-    service.Crypto.hashPassword(password)
+    Crypto.hashPassword(password)
   }
 
   "The login service" should "allow users access to the portal when given correct information" in {

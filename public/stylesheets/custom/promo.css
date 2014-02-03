@@ -1,19 +1,18 @@
-.promo {
-	background-color: #428BCA;
-}
-
 .promo-inner {
-	padding: 10px 0;
-	height: 420px;
+	padding: 4% 0;
+	min-height: 420px;
 	position: relative;
 }
 
 .promo-inner .jumbotron {
 	position: absolute;
-	width: 520px;
-	bottom: 10px;
-	left: 10px;
-	background-color: #428BCA;
+	width: 65%;
+	bottom: 1%;
+	left: 1%;
+}
+
+.jumbotron {
+	background-color: #428BAA;
 }
 
 .jumbotron h1,
@@ -31,15 +30,15 @@
 
 .tease {
 	position: absolute;
-	bottom: 10px;
-	right: 10px;
-	padding-top: 48px;
-	padding-bottom: 48px;
+	bottom: .5%;
+	right: .5%;
+	padding-top: 4%;
+	padding-bottom: 4%;
 }
 
 .tease .btn {
 	background-color: #55AA11;
-	box-shadow: 1px 0 5px #55DD22;
+	box-shadow: 1px 0 5px #55CC22;
 }
 
 .info {
@@ -47,9 +46,13 @@
 	min-height: 210px;
 }
 
+.text-promo {
+	padding: 2%;
+}
+
 .text-promo h1,
 .text-promo p {
-	color: #222;
+	color: #EEE;
 }
 
 .info .text-promo:nth-child(1) {
@@ -63,7 +66,7 @@
 .info-list {
 	list-style: none;
 	margin-left: 0;
-	padding-left: 5px;
+	padding-left: .5%;
 }
 
 .info-list li {

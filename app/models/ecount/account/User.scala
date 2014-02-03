@@ -1,4 +1,4 @@
-package models.ecount
+package models.ecount.account
 
 /**
  * Created by User 1 on 22/01/14.

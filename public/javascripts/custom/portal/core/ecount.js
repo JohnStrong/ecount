@@ -1,7 +1,13 @@
 var ecount = angular.module('Ecount',
-	['ngRoute', 'ngAnimate', 'Ecount.Map',
-	'Ecount.Map.County', 'Ecount.Map.Elections',
-	'Ecount.Map.County.Vis']);
+[
+'ngRoute',
+'ngAnimate',
+'Ecount.Account',
+'Ecount.Map',
+'Ecount.Map.County',
+'Ecount.Map.Elections',
+'Ecount.Map.County.Vis'
+]);
 
 ecount.config(
 	['$routeProvider',
@@ -17,19 +23,7 @@ ecount.config(
 			.when(
 				'/home',
 				{
-					action: 'home'
-				}
-			)
-			.when(
-				'/map',
-				{
 					action: 'map.base'
-				}
-			)
-			.when(
-				'/about',
-				{
-					action: 'about'
 				}
 			)
 			.when(
@@ -52,16 +46,11 @@ ecount.config(
 		}
 ]);
 
-ecount.directive('homeDirective', function() {
-	return {
-		restrict: 'E',
-		templateUrl: '/templates/core/templates/home.html'
-	}
-});
-
 ecount.controller('AppController',
 	['$scope', '$route', '$routeParams',
 	function($scope, $route, $routeParams) {
+
+		$scope.user = {};
 
 		var render = function() {
 

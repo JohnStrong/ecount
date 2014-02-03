@@ -1,10 +1,10 @@
-@(loginForm: Form[helpers.LoginData], registerForm: Form[helpers.RegisterData])(implicit token: play.filters.csrf.CSRF.Token)
+@(constituencies: Seq[(Int, String)], loginForm: Form[helpers.LoginData], registerForm: Form[helpers.RegisterData])(implicit token: play.filters.csrf.CSRF.Token)
 
 @import helper._
 @import helper.twitterBootstrap._
 
 <!DOCTYPE html>
-<html ng-app='Ecount' ng-controller="AppController" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8" >
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
@@ -99,9 +99,28 @@
                             <div class="form-group">
                                 @input(
                                     registerForm("email"),
-                                    '_error -> registerForm.globalError
+                                    '_showErrors -> true
                                 ) { (id, name, value, args) =>
                                     <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @input(
+                                    registerForm("name")
+                                ) { (id, name, value, args) =>
+                                    <input type="text" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+                                }
+                            </div>
+                            <div class="form-group">
+                                @input(
+                                    registerForm("constituency"),
+                                    '_label -> "constituency"
+                                ) { (id, name, value, args) =>
+                                    <select name="@name" id="@id" class="form-control" @toHtmlArgs(args)>
+                                        @constituencies.map { c =>
+                                            <option value="@c._1">@c._2</option>
+                                        }
+                                    </select>
                                 }
                             </div>
                             <div class="form-group">
@@ -120,9 +139,9 @@
                                     <input type="password" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
                                 }
                             </div>
-                            <div class="form-group">
+                            <span>
                                 @CSRF.formField
-                            </div>
+                            </span>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -139,11 +158,12 @@
                         <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                         <h4 class="modal-title" id="login-label">Login</h4>
                     </div>
-                    @form(action = routes.AccountController.login()) {
+                    @form(action = routes.AccountController.login) {
                         <div class="modal-body">
                             <div class="form-group">
                                 @input(
-                                    loginForm("email")
+                                    loginForm("email"),
+                                    '_showErrors -> true
                                 ) { (id, name, value, args) =>
                                     <input type="email" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
                                 }
@@ -153,9 +173,9 @@
                                     <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
                                 }
                             </div>
-                            <div class="form-group">
+                            <span>
                                 @CSRF.formField
-                            </div>
+                            </span>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -166,7 +186,7 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </body>
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/promo/home.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/home/main.js")"></script>
     <footer id="credits">
         <!-- awks will go here -->
     </footer>
