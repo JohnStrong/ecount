@@ -19,28 +19,9 @@
 </head>
 <body class="pool">
 	<div id="content-main spacial">
-	    <div class="content-body">
-	        <div class="wrap-large">
-	        	<div class="row">
-	        		<div class="col-md-8"></div>
-	        		<div class="col-md-4">
-	        			<span class="account-logout">
-	        				<a href="/logout" class="primary"><small>Logout</small></a>
-	        			</span>
-	        		</div>
-	        	</div>
-	        	<div class="row">
-		        	<!-- real time feed for tally results -->
-		            <div id="tally-feed"></div>
-		            <div id="interactive-main" class="spacial">
-		            	<!--account main-->
-						<account-directive></account-directive>
-						<!-- interactive map view -->
-						<map-directive></map-directive>
-		            </div>
-		        </div>
-	        </div>
-	    </div>
+	    <div id="interactive-main">
+        	<map-directive></map-directive>
+        </div>
 	    <!--map dependencies-->
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/util/map-util.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county-vis.js")"></script>

@@ -33,7 +33,7 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
 }
 
 .content-container {
-	padding: 1% 0;
+	padding: .5% 0;
 }
 
 .nav-container {
@@ -109,5 +109,9 @@ table.gen-table tr:nth-child(1) td {
 
 .account-logout {
 	/* what the hell is property....? */
+}
+
+.canvas {
+	background-color: #FFFFFF;
 }
 

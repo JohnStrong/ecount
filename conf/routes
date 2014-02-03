@@ -21,12 +21,17 @@ GET     /logout                           controllers.AccountController.logout
 # Portal core routes
 GET     /portal/account                   controllers.PortalController.account
 
+# Tally Feed routes
+GET     /tally/view                       controllers.TallyController.loadView
+
 # Statistics specific routes
-GET     /api/elections/                   controllers.StatsController.electionEntries
+GET     /api/elections/                     controllers.StatsController.electionEntries
 
-GET     /api/elections/general/:eid/:cid  controllers.StatsController.electionResultsGeneral(eid:Long, cid:Long)
+GET     /api/elections/constituencies/:cid  controllers.StatsController.constituencies(cid: Long)
 
-GET     /api/elections/party/:eid/:cid    controllers.StatsController.electionResultsParty(eid:Long, cid:Long)
+GET     /api/elections/general/:eid/:cid    controllers.StatsController.electionResultsGeneral(eid:Long, cid:Long)
+
+GET     /api/elections/party/:eid/:cid      controllers.StatsController.electionResultsParty(eid:Long, cid:Long)
 
 # Map Specific
 GET     /map/geo/county/                    controllers.MapController.countyBounds()

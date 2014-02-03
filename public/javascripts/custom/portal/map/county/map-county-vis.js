@@ -1,4 +1,5 @@
-var vis = angular.module('Ecount.Map.County.Vis', []);
+var vis = angular.module('Ecount.Map.County.Vis', 
+	['Ecount.Map.Elections']);
 
 vis.directive('visDirective',function() {
 	return {
@@ -6,186 +7,130 @@ vis.directive('visDirective',function() {
 	};
 });
 
-vis.factory('Visualize', function() {
+vis.factory('StatVisualization', function() {
+	
+	"use strict";
 
-	var margin = [20, 40, 80, 60],
-   		width = 595 - margin[3] - margin[3],
-   		height = 304 - margin[0] - margin[1];
+	return function(domain, dataset) {
 
-    var xs = d3.scale.ordinal().rangeRoundBands([0, width], .1),
-    	ys = d3.scale.linear().range([height, 0]),
-   		xval = function(d) { return d.partyName; };
+		var dataset = dataset,
 
-    var xAxis = d3.svg.axis().scale(xs).orient("bottom"),
-    	yAxis = d3.svg.axis().scale(ys).orient("left");
+			WIDTH = 800,
+			HEIGHT = dataset.length * 60,
+			BAR_HEIGHT_OFFSET = 50,
 
-    var initSVGContainer = function(elem) {
-    	var svg = d3.select(elem).append("svg")
-			.attr("width", width + margin[0] + margin[2])
-			.attr("height", height + margin[0] + margin[1])
-			.append("g")
-			.attr("transform", "translate(" + margin[2] + "," + margin[0] + ")");
+			ANIMATION_DURATION = 1200,
+			ANIMATION_DELAY = 100,
 
-		return svg;
-    };
+			BAR_WIDTH_TOTAL = 500,
+			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length,
 
-    var setColor = function(_color) {
+			BAR_MIN_WIDTH = 3,
 
-    	var color;
+			CANVAS_HEIGHT_PADDING = 30,
+			PADDING = [5, 18],
+			LEGEND_PADDING = 150,
 
-    	switch(_color) {
-    		case 'Fine Gael':
-    			color = '#013668';
-    			break;
-			case 'Fianna Fail':
-				color = '#2D4E2F';
-				break;
-			case 'Sinn Fein':
-				color = '#006837';
-				break;
-			case 'Labour Party':
-				color = '#BF1D24';
-				break;
-			case 'Green Party':
-				color = '#818181';
-				break;
-			case 'Others':
-				color = '#DF1D4A';
-				break;
-			default:
-				color = '#0136CA';
-				break;
-			}
+			TEXT_OFFSET = 10,
+			BAR_TEXT_PADDING = 20,
 
-		return color;
-    };
+			colorScale = d3.scale.category20c();
 
-    return {
+		var chart = d3.select(domain)
+			.append('svg:svg')
+			.attr('width', WIDTH)
+			.attr('height', HEIGHT);
 
-    	init: function(d, constituencyTitle) {
-    		this.data = d;
-    		this.constituencyTitle = constituencyTitle;
-    	},
+		return function(title, extraction) {
 
-    	yTitle: function(d, title) {
-    		d.append("text")
-				.attr("y", 6)
-				.attr("x", 5)
-				.attr("dy", ".5em")
-				.style("text-anchor", "start")
-				.text(title);
-		},
+			var xScale = d3.scale.linear().domain([0, 
+					d3.max(dataset, function(d) { 
+						return extraction(d.stats); })]).rangeRound([0, BAR_WIDTH_TOTAL]),
+				
+				yScale = d3.scale.linear().domain([0, dataset.length]).range([0, BAR_HEIGHT_TOTAL]);
 
-		drawBar: function(d, map) {
+			
+			chart.append('svg:text')
+				.attr('x', 0)
+				.attr('y', 0)
+				.attr('dx', PADDING[0])
+				.attr('dy', PADDING[1])
+				.attr('text-anchor', 'start')
+				.text(title)
+				.attr('fill', '#428BAA');
+			
 
-			var TRANSITION_DELAY = 300;
+			chart.selectAll('rect')
+				.data(dataset)
+				.enter().append('svg:rect')
+				.attr('x', PADDING[0])
+				.attr('y', function(d, i) { return yScale(i) + CANVAS_HEIGHT_PADDING; })
+				.attr('height', BAR_HEIGHT_OFFSET)
+				.transition()
+					.ease('bounce')
+					.duration(ANIMATION_DURATION)
+					.delay(function(d, i) { return i * ANIMATION_DELAY; })
+				.attr('width', 
+					function(d) { 
+						var ex  = extraction(d.stats); 
+						return xScale(ex) + BAR_MIN_WIDTH; 
+					})
+				.style('fill', function(d, i) { return colorScale(i); })
+				.attr('index_value', function(d, i) { return "item-" + i; })
+				.attr('color_value', function(d, i) { return colorScale(i); });
 
-			d.attr("x",  map.x)
-				.attr("y", function(d) { height - 0.5; })
-				.attr("width", xs.rangeBand)
-	    		.transition().duration(TRANSITION_DELAY)
-	    		.delay(function (d,i){ return i * TRANSITION_DELAY;})
-	    		.attr("height", function(d) { return height - map.y(d); })
-	    		.attr("y", map.y)
-	    		.style("fill", function(d) { return setColor(d.partyName); });
-		},
+			// add legend
+			chart.selectAll('circle')
+				.data(dataset).enter()
+				.append('svg:circle')
+				.attr('cx', WIDTH - LEGEND_PADDING)
+				.attr('cy', function(d, i) { return CANVAS_HEIGHT_PADDING + i*BAR_HEIGHT_OFFSET; })
+				.attr('stroke-width', '.5')
+				.style('fill', function(d, i) { return colorScale(i); })
+				.attr('index_value', function(d, i) { return 'legend-' + i; })
+				.attr('r', 5)
+				.attr('color_value', function(d, i) { return colorScale(i); });
 
-    	firstPreferenceVotes: function(elem) {
+			chart.selectAll('text.legend')
+				.data(dataset).enter()
+				.append('svg:text')
+				.attr('x', WIDTH - LEGEND_PADDING)
+				.attr('y', function(d, i) { return PADDING[1] + i*BAR_HEIGHT_OFFSET; })
+				.attr('dx', 0)
+				.attr('dy', '5px')
+				.attr('text-anchor', 'start')
+				.text(function(d) { d.name; })
+				.attr('fill', '#5A5A5A');
 
-    		var svg = initSVGContainer(elem);
-    		var data = this.data;
 
-    		xs.domain(data.map(xval));
-
-    		var yval = function(d) { return d.partyStats.firstPreferenceVotes; };
-
-	  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
-
-	  		var xmap = function(d) { return xs(xval(d)); };
-	  		var ymap = function(d) { return ys(yval(d)); };
-
-			svg.append("g")
-	    		.attr("class", "x axis")
-	    		.attr("transform", "translate(0," + height + ")")
-	    		.call(xAxis);
-
-	    	svg.append("g")
-				.attr("class", "y axis")
-	    		.call(yAxis)
-	    		.call(this.yTitle, "# first preference votes");
-
-	    	svg.selectAll(".bar")
-	    		.data(data)
-	    		.enter().append("rect")
-	    		.call(this.drawBar, { x: xmap, y: ymap });
-    	},
-
-    	percentageVote: function(elem) {
-
-    		var svg = initSVGContainer(elem);
-    		var data = this.data;
-
-    		var yval = function(d) { return d.partyStats.percentageVote; };
-
-			xs.domain(data.map(xval));
-	  		ys.domain([0, ( 1.15 * d3.max(data, yval))]);
-
-	  		var xmap = function(d) { return xs(xval(d)); };
-	  		var ymap = function(d) { return ys(yval(d)); };
-
-			svg.append("g")
-	    		.attr("class", "x axis")
-	    		.attr("transform", "translate(0," + height + ")")
-	    		.call(xAxis);
-
-	    	svg.append("g")
-				.attr("class", "y axis")
-	    		.call(yAxis)
-	    		.call(this.yTitle, "% votes recieved");
-
-	    	svg.selectAll(".bar")
-	    		.data(data)
-	    		.enter().append("rect")
-	    		.call(this.drawBar, {x: xmap, y: ymap });
-    	},
-
-    	seats: function(elem) {
-
-    		var svg = initSVGContainer(elem),
-    			data = this.data;
-
-    		var yval = function(d) { return d.partyStats.seats; };
-
-    		xs.domain(data.map(xval));
-			ys.domain([0, ( 1.15 * d3.max(data, yval))]);
-
-	  		var xmap = function(d) { return xs(xval(d)); },
-	  			ymap = function(d) { return ys(yval(d)); };
-
-			svg.append("g")
-	    		.attr("class", "x axis")
-	    		.attr("transform", "translate(0," + height + ")")
-	    		.call(xAxis);
-
-	    	svg.append("g")
-				.attr("class", "y axis")
-	    		.call(yAxis)
-	    		.call(this.yTitle, "# of seats won");
-
-			svg.selectAll(".bar")
-	    		.data(data)
-	    		.enter().append("rect")
-	    		.call(this.drawBar, {x: xmap, y: ymap });
-    	}
-    };
+			//append values onto end of bar
+			chart.selectAll('text.chart')
+				.data(dataset).enter()
+				.append('svg:text')
+				.attr('x', PADDING[0])
+				.attr('y', function(d, i) { return yScale(i); })
+				.attr('dx', function(d) { 
+					var ex  = extraction(d.stats); 
+					return xScale(ex) + BAR_MIN_WIDTH; 
+				})
+				.attr('dy', BAR_HEIGHT_OFFSET - BAR_TEXT_PADDING + CANVAS_HEIGHT_PADDING)
+				.attr('text-anchor', 'start')
+				.text(function(d) { return extraction(d.stats); })
+				.attr('fill', '#5A5A5A');
+		};
+	};
 });
 
 vis.controller('VisualizationController',
-	['$scope', '$element', 'Visualize',
-	function($scope, $element, Visualize)	{
-		Visualize.init($scope.c.stats, $scope.c.title);
-		Visualize.firstPreferenceVotes($element[0]);
-		Visualize.percentageVote($element[0]);
-		Visualize.seats($element[0]);
+	['$scope', '$element', 'ElectionStatistics', 'StatVisualization',
+	function($scope, $element, ElectionStatistics, StatVisualization)	{
+		ElectionStatistics.getElectionStatsParty($scope.electionId, $scope.c.id, function(data) {
+			StatVisualization($element[0], data)('first preference votes', 
+				function(stats) { return stats.firstPreferenceVotes; });
+			StatVisualization($element[0], data)('percentage of vote', 
+				function(stats) { return stats.percentageVote; });
+			StatVisualization($element[0], data)('no. of seats won', 
+				function(stats) { return stats.seats; });
+		});	
 	}
 ]);

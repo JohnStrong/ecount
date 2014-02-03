@@ -1,13 +1,13 @@
 <div id="map-content">
     <div id="imap">
         <div class="">
-            <ul class="list-group">
-                <li class="list-group-item">
+            <div class="list-group">
+                <div class="list-group-item">
                     <div id="county-map-view" ng-init="initMap()">
                         <div id="imap-view" style="height: 580px"></div>
                     </div>
-                </li>
-            </ul>
+                </div>
+            </div>
         </div>
     </div>
     <div id="party" class="party-stats">
@@ -18,7 +18,7 @@
             <div class="party-group">
             	<stat-tab>
             		<stat-pane ng-repeat="c in constituencies" title="{{c.title}}">
-            			<div id="{{c.title}}" width="595" height="400" vis-directive></div>
+            			<div id="{{c.title}}" width="800" height="400" vis-directive></div>
             		</stat-pane>
             	</stat-tab>
 		    </div>

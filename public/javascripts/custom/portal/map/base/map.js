@@ -48,6 +48,8 @@ map.controller('MapController',
 		$scope.election = null;
 
 		$scope.loadCountyView = function() {
+			console.log($scope);
+			
 			var countyId = $scope.target.id,
 				electionId = $scope.election.id;
 
