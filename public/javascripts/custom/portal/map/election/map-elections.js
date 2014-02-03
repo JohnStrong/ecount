@@ -3,10 +3,10 @@ var mapElections = angular.module('Ecount.Map.Elections', []);
 mapElections.factory('ElectionStatistics', ['$http',
 	function($http) {
 
-		var ALL_COUNTY_COUNSTITUENCIES_URL = '/api/elections/const/'
-		var ALL_ELECTIONS_URL = '/api/elections/';
-		var ELECTION_STATS_GENERAL_URL = '/api/elections/general/';
-		var ELECTION_STATS_PARTY_URL = '/api/elections/party/';
+		var ALL_COUNTY_COUNSTITUENCIES_URL = '/api/elections/constituencies/',
+			ALL_ELECTIONS_URL = '/api/elections/',
+			ELECTION_STATS_GENERAL_URL = '/api/elections/general/',
+			ELECTION_STATS_PARTY_URL = '/api/elections/party/';
 
 		return {
 
@@ -24,8 +24,15 @@ mapElections.factory('ElectionStatistics', ['$http',
 					});
 			},
 
-			getElectionStatsParty: function(electionId, countyId, callback) {
-				$http.get(ELECTION_STATS_PARTY_URL + electionId + '/' + countyId)
+			getElectionCountyConstituencies: function(countyId, callback) {
+				$http.get(ALL_COUNTY_COUNSTITUENCIES_URL + countyId)
+					.success(function(data) {
+						callback(data);
+					})
+			},
+
+			getElectionStatsParty: function(electionId, constituencyId, callback) {
+				$http.get(ELECTION_STATS_PARTY_URL + electionId + '/' + constituencyId)
 					.success(function(data) {
 						callback(data);
 					});
@@ -71,12 +78,20 @@ mapElections.controller('ElectionStatController',
 
 		var tables = [];
 
-		$scope.constituencies = [];
+		$scope.constituencies = null;
 		$scope.electionId = $scope.election.id;
 		$scope.countyId = $scope.target.id;
 
 		this.addTable = function(scope) {
 			tables.push(scope);
+		};
+
+		$scope.constituencies = function() {
+			ElectionStatistics.getElectionCountyConstituencies(
+				$scope.countyId,
+				function(data) {
+					$scope.constituencies = data;
+				});
 		};
 
 		$scope.electionResults = {
@@ -85,18 +100,6 @@ mapElections.controller('ElectionStatController',
 					$scope.electionId, $scope.countyId,
 					function(data) {
 						$scope.general = data;
-					});
-			},
-
-			party: function() {
-				ElectionStatistics.getElectionStatsParty(
-					$scope.electionId, $scope.countyId,
-					function(data) {
-						$.each(data, function(k, party) {
-							if(party.stats.length > 0) {
-								$scope.constituencies.push(party);
-							}
-						});
 					});
 			}
 		}

@@ -10,7 +10,6 @@
 
 	$('form').submit('#auth', function(e) {
 		e.preventDefault();
-
 		// do stuff...... ajax stuff
 	});
 

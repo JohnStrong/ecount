@@ -64,31 +64,46 @@ object StatsController extends Controller {
     }
   }
 
-  def electionResultsParty(electionId: Long, countyId:Long) = Action.async {
+  def constituencies(countyId: Long) = Action.async {
+
+    def getCountyConstituencies = {
+      withConnection { implicit conn => {
+          StatStore.getCountyConstituencies(countyId).map(c => {
+            Json.obj(
+              "id" -> c.id,
+              "title" -> c.title
+            )
+          }
+        )
+      }}
+    }
+
+    val constituencies = scala.concurrent.Future{ getCountyConstituencies }
+
+    constituencies.map(c => {
+      Ok(Json.toJson(c))
+    })
+  }
+
+  def electionResultsParty(electionId: Long, constituencyId:Long) = Action.async {
 
     def getPartyElectionResults = {
       withConnection { implicit conn => {
-        StatStore.getCountyConstituencies(countyId).map(c => {
 
-          val pse = PartyStatsExtractor.apply(c.id, electionId)
+        val pse = PartyStatsExtractor.apply(constituencyId, electionId)
 
+        StatStore.getPartyElectionStats(pse).map(pges => {
           Json.obj(
-            "title" -> c.title,
-            "stats" ->
-              StatStore.getPartyElectionStats(pse).map(pges => {
-                Json.obj(
-                  "partyName" -> pges.partyName,
-                  "partyStats" -> Json.obj(
-                  "firstPreferenceVotes" -> pges.firstPreferenceVotes,
-                  "percentageVote" -> pges.percentageVote,
-                  "seats" -> pges.seats
-                  )
-                )
-              })
-           )
+            "name" -> pges.partyName,
+            "stats" -> Json.obj(
+            "firstPreferenceVotes" -> pges.firstPreferenceVotes,
+            "percentageVote" -> pges.percentageVote,
+            "seats" -> pges.seats
+            )
+          )
         })
       }
-      }
+     }
     }
 
     val peResults =  scala.concurrent.Future { getPartyElectionResults }

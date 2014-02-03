@@ -29,16 +29,14 @@
 	        			</span>
 	        		</div>
 	        	</div>
-	        	<div class="row">
-		        	<!-- real time feed for tally results -->
-		            <div id="tally-feed"></div>
-		            <div id="interactive-main" class="spacial">
+	        	<div class="row list-group">
+		        	<div id="interactive-main" class="list-group-item">
 		            	<!--account main-->
 						<account-directive></account-directive>
 						<!-- interactive map view -->
 						<map-directive></map-directive>
 		            </div>
-		        </div>
+			    </div>
 	        </div>
 	    </div>
 	    <!--map dependencies-->
@@ -47,6 +45,8 @@
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/election/map-elections.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/base/map.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county.js")"></script>
+		<!--tally feed dependencies-->
+		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/tally.js")"></script>
 		<!--account dependencies-->
 		<script src="@routes.Assets.at("javascripts/custom/portal/core/home/util/account-util.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/core/home/account.js")"></script>

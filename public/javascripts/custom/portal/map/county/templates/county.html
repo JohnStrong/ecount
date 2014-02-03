@@ -1,15 +1,17 @@
-<div class="list-group">
-	<div class="row list-group-item">
-		<div class="">
-			<div class="col-md-12">
-				<div class="tally-feed">
-					live tally feed here....
+<ul class="list-group">
+	<li class="list-group-item">
+		<div class="row">
+			<div class="content-container">
+				<div class="col-md-12">
+					<div class="tally-feed">
+						<tally-directive data="{{target.id}}"></tally-directive>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row list-group-item">
-		<div class="">
+	</li>
+	<li class="list-group-item">
+		<div class="row">
 			<div class="content-container" ng-controller="ElectionStatController">
 				<div class="col-md-4">
 					<ul>
@@ -20,7 +22,7 @@
 				</div>
 				<div class="col-md-8">
 					<div ng-switch on="renderPath[2]">
-						<div ng-switch-when="ded" ng-init="electionResults.party()">
+						<div ng-switch-when="ded" ng-init="constituencies()">
 							<district-directive></district-directive>
 						</div>
 						<div ng-switch-when="ed">
@@ -30,5 +32,5 @@
 				</div>
 		    </div>
 		</div>
-	</div>
+	</li>
 </div>
