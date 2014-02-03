@@ -4,35 +4,36 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
-import service.{AccountDispatcher, Cache}
+import service.dispatch.MapDispatcher
 
 object ViewController extends Controller {
 
-  val UNAUTHORIZED_PORTAL_ACCESS_MG = "Oops, you are not connected"
-  val USER_SESSION_ID_KEY = "user.id"
+  private val CONSTITUENCIES = MapDispatcher.getConstituencies
+  private val SESSION_ID_KEY = "user.id"
+
+  private def getFormDependencies = {
+    (CONSTITUENCIES, FormHelper.loginForm, FormHelper.registerForm)
+  }
 
   def index = CSRFAddToken {
     Action { implicit request =>
-      Ok(views.html.main(FormHelper.loginForm, FormHelper.registerForm)).withNewSession
+      val (constituencies, loginForm, registerForm) = getFormDependencies
+      Ok(views.html.main(constituencies, loginForm, registerForm)).withNewSession
     }
   }
 
-  def getAccountDetails(sessId: String) = {
-    Cache.getUserFromCache(sessId) match {
-      case Some(user) => Some(user)
-      case _ => AccountDispatcher.getAccountDetailsAfterCacheFailure(sessId)
+  def auth() = CSRFAddToken {
+    Action { implicit request =>
+      val (constituencies, loginForm, registerForm) = getFormDependencies
+      Ok(views.html.auth(constituencies, loginForm, registerForm))
     }
   }
 
   def portalHome() = Action {
     implicit request => {
-      session.get(USER_SESSION_ID_KEY).map { sessId =>
-        getAccountDetails(sessId) match {
-          case Some(user) => Ok(views.html.portal(user))
-          case _ => Unauthorized(UNAUTHORIZED_PORTAL_ACCESS_MG)
-        }
-      }.getOrElse {
-        Unauthorized(UNAUTHORIZED_PORTAL_ACCESS_MG)
+      session.get(SESSION_ID_KEY).isDefined match {
+        case true => Ok(views.html.portal())
+        case false => Redirect(routes.ViewController.auth())
       }
     }
   }

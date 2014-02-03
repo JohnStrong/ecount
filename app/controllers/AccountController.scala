@@ -4,51 +4,36 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
-import service.{Cache, AccountDispatcher, Mail}
+import service.dispatch.MapDispatcher
+import service.util.Cache
 
 object AccountController extends Controller {
 
-  val UNAUTHORIZED_LOGIN_MGS = "invalid login"
-  val USER_SESSION_ID_KEY = "user.id"
+  private val USER_SESSION_ID_KEY = "user.id"
 
-  private def AuthenticateUser(loginData: helpers.LoginData) = {
+  private val ERROR_NON_UNIQUE_EMAIL = "oops, email address matches another user"
+  private val ERROR_FAILED_AUTHENTICATION = "oops, email or password is incorrect"
 
-    def verifyLogin = {
-      val email = loginData.email
-      val password = loginData.password
-      AccountDispatcher.getAccountDetails(email, password)
-    }
-
-    verifyLogin match {
-     case Some(user) => {
-       Cache.cacheUser(user)
-       Redirect(routes.ViewController.portalHome)
-         .withSession(USER_SESSION_ID_KEY -> user.email)
-     }
-     case _ =>
-       Unauthorized(UNAUTHORIZED_LOGIN_MGS)
-    }
-  }
-
-  private def successfulRegistration(email: String, password: String) = {
-    AccountDispatcher.isUniqueAccount(email) match {
-      case true =>
-        val update = AccountDispatcher.insertNewUnverifiedAccount(email, password)
-        //Mail.sendEmailVerification(email)
-        Some(update)
-      case false =>
-        None
-    }
-  }
+  private val CONSTITUENCIES = MapDispatcher.getConstituencies
 
   def login() = CSRFCheck {
     Action {
       implicit request => {
         FormHelper.loginForm.bindFromRequest.fold(
           formWithErrors => {
-            BadRequest(views.html.main(formWithErrors, FormHelper.registerForm))
+            BadRequest(views.html.auth(CONSTITUENCIES,
+              formWithErrors, FormHelper.registerForm))
           },
-          loginData => AuthenticateUser(loginData)
+          loginData =>
+            FormHelper.authenticateUser(loginData) match {
+              case true =>
+                Redirect(routes.ViewController.portalHome)
+                .withSession(USER_SESSION_ID_KEY -> loginData.email)
+              case false =>
+                BadRequest(views.html.auth(CONSTITUENCIES,
+                  FormHelper.loginForm.withGlobalError(ERROR_FAILED_AUTHENTICATION),
+                  FormHelper.registerForm))
+            }
         )
       }
     }
@@ -64,22 +49,21 @@ object AccountController extends Controller {
     }
   }
 
-  // todo: do something better when user fails the unique account check
   def register =  CSRFCheck {
     Action { implicit request => {
       FormHelper.registerForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.main(FormHelper.loginForm, formWithErrors))
+          BadRequest(views.html.auth(CONSTITUENCIES,
+            FormHelper.loginForm, formWithErrors))
         },
         registerData => {
-          var email = registerData.email
-          val password = registerData.password
-          successfulRegistration(email, password) match {
+           FormHelper.registerUser(registerData) match {
             case Some(i) =>
-              Redirect(routes.ViewController.confirmation(email))
+              Redirect(routes.ViewController.confirmation(registerData.email))
             case _ =>
-              BadRequest(views.html.main(
-                FormHelper.loginForm, FormHelper.registerForm))
+              BadRequest(views.html.auth(CONSTITUENCIES,
+                FormHelper.loginForm,
+                FormHelper.registerForm.withGlobalError(ERROR_NON_UNIQUE_EMAIL)))
           }
         }
       )
