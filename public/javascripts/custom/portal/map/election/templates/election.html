@@ -1,11 +1,7 @@
 <div id="election-nav-pane" ng-init="getElections()">
-    <div class="">
-    	<ul class="nav nav-list">
-	        <li class="nav-header">Election</li>
-	        <li>
-		        <select ng-model="election" class="form-control" ng-options="election.title for election in elections">
-		        </select>
-		    </li>
-	    </ul>
-    </div>
+	<form class="navbar form">
+	    <select ng-model="election" class="form-control" ng-options="election.title for election in elections">
+	    	<option value="">-- choose election --</option>
+	    </select>
+	</form>
 </div>

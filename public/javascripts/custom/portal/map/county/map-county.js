@@ -15,6 +15,7 @@ mapCounty.directive('statTab', function() {
 				});
 
 				pane.selected = true;
+				$scope.$emit('visualizeStatistics', [pane.$parent.c.id]);
 			};
 
 			this.addPane = function(pane) {
@@ -55,19 +56,9 @@ mapCounty.directive('countyDirective', function() {
 
 mapCounty.directive('districtDirective', function() {
 	return {
-		transclude: true,
 		restrict: 'E',
 		controller: 'DistrictController',
 		templateUrl: '/templates/map/county/templates/districts.html'
-	};
-});
-
-mapCounty.directive('edDirective', function() {
-	return {
-		transclude: true,
-		restrict: 'E',
-		controller: 'DEDController',
-		templateUrl: '/templates/map/county/templates/ded.html'
 	};
 });
 
@@ -90,36 +81,32 @@ mapCounty.controller('CountyController',
 	}
 ]);
 
-mapCounty.controller('DistrictController',
-	['$scope', 'GeomAPI', 'SharedMapService', 'MapStyle',
-	function($scope, GeomAPI, SharedMapService, MapStyle) {
-
-		var COUNTY_ZOOM = 12,
-			MAP_VIEW_DOM_ID = 'county-map-view';
-
-		$scope.initMap = function() {
-			GeomAPI.electoralDivisions($scope.countyId, function(geom) {
-				SharedMapService.setMap(MAP_VIEW_DOM_ID, { "zoom": COUNTY_ZOOM });
-				SharedMapService.draw(geom, MapStyle.base);
-			});
-		}
-	}
-]);
-
-mapCounty.controller('DEDController',
+mapCounty.controller('IMapController', 
 	['$scope', 'SharedMapService', 'GeomAPI', 'MapStyle',
 	function($scope, SharedMapService, GeomAPI, MapStyle) {
 
-		var MAP_VIEW_DOM_ID = 'ded-map-view',
-			DED_ZOOM = 14;
+		var DISTRICTS_ZOOM = 12,
+			DISTRICTS_VIEW_DOM_ID = 'county-map-view';
 
-		var gid = $scope.$parent.target.id;
+			ED_VIEW_DOM_ID = 'ed-map-view',
+			ED_ZOOM = 14,
 
-		$scope.initDEDMap = function() {
-			GeomAPI.electoralDivision(gid, function(geom) {
-				SharedMapService.setMap(MAP_VIEW_DOM_ID, { 'zoom': DED_ZOOM });
-				SharedMapService.draw(geom, MapStyle.base);
-			});
+			gid = $scope.$parent.target.id;
+
+		$scope.initMap = {
+
+			districts: function() {
+				GeomAPI.electoralDivisions($scope.countyId, function(geom) {
+					SharedMapService.setMap(DISTRICTS_VIEW_DOM_ID, { "zoom": DISTRICTS_ZOOM });
+					SharedMapService.draw(geom, MapStyle.base);
+				});
+			},
+			ed: function() {
+				GeomAPI.electoralDivision(gid, function(geom) {
+					SharedMapService.setMap(ED_VIEW_DOM_ID, { 'zoom': ED_ZOOM });
+					SharedMapService.draw(geom, MapStyle.base);
+				});
+			}
 		};
 	}
 ]);

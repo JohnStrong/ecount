@@ -57,21 +57,6 @@ mapElections.directive('constituencyTableDirective', function() {
 	};
 });
 
-
-mapElections.controller('ElectionController',
-	['$scope', 'ElectionStatistics',
-	function($scope, ElectionStatistics) {
-		$scope.elections = [];
-
-		$scope.getElections = function() {
-			ElectionStatistics.getElections(function(data) {
-				$scope.elections = data;
-				$scope.$parent.election = $scope.elections[0];
-			});
-		}
-	}
-]);
-
 mapElections.controller('ElectionStatController',
 	['$scope', 'ElectionStatistics',
 	function($scope, ElectionStatistics) {
@@ -79,7 +64,7 @@ mapElections.controller('ElectionStatController',
 		var tables = [];
 
 		$scope.constituencies = null;
-		$scope.electionId = $scope.election.id;
+		$scope.currentElectionId = null;
 		$scope.countyId = $scope.target.id;
 
 		this.addTable = function(scope) {
@@ -94,14 +79,27 @@ mapElections.controller('ElectionStatController',
 				});
 		};
 
-		$scope.electionResults = {
-			general: function() {
-				ElectionStatistics.getElectionStatsGeneral(
-					$scope.electionId, $scope.countyId,
-					function(data) {
-						$scope.general = data;
-					});
-			}
-		}
+		$scope.$on('visualizeStatistics', function(source, constituency) {
+			ElectionStatistics.getElectionStatsParty($scope.currentElectionId, constituency[0], 
+				function(data) {
+					$scope.$broadcast('updateVisualization', data);
+			});
+		});
+	}
+]);
+
+mapElections.controller('ElectionController',
+	['$scope', 'ElectionStatistics',
+	function($scope, ElectionStatistics) {
+		$scope.elections = [];
+
+		ElectionStatistics.getElections(function(data) {
+			$scope.elections = data;
+			$scope.currentElectionId = $scope.elections[0].id;
+		});
+
+		$scope.$watch('elections', function(newval, oldval) {
+			console.log(newval, oldval);
+		});
 	}
 ]);

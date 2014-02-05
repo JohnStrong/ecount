@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 
 /**
- * steams live tally data to the client county view
+ * streams live tally data to the client county view
  */
 object TallyController extends Controller {
 

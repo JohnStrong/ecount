@@ -1,5 +1,5 @@
 var vis = angular.module('Ecount.Map.County.Vis', 
-	['Ecount.Map.Elections']);
+	[]);
 
 vis.directive('visDirective',function() {
 	return {
@@ -15,7 +15,7 @@ vis.factory('StatVisualization', function() {
 
 		var dataset = dataset,
 
-			WIDTH = 800,
+			WIDTH = 600,
 			HEIGHT = dataset.length * 60,
 			BAR_HEIGHT_OFFSET = 50,
 
@@ -79,30 +79,6 @@ vis.factory('StatVisualization', function() {
 				.attr('index_value', function(d, i) { return "item-" + i; })
 				.attr('color_value', function(d, i) { return colorScale(i); });
 
-			// add legend
-			chart.selectAll('circle')
-				.data(dataset).enter()
-				.append('svg:circle')
-				.attr('cx', WIDTH - LEGEND_PADDING)
-				.attr('cy', function(d, i) { return CANVAS_HEIGHT_PADDING + i*BAR_HEIGHT_OFFSET; })
-				.attr('stroke-width', '.5')
-				.style('fill', function(d, i) { return colorScale(i); })
-				.attr('index_value', function(d, i) { return 'legend-' + i; })
-				.attr('r', 5)
-				.attr('color_value', function(d, i) { return colorScale(i); });
-
-			chart.selectAll('text.legend')
-				.data(dataset).enter()
-				.append('svg:text')
-				.attr('x', WIDTH - LEGEND_PADDING)
-				.attr('y', function(d, i) { return PADDING[1] + i*BAR_HEIGHT_OFFSET; })
-				.attr('dx', 0)
-				.attr('dy', '5px')
-				.attr('text-anchor', 'start')
-				.text(function(d) { d.name; })
-				.attr('fill', '#5A5A5A');
-
-
 			//append values onto end of bar
 			chart.selectAll('text.chart')
 				.data(dataset).enter()
@@ -124,13 +100,17 @@ vis.factory('StatVisualization', function() {
 vis.controller('VisualizationController',
 	['$scope', '$element', 'ElectionStatistics', 'StatVisualization',
 	function($scope, $element, ElectionStatistics, StatVisualization)	{
-		ElectionStatistics.getElectionStatsParty($scope.electionId, $scope.c.id, function(data) {
+
+		$scope.$on('updateVisualization', function(source, data) {
+			
+			$($element).empty();
+
 			StatVisualization($element[0], data)('first preference votes', 
 				function(stats) { return stats.firstPreferenceVotes; });
 			StatVisualization($element[0], data)('percentage of vote', 
 				function(stats) { return stats.percentageVote; });
 			StatVisualization($element[0], data)('no. of seats won', 
 				function(stats) { return stats.seats; });
-		});	
+		});
 	}
 ]);

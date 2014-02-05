@@ -107,11 +107,20 @@ table.gen-table tr:nth-child(1) td {
 	background-color: #FAFAFA;
 }
 
-.account-logout {
-	/* what the hell is property....? */
-}
-
 .canvas {
 	background-color: #FFFFFF;
 }
 
+.county-inner {
+	padding: 0.8%;
+}
+
+.tally-results-heading {
+	width: 40%;
+}
+
+.tally-results-body {
+	margin-top: 0.3%;
+	min-height: 400px;
+	padding: 0.8% 0;
+}

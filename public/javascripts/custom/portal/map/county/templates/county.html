@@ -1,29 +1,52 @@
-<div class="canvas">
-	<div class="tally-feed">
-		<tally-directive data="{{target.id}}"></tally-directive>
-	</div>
-	<div class="list-group">
-		<div class="list-group-item">
-			<div class="row">
-				<div ng-controller="ElectionStatController">
-					<div class="col-md-4">
-						<ul>
-							<div ng-init="electionResults.general()">
-								<constituency-table-directive ng-repeat="g in general"></constituency-table-directive>
+<div class="county-inner">
+	<div ng-controller="ElectionStatController">
+		<div class="navbar navbar-inner">
+    		<h3 class="brand">Tally Results</h3>
+    		<ul class="nav">
+    			<li>
+    				<election-directive></election-directive>
+    			</li>
+    		</ul>
+    	</div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="tally-results-body">
+					<div class="col-md-12" ng-switch on="currentElectionId !== null">
+			    		<!-- vis controller -->
+			    		<div ng-switch-when="true">
+			    			<div id="candidate" class="candidate-stats">
+								<div class="candidate-group" ng-init="constituencies()">
+							    	<stat-tab>
+							    		<stat-pane ng-repeat="c in constituencies" title="{{c.title}}">
+							    			<div id="{{c.title}}" width="600" height="400" vis-directive></div>
+							    		</stat-pane>
+							    	</stat-tab>
+							    </div>
 							</div>
-						</ul>
-					</div>
-					<div class="col-md-8">
-						<div ng-switch on="renderPath[2]">
-							<div ng-switch-when="ded" ng-init="constituencies()">
-								<district-directive></district-directive>
-							</div>
-							<div ng-switch-when="ed">
-								<ed-directive></ed-directive>
-							</div>
+			    		</div>
+						<div ng-switch-when="false">
+							<div class="alret alrert-info">loading....</div>
 						</div>
 					</div>
-			    </div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div id="imap">
+				    <div class="list-group-item">
+			        	<div ng-switch on="renderPath[2]" ng-controller="IMapController">
+			        		<div ng-switch-when="ded">
+				                <div id="county-map-view" ng-init="initMap.districts()">
+				                    <div id="imap-view" style="height: 580px"></div>
+				                </div>
+				            </div>
+				            <div ng-switch-when="ed">
+				            	<div id="ed-map-view" ng-init="initMap.ed()">
+			                    	<div id="imap-view" style="height: 580px"></div>
+			               		</div>
+				            </div>
+				        </div>
+			        </div>
+				</div>
 			</div>
 		</div>
 	</div>

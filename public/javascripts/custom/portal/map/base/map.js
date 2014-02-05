@@ -45,22 +45,17 @@ map.controller('MapController',
 	function($scope, $route, $location) {
 
 		$scope.target = null;
-		$scope.election = null;
+		
+		function loadCountyView() {
+			var countyId = $scope.target.id;
 
-		$scope.loadCountyView = function() {
-			console.log($scope);
-			
-			var countyId = $scope.target.id,
-				electionId = $scope.election.id;
-
-			$location.path('/map/election/' + electionId +
-				'/county/' + countyId);
+			$location.path('/map/county/' + countyId);
 			$route.reload();
 		}
 
 		$scope.$on('target-change', function(event, args) {
 			$scope.target = args[0];
-			$("#election-modal").modal();
+			loadCountyView();
 		});
 	}
 ]);
@@ -77,11 +72,6 @@ map.controller('MapBaseController',
 				SharedMapService.setMap(MAP_VIEW_DOM_ID, {'zoom': IRELAND_ZOOM});
 				SharedMapService.draw(geom, MapStyle.base);
 			});
-		}
-
-		$scope.electionSelected = function() {
-			$('#election-modal').modal('hide')
-				.on('hidden.bs.modal', $scope.loadCountyView);
 		};
 	}
 ]);

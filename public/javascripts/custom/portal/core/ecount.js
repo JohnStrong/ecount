@@ -27,7 +27,7 @@ ecount.config(
 				}
 			)
 			.when(
-				'/map/election/:eid/county/:cid',
+				'/map/county/:cid',
 				{
 					action: 'map.county.ded'
 				}
