@@ -52,13 +52,14 @@ object MapStore {
 
     resultMap = new ResultMap[CountyGeom] {
       result(property = "id", column = "county_id")
+      result(property = "name", column = "county")
       result(property = "geom", column = "geom")
     }
     def xsql =
       """
         SELECT ST_asGeoJson(
           ST_Transform(ST_SETSRID(ST_SIMPLIFY(cb.geom, 80), 29902), 4326)) as geom,
-        c.county_id
+        c.county_id, c.county
         FROM counties as c, county_boundries as cb
         WHERE c.county = cb.countyname
       """

@@ -97,9 +97,5 @@ mapElections.controller('ElectionController',
 			$scope.elections = data;
 			$scope.currentElectionId = $scope.elections[0].id;
 		});
-
-		$scope.$watch('elections', function(newval, oldval) {
-			console.log(newval, oldval);
-		});
 	}
 ]);

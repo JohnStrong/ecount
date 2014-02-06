@@ -19,7 +19,8 @@ object MapController extends Controller {
             "type" -> "Feature",
             "geometry" ->  Json.parse(ctd.geom),
             "properties" -> Json.obj(
-              "id" -> ctd.id
+              "id" -> ctd.id ,
+              "name" -> ctd.name
             )
           )
         })

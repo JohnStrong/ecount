@@ -1,7 +1,5 @@
-<div id="election-nav-pane" ng-init="getElections()">
-	<form class="navbar form">
-	    <select ng-model="election" class="form-control" ng-options="election.title for election in elections">
-	    	<option value="">-- choose election --</option>
-	    </select>
-	</form>
-</div>
+<span id="election-nav-pane" ng-init="getElections()">
+	<select ng-model="election" class="form-control" ng-options="election.title for election in elections">
+		<option value="">-- choose election --</option>
+	</select>
+</span>

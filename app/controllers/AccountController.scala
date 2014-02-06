@@ -12,7 +12,7 @@ object AccountController extends Controller {
   private val USER_SESSION_ID_KEY = "user.id"
 
   private val ERROR_NON_UNIQUE_EMAIL = "oops, email address matches another user"
-  private val ERROR_FAILED_AUTHENTICATION = "oops, email or password is incorrect"
+  private val ERROR_FAILED_AUTHENTICATION = "email or password is incorrect"
 
   private val CONSTITUENCIES = MapDispatcher.getConstituencies
 
@@ -27,7 +27,7 @@ object AccountController extends Controller {
           loginData =>
             FormHelper.authenticateUser(loginData) match {
               case true =>
-                Redirect(routes.ViewController.portalHome)
+                Redirect(routes.ViewController.index)
                 .withSession(USER_SESSION_ID_KEY -> loginData.email)
               case false =>
                 BadRequest(views.html.auth(CONSTITUENCIES,
