@@ -15,14 +15,10 @@ mapCounty.directive('statTab', function() {
 				});
 
 				pane.selected = true;
-				$scope.$emit('visualizeStatistics', [pane.$parent.c.id]);
+				$scope.$emit('visualizeStatistics', pane.$parent.c.id);
 			};
 
 			this.addPane = function(pane) {
-				if (panes.length == 0) {
-					$scope.select(pane);
-				}
-
 				panes.push(pane);
 			};
 		},
@@ -52,7 +48,14 @@ mapCounty.directive('countyDirective', function() {
 		controller: 'CountyController',
 		templateUrl: '/templates/map/county/templates/county.html'
 	}
-})
+});
+
+mapCounty.directive('tallyFeedDirective', function() {
+	return {
+		controller: 'TallyFeedController',
+		templateUrl: '/templates/map/county/templates/tallyFeed.html'
+	};
+});
 
 mapCounty.directive('districtDirective', function() {
 	return {
@@ -61,6 +64,15 @@ mapCounty.directive('districtDirective', function() {
 		templateUrl: '/templates/map/county/templates/districts.html'
 	};
 });
+
+mapCounty.controller('TallyFeedController',
+	['$scope', function($scope) {
+		$scope.tallyFeed = null;
+
+		// request tally feed
+		console.log('loaded');
+	}
+]);
 
 mapCounty.controller('CountyController',
 	['$scope', '$route', '$location',
@@ -75,6 +87,7 @@ mapCounty.controller('CountyController',
 		}
 
 		$scope.$on('target-change', function(event, args) {
+			console.log('fired');
 			$scope.$parent.target = args[0];
 			loadEDView();
 		});
@@ -89,11 +102,9 @@ mapCounty.controller('IMapController',
 			DISTRICTS_VIEW_DOM_ID = 'county-map-view';
 
 			ED_VIEW_DOM_ID = 'ed-map-view',
-			ED_ZOOM = 14,
+			ED_ZOOM = 14;
 
-			gid = $scope.$parent.target.id;
-
-		$scope.initMap = {
+		$scope.loadMap = {
 
 			districts: function() {
 				GeomAPI.electoralDivisions($scope.countyId, function(geom) {
@@ -102,11 +113,29 @@ mapCounty.controller('IMapController',
 				});
 			},
 			ed: function() {
-				GeomAPI.electoralDivision(gid, function(geom) {
+				var gid = 2469; // test data right now.....
+				GeomAPI.electoralDivision(gid, function(data) {
 					SharedMapService.setMap(ED_VIEW_DOM_ID, { 'zoom': ED_ZOOM });
-					SharedMapService.draw(geom, MapStyle.base);
+					SharedMapService.draw(data, MapStyle.base);
 				});
 			}
+		};
+	}
+]);
+
+mapCounty.controller('DEDController', 
+	['$scope', function($scope) {
+		$scope.initMap = function() {
+			$scope.loadMap.districts();
+		}
+	}
+]);
+
+mapCounty.controller('EDController',
+	['$scope', 
+	function($scope) {
+		$scope.initMap = function() {
+			$scope.loadMap.ed();
 		};
 	}
 ]);

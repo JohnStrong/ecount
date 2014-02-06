@@ -83,7 +83,6 @@ mapUtil.factory('SharedMapService',
 
 			function getElectoralInformation(e){
 				var target = e.target.feature.properties;
-				console.log('target', target);
 				$rootScope.$broadcast("target-change", [target]);
 			}
 

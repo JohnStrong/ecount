@@ -2,7 +2,7 @@ package persistence.ecount
 
 import org.mybatis.scala.mapping._
 
-import models.ecount.map.{CountyElectoralDivision, CountyGeom}
+import models.ecount.map.{CountyElectoralDivision, CountyGeom, ElectoralDistrict}
 import models.ecount.stat.Constituency
 
 object MapStore {
@@ -38,13 +38,21 @@ object MapStore {
       </xsql>
   }
 
-  val getElectoralDivision = new SelectListBy[Long, String] {
+  val getElectoralDivision = new SelectListBy[Long, ElectoralDistrict] {
 
+    resultMap = new ResultMap[ElectoralDistrict] {
+      result(property = "id", column = "ded_id")
+      result(property = "title", column = "ded_title")
+      result(property = "constituencyId", column = "constituency_id")
+      result(property = "geom", column = "geom")
+    }
     def xsql = <xsql>
-      SELECT ST_ASGEOJSON(
-        ST_TRANSFORM(ST_SETSRID(geom, 29902), 4326)) as geom
-      FROM electoral_divisions
-      WHERE gid = #{{id}}
+      SELECT ded.ded_id, ded.ded_title, ded.constituency_id, ST_ASGEOJSON(
+      ST_TRANSFORM(ST_SETSRID(ed.geom, 29902), 4326)) as geom
+      FROM electoral_divisions as ed,
+      stat_bank_tally_ded as ded
+      WHERE ed.gid =  #{{id}}
+      AND ded.gid = ed.gid
     </xsql>
   }
 

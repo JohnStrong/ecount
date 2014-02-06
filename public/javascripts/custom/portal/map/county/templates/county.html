@@ -8,22 +8,21 @@
 				<div class="row">
 					<div class="col-md-5">
 						<div class="live tally feed">
-							<div class="alert alert-warning">
-								No live tally feed avaliable at this moment...
-							</div>
+							<!-- place live tally data or alert message-->
+							<tally-feed-directive></tally-feed-directive>
 						</div>
 					</div>
 					<div class="col-md-7">
 						<div id="imap">
 						    <div class="list-group-item">
 					        	<div ng-switch on="renderPath[2]" ng-controller="IMapController">
-					        		<div ng-switch-when="ded">
-						                <div id="county-map-view" ng-init="initMap.districts()">
+					        		<div ng-switch-when="ded" ng-controller="DEDController">
+						                <div id="county-map-view" ng-init="initMap()">
 						                    <div id="imap-view" style="height: 580px"></div>
 						                </div>
 						            </div>
-						            <div ng-switch-when="ed">
-						            	<div id="ed-map-view" ng-init="initMap.ed()">
+						            <div ng-switch-when="ed" ng-controller="EDController">
+						            	<div id="ed-map-view" ng-init="initMap()">
 					                    	<div id="imap-view" style="height: 580px"></div>
 					               		</div>
 						            </div>
