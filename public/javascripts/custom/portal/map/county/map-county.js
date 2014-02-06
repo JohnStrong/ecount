@@ -15,13 +15,10 @@ mapCounty.directive('statTab', function() {
 				});
 
 				pane.selected = true;
+				$scope.$emit('visualizeStatistics', pane.$parent.c.id);
 			};
 
 			this.addPane = function(pane) {
-				if (panes.length == 0) {
-					$scope.select(pane);
-				}
-
 				panes.push(pane);
 			};
 		},
@@ -51,25 +48,31 @@ mapCounty.directive('countyDirective', function() {
 		controller: 'CountyController',
 		templateUrl: '/templates/map/county/templates/county.html'
 	}
-})
+});
+
+mapCounty.directive('tallyFeedDirective', function() {
+	return {
+		controller: 'TallyFeedController',
+		templateUrl: '/templates/map/county/templates/tallyFeed.html'
+	};
+});
 
 mapCounty.directive('districtDirective', function() {
 	return {
-		transclude: true,
 		restrict: 'E',
 		controller: 'DistrictController',
 		templateUrl: '/templates/map/county/templates/districts.html'
 	};
 });
 
-mapCounty.directive('edDirective', function() {
-	return {
-		transclude: true,
-		restrict: 'E',
-		controller: 'DEDController',
-		templateUrl: '/templates/map/county/templates/ded.html'
-	};
-});
+mapCounty.controller('TallyFeedController',
+	['$scope', function($scope) {
+		$scope.tallyFeed = null;
+
+		// request tally feed
+		console.log('loaded');
+	}
+]);
 
 mapCounty.controller('CountyController',
 	['$scope', '$route', '$location',
@@ -84,42 +87,55 @@ mapCounty.controller('CountyController',
 		}
 
 		$scope.$on('target-change', function(event, args) {
+			console.log('fired');
 			$scope.$parent.target = args[0];
 			loadEDView();
 		});
 	}
 ]);
 
-mapCounty.controller('DistrictController',
-	['$scope', 'GeomAPI', 'SharedMapService', 'MapStyle',
-	function($scope, GeomAPI, SharedMapService, MapStyle) {
+mapCounty.controller('IMapController', 
+	['$scope', 'SharedMapService', 'GeomAPI', 'MapStyle',
+	function($scope, SharedMapService, GeomAPI, MapStyle) {
 
-		var COUNTY_ZOOM = 12,
-			MAP_VIEW_DOM_ID = 'county-map-view';
+		var DISTRICTS_ZOOM = 12,
+			DISTRICTS_VIEW_DOM_ID = 'county-map-view';
 
+			ED_VIEW_DOM_ID = 'ed-map-view',
+			ED_ZOOM = 14;
+
+		$scope.loadMap = {
+
+			districts: function() {
+				GeomAPI.electoralDivisions($scope.countyId, function(geom) {
+					SharedMapService.setMap(DISTRICTS_VIEW_DOM_ID, { "zoom": DISTRICTS_ZOOM });
+					SharedMapService.draw(geom, MapStyle.base);
+				});
+			},
+			ed: function() {
+				var gid = 2469; // test data right now.....
+				GeomAPI.electoralDivision(gid, function(data) {
+					SharedMapService.setMap(ED_VIEW_DOM_ID, { 'zoom': ED_ZOOM });
+					SharedMapService.draw(data, MapStyle.base);
+				});
+			}
+		};
+	}
+]);
+
+mapCounty.controller('DEDController', 
+	['$scope', function($scope) {
 		$scope.initMap = function() {
-			GeomAPI.electoralDivisions($scope.countyId, function(geom) {
-				SharedMapService.setMap(MAP_VIEW_DOM_ID, { "zoom": COUNTY_ZOOM });
-				SharedMapService.draw(geom, MapStyle.base);
-			});
+			$scope.loadMap.districts();
 		}
 	}
 ]);
 
-mapCounty.controller('DEDController',
-	['$scope', 'SharedMapService', 'GeomAPI', 'MapStyle',
-	function($scope, SharedMapService, GeomAPI, MapStyle) {
-
-		var MAP_VIEW_DOM_ID = 'ded-map-view',
-			DED_ZOOM = 14;
-
-		var gid = $scope.$parent.target.id;
-
-		$scope.initDEDMap = function() {
-			GeomAPI.electoralDivision(gid, function(geom) {
-				SharedMapService.setMap(MAP_VIEW_DOM_ID, { 'zoom': DED_ZOOM });
-				SharedMapService.draw(geom, MapStyle.base);
-			});
+mapCounty.controller('EDController',
+	['$scope', 
+	function($scope) {
+		$scope.initMap = function() {
+			$scope.loadMap.ed();
 		};
 	}
 ]);

@@ -57,21 +57,6 @@ mapElections.directive('constituencyTableDirective', function() {
 	};
 });
 
-
-mapElections.controller('ElectionController',
-	['$scope', 'ElectionStatistics',
-	function($scope, ElectionStatistics) {
-		$scope.elections = [];
-
-		$scope.getElections = function() {
-			ElectionStatistics.getElections(function(data) {
-				$scope.elections = data;
-				$scope.$parent.election = $scope.elections[0];
-			});
-		}
-	}
-]);
-
 mapElections.controller('ElectionStatController',
 	['$scope', 'ElectionStatistics',
 	function($scope, ElectionStatistics) {
@@ -79,8 +64,13 @@ mapElections.controller('ElectionStatController',
 		var tables = [];
 
 		$scope.constituencies = null;
-		$scope.electionId = $scope.election.id;
+		$scope.constituencyVisData = [];
+		$scope.election = null;
 		$scope.countyId = $scope.target.id;
+
+		function visualizeConstituencyData(data) {
+			$scope.$broadcast('updateVisualization', data);
+		}
 
 		this.addTable = function(scope) {
 			tables.push(scope);
@@ -94,14 +84,45 @@ mapElections.controller('ElectionStatController',
 				});
 		};
 
-		$scope.electionResults = {
-			general: function() {
-				ElectionStatistics.getElectionStatsGeneral(
-					$scope.electionId, $scope.countyId,
-					function(data) {
-						$scope.general = data;
-					});
+		$scope.$on('visualizeStatistics', function(source, cid) {
+			var constituencyVisData = $scope.constituencyVisData;
+
+			$.each(constituencyVisData, function(k, constituencyData) {
+				if(cid === constituencyData.cid) {
+					visualizeConstituencyData(constituencyData.data);
+					return;
+				}
+			});
+		});
+
+		$scope.$watch('election', function() {
+
+			function getTallyStats(constituency) {
+				ElectionStatistics.getElectionStatsParty($scope.election.id,
+					constituency.id, function(d) {
+						$scope.constituencyVisData.push({'cid' : constituency.id, 'data': d});
+				});
 			}
-		}
+
+			if($scope.election !== null) {
+
+				$scope.constituencyVisData = [];
+
+				$.each($scope.constituencies, function(k, constituency) {
+					getTallyStats(constituency);
+				});
+			}
+		});
+	}
+]);
+
+mapElections.controller('ElectionController',
+	['$scope', 'ElectionStatistics',
+	function($scope, ElectionStatistics) {
+		$scope.elections = [];
+
+		ElectionStatistics.getElections(function(data) {
+			$scope.elections = data;
+		});
 	}
 ]);

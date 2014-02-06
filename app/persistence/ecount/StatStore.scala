@@ -8,7 +8,7 @@ import org.mybatis.scala.mapping._
 
 import models.ecount.stat._
 
-object StatStore {
+  object StatStore {
 
   val getElectionEntries = new SelectList[Election]{
 

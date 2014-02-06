@@ -19,7 +19,8 @@ object MapController extends Controller {
             "type" -> "Feature",
             "geometry" ->  Json.parse(ctd.geom),
             "properties" -> Json.obj(
-              "id" -> ctd.id
+              "id" -> ctd.id ,
+              "name" -> ctd.name
             )
           )
         })
@@ -66,21 +67,20 @@ object MapController extends Controller {
     def getDedById =
       withConnection {  implicit conn =>
          MapStore.getElectoralDivision(gid).map(ed => {
-           Json.obj(
-             "type" -> "Feature",
-             "geometry" -> Json.parse(ed)
+            Json.obj(
+              "type" -> "Feature",
+              "geometry" -> Json.parse(ed.geom)
            )
-          }
-         )
+         }
+        )
       }
 
     val ded = scala.concurrent.Future { getDedById }
 
     ded.map { i =>
        Ok(Json.obj(
-          "type" -> "FeatureCollection",
-          "features" -> Json.toJson(i)
-        )
+         "type" -> "FeatureCollection",
+          "features" -> Json.toJson(i))
        )
     }
   }

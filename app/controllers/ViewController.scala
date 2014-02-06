@@ -17,8 +17,12 @@ object ViewController extends Controller {
 
   def index = CSRFAddToken {
     Action { implicit request =>
-      val (constituencies, loginForm, registerForm) = getFormDependencies
-      Ok(views.html.main(constituencies, loginForm, registerForm)).withNewSession
+      if(!session.get(SESSION_ID_KEY).isDefined) {
+        val (constituencies, loginForm, registerForm) = getFormDependencies
+        Ok(views.html.main(constituencies, loginForm, registerForm)).withNewSession
+      } else {
+        Ok(views.html.portal())
+      }
     }
   }
 
@@ -26,15 +30,6 @@ object ViewController extends Controller {
     Action { implicit request =>
       val (constituencies, loginForm, registerForm) = getFormDependencies
       Ok(views.html.auth(constituencies, loginForm, registerForm))
-    }
-  }
-
-  def portalHome() = Action {
-    implicit request => {
-      session.get(SESSION_ID_KEY).isDefined match {
-        case true => Ok(views.html.portal())
-        case false => Redirect(routes.ViewController.auth())
-      }
     }
   }
 

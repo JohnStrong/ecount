@@ -33,10 +33,7 @@ body {
 }
 
 .pool {
-    position: absolute;
     background-color: #428BAA;
-    box-shadow: inset 0 0 4em #428B88;
-    height: 100%;
     width: 100%;
 }
 
@@ -62,14 +59,9 @@ ul {
     min-height: 665px;
 }
 
-.wrap-large {
-    width: 90%;
-    margin: 0 auto;
-}
-
-.wrap-small {
-    width: 95%;
-    margin: 0 auto;
+.account-header {
+	position: absolute;
+	width: 100%;
 }
 
 /**
