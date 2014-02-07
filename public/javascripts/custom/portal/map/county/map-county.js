@@ -47,7 +47,7 @@ mapCounty.directive('countyDirective', function() {
 		restrict: 'E',
 		controller: 'CountyController',
 		templateUrl: '/templates/map/county/templates/county.html'
-	}
+	};
 });
 
 mapCounty.directive('tallyFeedDirective', function() {
@@ -57,20 +57,9 @@ mapCounty.directive('tallyFeedDirective', function() {
 	};
 });
 
-mapCounty.directive('districtDirective', function() {
-	return {
-		restrict: 'E',
-		controller: 'DistrictController',
-		templateUrl: '/templates/map/county/templates/districts.html'
-	};
-});
-
 mapCounty.controller('TallyFeedController',
 	['$scope', function($scope) {
 		$scope.tallyFeed = null;
-
-		// request tally feed
-		console.log('loaded');
 	}
 ]);
 
@@ -78,42 +67,48 @@ mapCounty.controller('CountyController',
 	['$scope', '$route', '$location',
 	function($scope, $route, $location) {
 
-		function loadEDView() {
+		$scope.districtTarget = null;
 
-			var gid = $scope.target.id;
+		function loadDEDView() {
+			var dedId = $scope.countyTarget.dedId;
 
-			$location.path('/map/county/districts/' + gid);
+			$location.path('/map/county/districts/' + dedId);
 			$route.reload();
 		}
 
 		$scope.$on('target-change', function(event, args) {
-			console.log('fired');
-			$scope.$parent.target = args[0];
-			loadEDView();
+			// check whether we are loading a district or all districts
+			if($scope.renderPath[2]) {
+				$scope.districtTarget = args[0];
+				loadDEDView();
+			}
 		});
 	}
 ]);
 
-mapCounty.controller('IMapController', 
+mapCounty.controller('IMapController',
 	['$scope', 'SharedMapService', 'GeomAPI', 'MapStyle',
 	function($scope, SharedMapService, GeomAPI, MapStyle) {
 
 		var DISTRICTS_ZOOM = 12,
 			DISTRICTS_VIEW_DOM_ID = 'county-map-view';
 
-			ED_VIEW_DOM_ID = 'ed-map-view',
+			ED_VIEW_DOM_ID = 'ded-map-view',
 			ED_ZOOM = 14;
 
 		$scope.loadMap = {
 
-			districts: function() {
-				GeomAPI.electoralDivisions($scope.countyId, function(geom) {
+			districts: function(countyId) {
+				var countyId = $scope.countyTarget.id;
+
+				GeomAPI.electoralDivisions(countyId, function(geom) {
 					SharedMapService.setMap(DISTRICTS_VIEW_DOM_ID, { "zoom": DISTRICTS_ZOOM });
 					SharedMapService.draw(geom, MapStyle.base);
 				});
 			},
-			ed: function() {
-				var gid = 2469; // test data right now.....
+			ed: function(dedId) {
+				var gid = $scope.districtTarget.gid;
+
 				GeomAPI.electoralDivision(gid, function(data) {
 					SharedMapService.setMap(ED_VIEW_DOM_ID, { 'zoom': ED_ZOOM });
 					SharedMapService.draw(data, MapStyle.base);
@@ -123,19 +118,25 @@ mapCounty.controller('IMapController',
 	}
 ]);
 
-mapCounty.controller('DEDController', 
-	['$scope', function($scope) {
-		$scope.initMap = function() {
+mapCounty.controller('DistrictsController',
+	['$scope',
+	function($scope) {
+
+		$scope.$watch('election', function() {
 			$scope.loadMap.districts();
-		}
+		});
 	}
 ]);
 
-mapCounty.controller('EDController',
-	['$scope', 
+mapCounty.controller('DEDController',
+	['$scope',
 	function($scope) {
-		$scope.initMap = function() {
+
+		// load map up to corr with current election value
+		$scope.loadMap.ed();
+
+		$scope.$watch('election', function() {
 			$scope.loadMap.ed();
-		};
+		});
 	}
 ]);

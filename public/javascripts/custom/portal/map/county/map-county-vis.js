@@ -15,17 +15,17 @@ vis.factory('StatVisualization', function() {
 
 		var dataset = dataset,
 
-			WIDTH = 600,
-			HEIGHT = dataset.length * 60,
-			BAR_HEIGHT_OFFSET = 50,
+			WIDTH = 900,
+			HEIGHT = dataset.length * 30,
+			BAR_HEIGHT_OFFSET = 25,
 
 			ANIMATION_DURATION = 1200,
 			ANIMATION_DELAY = 100,
 
-			BAR_WIDTH_TOTAL = 500,
+			BAR_WIDTH_TOTAL = 600,
 			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length,
 
-			BAR_MIN_WIDTH = 3,
+			BAR_MIN_WIDTH = 5,
 
 			CANVAS_HEIGHT_PADDING = 30,
 			PADDING = [5, 18],
@@ -33,7 +33,7 @@ vis.factory('StatVisualization', function() {
 			LEGEND_PADDING = 150,
 
 			TEXT_OFFSET = 10,
-			BAR_TEXT_PADDING = 20,
+			BAR_TEXT_PADDING = 8,
 
 			colorScale = d3.scale.category20c();
 
@@ -42,59 +42,46 @@ vis.factory('StatVisualization', function() {
 			.attr('width', WIDTH)
 			.attr('height', HEIGHT);
 
-		return function(title, extraction) {
+		var xScale = d3.scale.linear().domain([0,
+				d3.max(dataset, function(d) {
+					return d.count; })]).rangeRound([0, BAR_WIDTH_TOTAL]),
 
-			var xScale = d3.scale.linear().domain([0,
-					d3.max(dataset, function(d) {
-						return extraction(d.stats); })]).rangeRound([0, BAR_WIDTH_TOTAL]),
+			yScale = d3.scale.linear().domain([0, dataset.length]).range([0, BAR_HEIGHT_TOTAL]);
 
-				yScale = d3.scale.linear().domain([0, dataset.length]).range([0, BAR_HEIGHT_TOTAL]);
-
-
-			chart.append('svg:text')
-				.attr('x', 0)
-				.attr('y', 0)
-				.attr('dx', PADDING[0])
-				.attr('dy', PADDING[1])
-				.attr('text-anchor', 'start')
-				.text(title)
-				.attr('fill', '#428BAA');
-
-
-			chart.selectAll('rect')
-				.data(dataset)
-				.enter().append('svg:rect')
-				.attr('x', PADDING[0])
-				.attr('y', function(d, i) { return yScale(i) + CANVAS_HEIGHT_PADDING; })
-				.attr('height', BAR_HEIGHT_OFFSET)
-				.transition()
-					.ease('bounce')
-					.duration(ANIMATION_DURATION)
-					.delay(function(d, i) { return i * ANIMATION_DELAY; })
-				.attr('width',
-					function(d) {
-						var ex  = extraction(d.stats);
-						return xScale(ex) + BAR_MIN_WIDTH;
-					})
-				.style('fill', function(d, i) { return colorScale(i); })
-				.attr('index_value', function(d, i) { return "item-" + i; })
-				.attr('color_value', function(d, i) { return colorScale(i); });
-
-			//append values onto end of bar
-			chart.selectAll('text.chart')
-				.data(dataset).enter()
-				.append('svg:text')
-				.attr('x', PADDING[0])
-				.attr('y', function(d, i) { return yScale(i); })
-				.attr('dx', function(d) {
-					var ex  = extraction(d.stats);
+		// begin visualization.....
+		chart.selectAll('rect')
+			.data(dataset)
+			.enter().append('svg:rect')
+			.attr('x', PADDING[0])
+			.attr('y', function(d, i) { return yScale(i) + CANVAS_HEIGHT_PADDING; })
+			.attr('height', BAR_HEIGHT_OFFSET)
+			.transition()
+				.ease('bounce')
+				.duration(ANIMATION_DURATION)
+				.delay(function(d, i) { return i * ANIMATION_DELAY; })
+			.attr('width',
+				function(d) {
+					var ex  = d.count;
 					return xScale(ex) + BAR_MIN_WIDTH;
 				})
-				.attr('dy', BAR_HEIGHT_OFFSET - BAR_TEXT_PADDING + CANVAS_HEIGHT_PADDING)
-				.attr('text-anchor', 'start')
-				.text(function(d) { return extraction(d.stats); })
-				.attr('fill', '#5A5A5A');
-		};
+			.style('fill', function(d, i) { return colorScale(i); })
+			.attr('index_value', function(d, i) { return "item-" + i; })
+			.attr('color_value', function(d, i) { return colorScale(i); });
+
+		//append values onto end of bar
+		chart.selectAll('text.chart')
+			.data(dataset).enter()
+			.append('svg:text')
+			.attr('x', PADDING[0])
+			.attr('y', function(d, i) { return yScale(i); })
+			.attr('dx', function(d) {
+				var ex  = d.count;
+				return xScale(ex) + BAR_MIN_WIDTH;
+			})
+			.attr('dy', BAR_HEIGHT_OFFSET - BAR_TEXT_PADDING + CANVAS_HEIGHT_PADDING)
+			.attr('text-anchor', 'start')
+			.text(function(d) { return (''+d.name + ': ' + d.count); })
+			.attr('fill', '#8A8A8A');
 	};
 });
 
@@ -103,15 +90,8 @@ vis.controller('VisualizationController',
 	function($scope, $element, ElectionStatistics, StatVisualization)	{
 
 		$scope.$on('updateVisualization', function(source, data) {
-
 			$($element).empty();
-
-			StatVisualization($element[0], data)('first preference votes',
-				function(stats) { return stats.firstPreferenceVotes; });
-			StatVisualization($element[0], data)('percentage of vote',
-				function(stats) { return stats.percentageVote; });
-			StatVisualization($element[0], data)('no. of seats won',
-				function(stats) { return stats.seats; });
+			StatVisualization($element[0], data);
 		});
 	}
 ]);

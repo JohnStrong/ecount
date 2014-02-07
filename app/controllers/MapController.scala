@@ -34,7 +34,7 @@ object MapController extends Controller {
     )))
   }
 
-  def electoralDivisions(countyId: Long) = Action.async {
+  def electoralDistricts(countyId: Long) = Action.async {
 
     def getEDsByCountyId =
       withConnection { implicit conn =>
@@ -43,7 +43,8 @@ object MapController extends Controller {
             "type" -> "Feature",
             "geometry" ->  Json.parse(ed.geometry),
             "properties" -> Json.obj(
-              "id" -> ed.id,
+              "dedId" -> ed.dedId,
+              "gid" -> ed.gid,
               "name" -> ed.label,
               "county" -> ed.county
             )
@@ -62,7 +63,7 @@ object MapController extends Controller {
     }
   }
 
-  def electoralDivision(gid: Long) = Action.async {
+  def electoralDistrict(gid: Long) = Action.async {
 
     def getDedById =
       withConnection {  implicit conn =>
@@ -70,8 +71,7 @@ object MapController extends Controller {
             Json.obj(
               "type" -> "Feature",
               "geometry" -> Json.parse(ed.geom)
-           )
-         }
+           )}
         )
       }
 

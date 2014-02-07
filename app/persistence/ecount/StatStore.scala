@@ -1,9 +1,5 @@
 package persistence.ecount
 
-/**
- * Created by User 1 on 06/01/14.
- */
-
 import org.mybatis.scala.mapping._
 
 import models.ecount.stat._
@@ -72,6 +68,31 @@ import models.ecount.stat._
     </xsql>
   }
 
+  val getConstituencyTallyResults = new SelectListBy[TallyResultsExtractor, ElectionCandidate] {
+
+    resultMap = new ResultMap[ElectionCandidate] {
+      result(property = "id", column = "candidate_id")
+      result(property = "name", column = "candidate_name")
+      result(property = "tallyResult", column = "count")
+      result(property = "dedId", column = "ded_id")
+    }
+
+    def xsql = <xsql>
+      select ca.candidate_id, ca.candidate_name, cr.count, cr.ded_id
+      from stat_bank_constituencies as c,
+      stat_bank_elections as e,
+      stat_bank_tally_election_to_const_candidates as cc,
+      stat_bank_tally_constituency_candidates as ca,
+      stat_bank_tally_candidate_results as cr
+      where c.constituency_id = #{{constituencyId}}
+      and ca.constituency_id = c.constituency_id
+      and e.election_id = #{{electionId}}
+      and cc.election_id = e.election_id
+      and ca.candidate_id = cc.candidate_id
+      and cr.results_id = ca.candidate_id
+    </xsql>
+  }
+
   val getPartyElectionStats = new SelectListBy[PartyStatsExtractor, PartyElectionResults] {
 
     resultMap = new ResultMap[PartyElectionResults] {
@@ -95,5 +116,11 @@ import models.ecount.stat._
     </xsql>
   }
 
-  def bind = Seq(getElectionEntries, getGeneralElectionStatistics, getCountyConstituencies, getPartyElectionStats)
+  def bind = Seq(
+    getElectionEntries,
+    getGeneralElectionStatistics,
+    getCountyConstituencies,
+    getConstituencyTallyResults,
+    getPartyElectionStats
+  )
 }

@@ -44,18 +44,21 @@ map.controller('MapController',
 	['$scope', '$route', '$location',
 	function($scope, $route, $location) {
 
-		$scope.target = null;
-		
+		$scope.countyTarget = null;
+
 		function loadCountyView() {
-			var countyId = $scope.target.id;
+			var countyId = $scope.countyTarget.id;
 
 			$location.path('/map/county/' + countyId);
 			$route.reload();
 		}
 
 		$scope.$on('target-change', function(event, args) {
-			$scope.target = args[0];
-			loadCountyView();
+			// check whether we are loading a district or all districts
+			if(!$scope.renderPath[2]) {
+				$scope.countyTarget = args[0];
+				loadCountyView();
+			}
 		});
 	}
 ]);

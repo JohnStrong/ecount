@@ -1,15 +1,26 @@
 (function($) {
 	'use strict';
 
-	var REGISTER_FORM_ID = 'register-form',
+	var URL_REGISTER_FAILED = '/auth/register',
+		URL_LOGIN_FAILED = '/auth/login',
+
+		REGISTER_FORM_ID = 'register-form',
 		LOGIN_FORM_ID = 'login-form'
 
 	$(document).ready(function() {
-		$('#register').hide();
+		var elemToHide = '#register';
+
+		console.log(document.URL);
+
+		if(document.URL === URL_REGISTER_FAILED) {
+			elemToHide = '#login';
+		}
+		$(elemToHide).hide();
 	});
 
 	$('form').submit('#auth', function(e) {
 		e.preventDefault();
+
 		// do stuff...... ajax stuff
 	});
 

@@ -23,18 +23,20 @@ object MapStore {
   val getElectoralDivisions = new SelectListBy[Long, CountyElectoralDivision] {
 
     resultMap = new ResultMap[CountyElectoralDivision] {
-        result(property = "id", column = "gid")
+        result(property = "dedId", column = "ded_id")
+        result(property = "gid", column = "gid")
         result(property = "label", column = "saps_label")
         result(property = "county", column = "county")
         result(property = "geometry", column = "geom")
     }
 
     def xsql = <xsql>
-      SELECT ed.gid, ed.county, ed.saps_label,
+      SELECT d.ded_id, ed.gid, ed.county, ed.saps_label,
       ST_ASGEOJSON(ST_TRANSFORM(ST_SETSRID(ST_SIMPLIFY(ed.geom, 100), 29902), 4326)) as geom
-      FROM electoral_divisions ed, counties c
+      FROM electoral_divisions ed, counties c, stat_bank_tally_ded as d
       WHERE c.county_id = #{{id}}
       AND c.county = ed.county
+      AND ed.saps_label like '%'||d.ded_title||'%'
       </xsql>
   }
 
@@ -47,12 +49,9 @@ object MapStore {
       result(property = "geom", column = "geom")
     }
     def xsql = <xsql>
-      SELECT ded.ded_id, ded.ded_title, ded.constituency_id, ST_ASGEOJSON(
-      ST_TRANSFORM(ST_SETSRID(ed.geom, 29902), 4326)) as geom
-      FROM electoral_divisions as ed,
-      stat_bank_tally_ded as ded
-      WHERE ed.gid =  #{{id}}
-      AND ded.gid = ed.gid
+      SELECT (ST_ASGEOJSON(ST_TRANSFORM(ST_SETSRID(geom, 29902), 4326))) as geom
+      FROM electoral_divisions
+      WHERE gid =  #{{id}}
     </xsql>
   }
 

@@ -1,11 +1,11 @@
 <div class="row">
 	<div class="col-md-12">
 		<div id="Map">
-			<div ng-switch on="renderPath[1]">
-				<div ng-switch-when="base">
+			<div ng-switch on="countyTarget === null">
+				<div ng-switch-when="true">
 		    		<map-base-directive></map-base-directive>
 		    	</div>
-		    	<div ng-switch-when="county">
+		    	<div ng-switch-when="false">
 		    		<county-directive></county-directive>
 	        	</div>
 		    </div>

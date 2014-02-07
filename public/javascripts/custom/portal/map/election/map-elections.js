@@ -6,7 +6,8 @@ mapElections.factory('ElectionStatistics', ['$http',
 		var ALL_COUNTY_COUNSTITUENCIES_URL = '/api/elections/constituencies/',
 			ALL_ELECTIONS_URL = '/api/elections/',
 			ELECTION_STATS_GENERAL_URL = '/api/elections/general/',
-			ELECTION_STATS_PARTY_URL = '/api/elections/party/';
+			ELECTION_STATS_PARTY_URL = '/api/elections/party/',
+			ELECTION_TALLY_CONSTITUENCY_URL = '/api/elections/tally/';
 
 		return {
 
@@ -33,6 +34,13 @@ mapElections.factory('ElectionStatistics', ['$http',
 
 			getElectionStatsParty: function(electionId, constituencyId, callback) {
 				$http.get(ELECTION_STATS_PARTY_URL + electionId + '/' + constituencyId)
+					.success(function(data) {
+						callback(data);
+					});
+			},
+
+			getElectionTallyByConstituency: function(electionId, constituencyId, callback) {
+				$http.get(ELECTION_TALLY_CONSTITUENCY_URL + electionId + '/' + constituencyId)
 					.success(function(data) {
 						callback(data);
 					});
@@ -64,12 +72,16 @@ mapElections.controller('ElectionStatController',
 		var tables = [];
 
 		$scope.constituencies = null;
-		$scope.constituencyVisData = [];
+		$scope.constituencyTallyResults = [];
 		$scope.election = null;
-		$scope.countyId = $scope.target.id;
+		$scope.countyId = $scope.$parent.countyTarget.id;
 
 		function visualizeConstituencyData(data) {
 			$scope.$broadcast('updateVisualization', data);
+		}
+
+		function MapReduce(data) {
+			// TODO...
 		}
 
 		this.addTable = function(scope) {
@@ -84,33 +96,41 @@ mapElections.controller('ElectionStatController',
 				});
 		};
 
-		$scope.$on('visualizeStatistics', function(source, cid) {
-			var constituencyVisData = $scope.constituencyVisData;
-
-			$.each(constituencyVisData, function(k, constituencyData) {
-				if(cid === constituencyData.cid) {
-					visualizeConstituencyData(constituencyData.data);
-					return;
-				}
-			});
-		});
-
 		$scope.$watch('election', function() {
 
+			// when user chooses election results, get tally data
 			function getTallyStats(constituency) {
-				ElectionStatistics.getElectionStatsParty($scope.election.id,
-					constituency.id, function(d) {
-						$scope.constituencyVisData.push({'cid' : constituency.id, 'data': d});
-				});
+				ElectionStatistics.getElectionTallyByConstituency(
+					$scope.election.id,
+					constituency.id,
+					function(d) {
+						$scope.constituencyTallyResults.push(d);
+					}
+				);
 			}
 
 			if($scope.election !== null) {
 
-				$scope.constituencyVisData = [];
+				$scope.constituencyTallyResults = [];
 
 				$.each($scope.constituencies, function(k, constituency) {
 					getTallyStats(constituency);
 				});
+			}
+		});
+
+		// visualize map reduced tally results
+		$scope.$on('visualizeStatistics', function(source, cid) {
+			var dataSet = [];
+
+			$.each($scope.constituencyTallyResults, function(k, d) {
+				if(d.id === cid) dataSet = d.results;
+			});
+
+			if($scope.renderPath[2] === 'ded') {
+				$scope.$broadcast('updateVisualization', dataSet);
+			} else {
+				// TODO map-reduce phase of tally stats by each district
 			}
 		});
 	}

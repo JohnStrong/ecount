@@ -39,8 +39,8 @@ mapUtil.factory('GeomAPI', ['$http',
 
 			electoralDivision: function(gid, callback) {
 				return $http.get(ELECTORAL_DIVISION_REQ_URL + gid)
-					.success(function(geom) {
-						callback(geom);
+					.success(function(data) {
+						callback(data);
 					});
 			}
 		};

@@ -29,13 +29,13 @@ ecount.config(
 			.when(
 				'/map/county/:cid',
 				{
-					action: 'map.county.ded'
+					action: 'map.county.districts'
 				}
 			)
 			.when(
 				'/map/county/districts/:gid',
 				{
-					action: 'map.county.ed'
+					action: 'map.county.ded'
 				}
 			)
 			.otherwise(

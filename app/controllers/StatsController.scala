@@ -10,7 +10,7 @@ import PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 
-import models.ecount.stat.{PartyStatsExtractor, ElectionStatsExtractor}
+import models.ecount.stat.{PartyStatsExtractor, ElectionStatsExtractor, TallyResultsExtractor}
 
 object StatsController extends Controller {
 
@@ -82,6 +82,33 @@ object StatsController extends Controller {
 
     constituencies.map(c => {
       Ok(Json.toJson(c))
+    })
+  }
+
+  def constituencyTallyResults(electionId: Long, constituencyId: Long) = Action.async {
+
+    def getTallyResults = {
+      withConnection { implicit conn => {
+          val tre = TallyResultsExtractor.apply(constituencyId, electionId)
+
+          StatStore.getConstituencyTallyResults(tre).map(res => {
+            Json.obj(
+              "id" -> res.id,
+              "name" -> res.name,
+              "count" -> res.tallyResult,
+              "ded" -> res.dedId
+            )
+          })
+        }
+      }
+    }
+
+    val res = scala.concurrent.Future { getTallyResults }
+    res.map(i => {
+      Ok(Json.obj(
+        "id" -> constituencyId,
+        "results" -> Json.toJson(i))
+      )
     })
   }
 
