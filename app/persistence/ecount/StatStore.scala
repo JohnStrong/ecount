@@ -68,28 +68,38 @@ import models.ecount.stat._
     </xsql>
   }
 
-  val getConstituencyTallyResults = new SelectListBy[TallyResultsExtractor, ElectionCandidate] {
+  val getConstituencyElectionCandidates = new SelectListBy[TallyResultsExtractor, ElectionCandidate] {
 
     resultMap = new ResultMap[ElectionCandidate] {
       result(property = "id", column = "candidate_id")
       result(property = "name", column = "candidate_name")
-      result(property = "tallyResult", column = "count")
+    }
+
+    def xsql = <xsql>
+      SELECT ca.candidate_id, ca.candidate_name
+      FROM stat_bank_constituencies as c,
+      stat_bank_tally_election_to_const_candidates as ec,
+      stat_bank_tally_constituency_candidates as ca
+      WHERE c.constituency_id = #{{constituencyId}}
+      AND ec.election_id = #{{electionId}}
+      AND ca.candidate_id = ec.candidate_id
+      AND ca.constituency_id = c.constituency_id;
+    </xsql>
+  }
+
+  val getConstituencyTallyResults = new SelectListBy[Long, ElectionCandidateTally] {
+
+    resultMap = new ResultMap[ElectionCandidateTally] {
+      result(property = "result", column = "count")
       result(property = "dedId", column = "ded_id")
     }
 
     def xsql = <xsql>
-      select ca.candidate_id, ca.candidate_name, cr.count, cr.ded_id
-      from stat_bank_constituencies as c,
-      stat_bank_elections as e,
-      stat_bank_tally_election_to_const_candidates as cc,
-      stat_bank_tally_constituency_candidates as ca,
+      SELECT cr.count, cr.ded_id
+      FROM stat_bank_tally_candidate_to_results as ctr,
       stat_bank_tally_candidate_results as cr
-      where c.constituency_id = #{{constituencyId}}
-      and ca.constituency_id = c.constituency_id
-      and e.election_id = #{{electionId}}
-      and cc.election_id = e.election_id
-      and ca.candidate_id = cc.candidate_id
-      and cr.results_id = ca.candidate_id
+      WHERE ctr.candidate_id = #{{id}}
+      AND cr.results_id = ctr.results_id
     </xsql>
   }
 
@@ -120,6 +130,7 @@ import models.ecount.stat._
     getElectionEntries,
     getGeneralElectionStatistics,
     getCountyConstituencies,
+    getConstituencyElectionCandidates,
     getConstituencyTallyResults,
     getPartyElectionStats
   )

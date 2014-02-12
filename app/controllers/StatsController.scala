@@ -89,26 +89,28 @@ object StatsController extends Controller {
 
     def getTallyResults = {
       withConnection { implicit conn => {
-          val tre = TallyResultsExtractor.apply(constituencyId, electionId)
-
-          StatStore.getConstituencyTallyResults(tre).map(res => {
-            Json.obj(
-              "id" -> res.id,
-              "name" -> res.name,
-              "count" -> res.tallyResult,
-              "ded" -> res.dedId
-            )
-          })
-        }
-      }
+        val tre = TallyResultsExtractor.apply(constituencyId, electionId)
+        StatStore.getConstituencyElectionCandidates(tre).map(candidate => {
+          Json.obj(
+            "id" -> candidate.id,
+            "name" -> candidate.name,
+            "results" -> StatStore.getConstituencyTallyResults(candidate.id).map(res => {
+              Json.obj(
+                "result" -> res.result,
+                "dedId" -> res.dedId
+              )
+            })
+          )
+        })
+      }}
     }
 
     val res = scala.concurrent.Future { getTallyResults }
     res.map(i => {
       Ok(Json.obj(
         "id" -> constituencyId,
-        "results" -> Json.toJson(i))
-      )
+        "results" -> Json.toJson(i)
+      ))
     })
   }
 

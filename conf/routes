@@ -36,9 +36,9 @@ GET     /api/elections/tally/:eid/:cid      controllers.StatsController.constitu
 # Map Specific
 GET     /map/geo/county/                    controllers.MapController.countyBounds()
 
-GET     /map/geo/county/divisions/:cid      controllers.MapController.electoralDistricts(cid:Long)
+GET     /map/geo/county/districts/:cid      controllers.MapController.electoralDistricts(cid:Long)
 
-GET     /map/geo/county/division/:gid       controllers.MapController.electoralDistrict(gid:Long)
+GET     /map/geo/county/district/:gid       controllers.MapController.electoralDistrict(gid:Long)
 
 # Template Loader
 GET     /templates/*file                    controllers.TemplateAssetsController.at(file)

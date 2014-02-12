@@ -19,8 +19,8 @@ mapUtil.factory('GeomAPI', ['$http',
 	function($http) {
 
 		var COUNTY_BOUNDS_REQ_URL = '/map/geo/county/',
-			ELECTORAL_DIVISIONS_REQ_URL = '/map/geo/county/divisions/',
-			ELECTORAL_DIVISION_REQ_URL = '/map/geo/county/division/';
+			ELECTORAL_DISTRICTS_REQ_URL = '/map/geo/county/districts/',
+			ELECTORAL_DISTRICT_REQ_URL = '/map/geo/county/district/';
 
 		return {
 			countyBounds: function(callback) {
@@ -30,15 +30,15 @@ mapUtil.factory('GeomAPI', ['$http',
 					});
 			},
 
-			electoralDivisions: function(countyId, callback) {
-				$http.get(ELECTORAL_DIVISIONS_REQ_URL + countyId)
+			electoralDistricts: function(countyId, callback) {
+				$http.get(ELECTORAL_DISTRICTS_REQ_URL + countyId)
 					.success(function(geom) {
 						callback(geom);
 					});
 			},
 
-			electoralDivision: function(gid, callback) {
-				return $http.get(ELECTORAL_DIVISION_REQ_URL + gid)
+			electoralDistrict: function(gid, callback) {
+				return $http.get(ELECTORAL_DISTRICT_REQ_URL + gid)
 					.success(function(data) {
 						callback(data);
 					});

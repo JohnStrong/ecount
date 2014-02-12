@@ -69,19 +69,62 @@ mapElections.controller('ElectionStatController',
 	['$scope', 'ElectionStatistics',
 	function($scope, ElectionStatistics) {
 
-		var tables = [];
+		var tables = [],
+
+			// filter functions for extractor utility
+			filterFor = {
+				districts: function(datum) {
+					
+					// computes the sum of all district tally results per candidate
+					var result = datum.results.reduce(function(prev, next) {
+						return prev.result + next.result;
+					});
+
+					return {
+						'id': datum.id,
+						'name' : datum.name,
+						'count' : result
+					};
+				},
+
+				ded: function(datum) {
+					
+					var result;
+
+					// for each candidate, extracts the tally result relating to the current view 
+					$.each(datum.results, function(k, d) { 
+						if(d.dedId === $scope.districtTarget.dedId) {
+							result = d.result;
+							return;
+						} 
+					});
+
+					return {
+						'id' : datum.id,
+						'name' : datum.name,
+						'count' : result 
+					};
+				}
+			},
+
+			extractor = function(dataSet) {
+				return function(filter) {
+					return resultSet = $.map(dataSet, function(datum) {
+						return filter(datum);
+					});
+				}
+			};
 
 		$scope.constituencies = null;
+
 		$scope.constituencyTallyResults = [];
+
 		$scope.election = null;
+
 		$scope.countyId = $scope.$parent.countyTarget.id;
 
 		function visualizeConstituencyData(data) {
 			$scope.$broadcast('updateVisualization', data);
-		}
-
-		function MapReduce(data) {
-			// TODO...
 		}
 
 		this.addTable = function(scope) {
@@ -121,17 +164,33 @@ mapElections.controller('ElectionStatController',
 
 		// visualize map reduced tally results
 		$scope.$on('visualizeStatistics', function(source, cid) {
-			var dataSet = [];
+			var dataSet = [],
+
+				filter = null,
+
+				extractorResult = null;
 
 			$.each($scope.constituencyTallyResults, function(k, d) {
 				if(d.id === cid) dataSet = d.results;
 			});
 
-			if($scope.renderPath[2] === 'ded') {
-				$scope.$broadcast('updateVisualization', dataSet);
-			} else {
-				// TODO map-reduce phase of tally stats by each district
+			// apply the current data set in the extractor function
+			var extract = extractor(dataSet);
+
+			// get the corrrect filter for the current data-set
+			if($scope.renderPath[2] === 'districts') {
+				filter = filterFor.districts;
+			} else if($scope.renderPath[2] === 'ded') {
+				filter = filterFor.ded;
 			}
+
+			// apply the filter function to the supplied dataset
+			var result = extract(function(datum) {
+				return filter(datum);
+			});
+
+			// visualze the filtered tally data
+			$scope.$broadcast('updateVisualization', result);
 		});
 	}
 ]);

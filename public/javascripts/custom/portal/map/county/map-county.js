@@ -70,7 +70,7 @@ mapCounty.controller('CountyController',
 		$scope.districtTarget = null;
 
 		function loadDEDView() {
-			var dedId = $scope.countyTarget.dedId;
+			var dedId = $scope.districtTarget.dedId;
 
 			$location.path('/map/county/districts/' + dedId);
 			$route.reload();
@@ -101,7 +101,7 @@ mapCounty.controller('IMapController',
 			districts: function(countyId) {
 				var countyId = $scope.countyTarget.id;
 
-				GeomAPI.electoralDivisions(countyId, function(geom) {
+				GeomAPI.electoralDistricts(countyId, function(geom) {
 					SharedMapService.setMap(DISTRICTS_VIEW_DOM_ID, { "zoom": DISTRICTS_ZOOM });
 					SharedMapService.draw(geom, MapStyle.base);
 				});
@@ -109,7 +109,7 @@ mapCounty.controller('IMapController',
 			ed: function(dedId) {
 				var gid = $scope.districtTarget.gid;
 
-				GeomAPI.electoralDivision(gid, function(data) {
+				GeomAPI.electoralDistrict(gid, function(data) {
 					SharedMapService.setMap(ED_VIEW_DOM_ID, { 'zoom': ED_ZOOM });
 					SharedMapService.draw(data, MapStyle.base);
 				});
