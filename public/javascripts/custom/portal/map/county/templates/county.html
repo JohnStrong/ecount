@@ -41,15 +41,36 @@
 									<div class="col-md-12">
 							    		<!-- vis controller -->
 							    		<div id="candidate" class="candidate-stats">
-											<div class="candidate-group">
-										    	<stat-tab>
-										    		<stat-pane ng-repeat="c in constituencies" title="{{c.title}}">
-										    			<div id="{{c.title}}" width="900" height="400" vis-directive></div>
-										    		</stat-pane>
-										    	</stat-tab>
-										    </div>
+							    			<div ng-switch on="constituencyTallyResults.length > 0">
+							    				<div ng-switch-when="true">
+										    		<div class="candidate-group">
+										    			<!-- both views display with the same style right now-->
+										    			<div ng-switch on="renderPath[2]">
+										    				<div ng-switch-when="districts">
+														    	<stat-tab>
+														    		<stat-pane ng-repeat="c in constituencyTallyResults" title="{{c.title}}">
+														    			<div id="{{c.title}}" width="900" height="400" vis-directive></div>
+														    		</stat-pane>
+														    	</stat-tab>
+														    </div>
+														    <div ng-switch-when="ded">
+														    	<stat-tab>
+														    		<stat-pane ng-repeat="c in constituencyTallyResults" title="{{c.title}}">
+														    			<div id="{{c.title}}" width="900" height="400" vis-directive></div>
+														    		</stat-pane>
+														    	</stat-tab>
+														    </div>
+														</div>
+												    </div>
+												</div>
+												<div ng-switch-when="false">
+													<div class="alert alert-info">
+														No tally results available...
+													</div>
+												</div>
+											</div>
 										</div>
-						    		</div>
+							    	</div>
 								</div>
 							</div>
 						</div>

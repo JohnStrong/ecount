@@ -106,7 +106,9 @@ table.gen-table tr:nth-child(1) td {
 
 .county-inner {
 	background-color: #FFFFFF;
-	padding: 0.2% 1.8%;
+	padding: 0 1.8%;
+	padding-top: 0.5%;
+	padding-bottom: 5%;
 }
 
 .tally-results-heading {

@@ -35,35 +35,6 @@ object StatsController extends Controller {
     }
   }
 
-  def electionResultsGeneral(electionId:Long, countyId:Long) = Action.async {
-    val ese = ElectionStatsExtractor.apply(electionId, countyId)
-
-    def getGeneralElectionResults = {
-      withConnection {  implicit conn => {
-        StatStore.getGeneralElectionStatistics(ese).map(ges => {
-          Json.obj(
-            "constituency" -> ges.constituency,
-            "votes" -> ges.votes,
-            "percentTurnout" -> ges.percentTurnout,
-            "invalidBallots" -> ges.invalidBallots,
-            "percentInvalid" -> ges.percentInvalid,
-            "validVotes" -> ges.validVotes,
-            "percentValid" -> ges.percentValid,
-            "registeredElectors" -> ges.registeredElectors
-          )
-        })
-      }
-      }
-    }
-
-    val geResults = scala.concurrent.Future{ getGeneralElectionResults }
-
-    geResults.map{ g => {
-        Ok(Json.toJson(g))
-      }
-    }
-  }
-
   def constituencies(countyId: Long) = Action.async {
 
     def getCountyConstituencies = {
@@ -112,33 +83,5 @@ object StatsController extends Controller {
         "results" -> Json.toJson(i)
       ))
     })
-  }
-
-  def electionResultsParty(electionId: Long, constituencyId:Long) = Action.async {
-
-    def getPartyElectionResults = {
-      withConnection { implicit conn => {
-
-        val pse = PartyStatsExtractor.apply(constituencyId, electionId)
-
-        StatStore.getPartyElectionStats(pse).map(pges => {
-          Json.obj(
-            "name" -> pges.partyName,
-            "stats" -> Json.obj(
-            "firstPreferenceVotes" -> pges.firstPreferenceVotes,
-            "percentageVote" -> pges.percentageVote,
-            "seats" -> pges.seats
-            )
-          )
-        })
-      }
-     }
-    }
-
-    val peResults =  scala.concurrent.Future { getPartyElectionResults }
-    peResults.map(p => {
-      Ok(Json.toJson(p))
-     }
-    )
   }
 }

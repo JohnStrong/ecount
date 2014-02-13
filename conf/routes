@@ -27,10 +27,6 @@ GET     /api/elections/                     controllers.StatsController.election
 
 GET     /api/elections/constituencies/:cid  controllers.StatsController.constituencies(cid: Long)
 
-GET     /api/elections/general/:eid/:cid    controllers.StatsController.electionResultsGeneral(eid:Long, cid:Long)
-
-GET     /api/elections/party/:eid/:cid      controllers.StatsController.electionResultsParty(eid:Long, cid:Long)
-
 GET     /api/elections/tally/:eid/:cid      controllers.StatsController.constituencyTallyResults(eid: Long, cid:Long)
 
 # Map Specific

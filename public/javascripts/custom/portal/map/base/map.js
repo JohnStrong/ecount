@@ -44,6 +44,7 @@ map.controller('MapController',
 	['$scope', '$route', '$location',
 	function($scope, $route, $location) {
 
+		// county currently being viewed...
 		$scope.countyTarget = null;
 
 		function loadCountyView() {

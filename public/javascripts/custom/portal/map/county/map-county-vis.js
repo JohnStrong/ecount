@@ -24,8 +24,9 @@ vis.factory('StatVisualization', function() {
 
 			BAR_WIDTH_TOTAL = 600,
 			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length,
-
 			BAR_MIN_WIDTH = 5,
+			BAR_BORDER_COLOR = '#FFFFFF',
+			BAR_BORDER_WIDTH = 1,
 
 			CANVAS_HEIGHT_PADDING = 30,
 			PADDING = [5, 18],
@@ -65,6 +66,8 @@ vis.factory('StatVisualization', function() {
 					return xScale(ex) + BAR_MIN_WIDTH;
 				})
 			.style('fill', function(d, i) { return colorScale(i); })
+			.style('stroke', BAR_BORDER_COLOR)
+			.style('stroke-width', BAR_BORDER_WIDTH)
 			.attr('index_value', function(d, i) { return "item-" + i; })
 			.attr('color_value', function(d, i) { return colorScale(i); });
 
@@ -89,8 +92,11 @@ vis.controller('VisualizationController',
 	['$scope', '$element', 'ElectionStatistics', 'StatVisualization',
 	function($scope, $element, ElectionStatistics, StatVisualization)	{
 
-		$scope.$on('updateVisualization', function(source, data) {
+		$scope.$on('emptyVisualization', function() {
 			$($element).empty();
+		});
+
+		$scope.$on('updateVisualization', function(source, data) {
 			StatVisualization($element[0], data);
 		});
 	}

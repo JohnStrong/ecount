@@ -19,6 +19,10 @@ mapCounty.directive('statTab', function() {
 			};
 
 			this.addPane = function(pane) {
+				if(panes.length === 0) {
+					$scope.select(pane);
+				}
+
 				panes.push(pane);
 			};
 		},
@@ -67,6 +71,7 @@ mapCounty.controller('CountyController',
 	['$scope', '$route', '$location',
 	function($scope, $route, $location) {
 
+		// the district we are viewing....
 		$scope.districtTarget = null;
 
 		function loadDEDView() {
@@ -77,6 +82,7 @@ mapCounty.controller('CountyController',
 		}
 
 		$scope.$on('target-change', function(event, args) {
+
 			// check whether we are loading a district or all districts
 			if($scope.renderPath[2]) {
 				$scope.districtTarget = args[0];
