@@ -34,7 +34,6 @@ body {
 
 .pool {
     background-color: #428BAA;
-    width: 100%;
 }
 
 ul {
@@ -49,19 +48,17 @@ ul {
             border-radius: 4px;
 }
 
-#top {
-    clear: both;
-    float: none;
-    width: 100%;
+.account-header {
+	clear: both;
+	background-color: #FFFFFF;
+}
+
+.content-main {
+	clear: both;
 }
 
 #interactive-main {
     min-height: 665px;
-}
-
-.account-header {
-	position: absolute;
-	width: 100%;
 }
 
 /**

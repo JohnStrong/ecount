@@ -85,8 +85,6 @@ mapElections.service('TallyExtractor',
 				filter = filterFor.ded(scope.districtTarget.dedId);
 			}
 
-			console.log(scope);
-			
 			return function(callback) {
 				var resultSet = $.map(dataSet, function(datum) {
 					return filter(datum);
@@ -145,22 +143,20 @@ mapElections.controller('ElectionStatController',
 
 			var constituencyStats = [];
 
-			// when user chooses election results, get tally data
 			function getTallyStats(constituency) {
 				ElectionStatistics.getElectionTallyByConstituency(
-					$scope.election.id, constituency.id,
-					function(d) {
-
-						if(d.results.length > 0) {
-							d.title = constituency.title;
-							constituencyStats.push(d);
-						}
+				$scope.election.id, constituency.id,
+				function(d) {
+					if(d.results.length > 0) {
+						d.title = constituency.title;
+						constituencyStats.push(d);
 					}
-				);
+				});
 			}
 
 			if($scope.election !== null) {
 
+				// get the immediate tally results for each constituency
 				$.each($scope.constituencies, function(k, constituency) {
 					getTallyStats(constituency);
 				});
@@ -193,10 +189,33 @@ mapElections.controller('ElectionStatController',
 mapElections.controller('ElectionController',
 	['$scope', 'ElectionStatistics',
 	function($scope, ElectionStatistics) {
-		$scope.elections = [];
 
-		ElectionStatistics.getElections(function(data) {
-			$scope.elections = data;
+		$scope.elections = [];
+		
+		var isTallyOngoing = (function() {
+
+			var DATE_SUBSTRING_SPLIT_SYMBOL = 'T';
+
+			// returns true if an election tally date matches the current date
+			return function(tallyDate) {
+				var currentISO = new Date().toISOString(),
+
+					currentDate = currentISO.substring(0, 
+						currentISO.indexOf(DATE_SUBSTRING_SPLIT_SYMBOL));
+
+				return currentDate === tallyDate;
+			};
+		})();
+
+		// get all election tallys, if it is currently ongoing create a live feed for it...
+		ElectionStatistics.getElections(function(elections) {
+			$.each(elections, function(k, election) {
+				if(isTallyOngoing(election.tallyDate)) {
+					$scope.$emit('liveTally', election);
+				} else {
+					$scope.elections.push(election);
+				}
+			});
 		});
 	}
 ]);

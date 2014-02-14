@@ -18,15 +18,35 @@
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/vis.css")"/>
 </head>
 <body class="pool">
-	<header class="account-header">
+	<div class="account-header">
 		<div class="container">
-	        <ul class="nav navbar-nav navbar-right">
-	            <li><a href="" class="btn">Edit Account</a></li>
-	            <li><a href="" class="btn">Logout</a></li>
-	        </ul>
+			<div class="navbar-inner" role="navigation">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">
+						Ecount 
+						<small>portal</small>
+					</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li id="account-dropdown" class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Edit</a></li>
+							<li><a href="#">Logout</a></li>
+						</ul>
+					</li>
+					<script>
+						(function() {
+							$("a").click('#account-dropdown', function(e) {
+								e.preventDefault();
+							});
+						})();
+					</script>
+				</ul>
+			</div>
 	    </div>
-    </header>
-	<div id="content-main">
+    </div>
+	<div class="content-main">
 	    <div id="interactive-main">
         	<map-directive></map-directive>
         </div>
@@ -36,8 +56,6 @@
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/election/map-elections.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/base/map.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county.js")"></script>
-		<!--tally feed dependencies-->
-		<script src="@routes.Assets.at("javascripts/custom/portal/map/county/tally.js")"></script>
 		<!--account dependencies-->
 		<script src="@routes.Assets.at("javascripts/custom/portal/core/home/util/account-util.js")"></script>
 		<script src="@routes.Assets.at("javascripts/custom/portal/core/home/account.js")"></script>

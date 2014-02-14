@@ -1,6 +1,32 @@
 var mapCounty = angular.module('Ecount.Map.County',
 	['Ecount.Map.Util']);
 
+mapCounty.service('LiveTallyFeed', 
+	[function() {
+
+		var LIVE_TALLY_RESULTS_UPDATE_INTERVAL = 10000,
+			
+			getLiveTallyResults = function() {
+				console.log('called');
+			},
+
+			getElectionCandidates = function() {
+
+			};
+
+		return function(election) {
+
+			this.title = election.title;
+			this.date = election.tallyDate;
+
+			this.candidates = [];
+			this.percentageTallied = 0;
+
+			setInterval(getLiveTallyResults, LIVE_TALLY_RESULTS_UPDATE_INTERVAL);
+		}
+	}
+]);
+
 mapCounty.directive('statTab', function() {
 	return {
 		restrict: 'E',
@@ -68,11 +94,14 @@ mapCounty.controller('TallyFeedController',
 ]);
 
 mapCounty.controller('CountyController',
-	['$scope', '$route', '$location',
-	function($scope, $route, $location) {
+	['$scope', '$route', '$location', 'LiveTallyFeed',
+	function($scope, $route, $location, LiveTallyFeed) {
 
-		// the district we are viewing....
+		// the district we are viewing...
 		$scope.districtTarget = null;
+
+		// holds the live tally count ongoing if one exists...
+		$scope.liveTally = null;
 
 		function loadDEDView() {
 			var dedId = $scope.districtTarget.dedId;
@@ -81,9 +110,15 @@ mapCounty.controller('CountyController',
 			$route.reload();
 		}
 
+		// listens for any ongoing election tallys...
+		$scope.$on('liveTally', function(source, liveElectionTally) {
+			$scope.liveTally = new LiveTallyFeed(liveElectionTally);
+			console.log($scope.liveTally);
+		});
+
+		// check whether we are loading a district or all districts...
 		$scope.$on('target-change', function(event, args) {
 
-			// check whether we are loading a district or all districts
 			if($scope.renderPath[2]) {
 				$scope.districtTarget = args[0];
 				loadDEDView();
@@ -97,7 +132,7 @@ mapCounty.controller('IMapController',
 	function($scope, SharedMapService, GeomAPI, MapStyle) {
 
 		var DISTRICTS_ZOOM = 12,
-			DISTRICTS_VIEW_DOM_ID = 'county-map-view';
+			DISTRICTS_VIEW_DOM_ID = 'county-map-view',
 
 			ED_VIEW_DOM_ID = 'ded-map-view',
 			ED_ZOOM = 14;

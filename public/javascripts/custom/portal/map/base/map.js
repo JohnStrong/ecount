@@ -46,7 +46,7 @@ map.controller('MapController',
 
 		// county currently being viewed...
 		$scope.countyTarget = null;
-
+		
 		function loadCountyView() {
 			var countyId = $scope.countyTarget.id;
 

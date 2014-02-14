@@ -40,7 +40,7 @@ ecount.config(
 			)
 			.otherwise(
 				{
-					redirectTo: '/home'
+					redirectTo: '/'
 				}
 			);
 		}

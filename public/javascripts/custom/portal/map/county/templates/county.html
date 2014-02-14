@@ -2,42 +2,61 @@
 	<div class="county-contain">
 		<div class="county-inner">
 			<div ng-controller="ElectionStatController" ng-init="constituencies()">
-				<div class="navbar navbar-inner">
-		    		<h3 class="page-header text-primary">Statistics</h3>
-		    		<election-directive></election-directive>
-		    	</div>
-				<div ng-switch on="election !== null">
-					<div ng-switch-when="true">
-						<div class="row">
-							<div class="col-md-12">
-								<div id="imap">
-								    <div class="list-group-item">
-							        	<div ng-switch on="renderPath[2]" ng-controller="IMapController">
-							        		<div ng-switch-when="districts" ng-controller="DistrictsController">
-								                <div id="county-map-view">
-								                    <div id="imap-view" style="height: 580px"></div>
-								                </div>
-								            </div>
-								            <div ng-switch-when="ded" ng-controller="DEDController">
-								            	<div id="ded-map-view">
-							                    	<div id="imap-view" style="height: 580px"></div>
-							               		</div>
-								            </div>
-								        </div>
-							        </div>
+				<h3 class="page-header text-primary">Tally View</h3>
+		    	<div class="row">
+					<div class="col-md-12">
+						<!--live tally feed (do animatation here to show it is live)-->
+						<div ng-if="liveTally !== null" class="feed">
+							<div id="live-feed" class="list-group">
+								<div class="list-group-item">
+									<div class="feed-nav navbar-text navbar-right">
+										<div class="status">live!</div>
+									</div>
+									<div class="feed-main">
+										<div class="feed-header">
+											<h3 class="page-header">
+												{{liveTally.title}} 
+												<small>{{liveTally.date}}</small>
+											</h3>
+										</div>
+										<div class="feed-body">
+											... todo
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-md-12">
-								<div class="tally-results-body">
-									<div class="page-header">
-										<div class="form-inline" role="form">
-											<div class="form-group">
-												<h3 class="text-primary">{{election.title}} Tally Results</h3>
-											</div>
-										</div>
+						<div id="imap">
+						    <div class="list-group-item">
+					        	<div ng-switch on="renderPath[2]" ng-controller="IMapController">
+					        		<div ng-switch-when="districts" ng-controller="DistrictsController">
+						                <div id="county-map-view">
+						                    <div id="imap-view" style="height: 580px"></div>
+						                </div>
+						            </div>
+						            <div ng-switch-when="ded" ng-controller="DEDController">
+						            	<div id="ded-map-view">
+					                    	<div id="imap-view" style="height: 580px"></div>
+					               		</div>
+						            </div>
+						        </div>
+					        </div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="tally-results-body">
+							<div class="page-header">
+								<div class="form-inline" role="form">
+									<div class="form-group">
+										<h3 class="text-primary">Previous Tally Results</h3>
+										<election-directive></election-directive>
 									</div>
+								</div>
+							</div>
+							<div ng-switch on="election !== null">
+								<div ng-switch-when="true">
 									<div class="col-md-12">
 							    		<!-- vis controller -->
 							    		<div id="candidate" class="candidate-stats">
@@ -64,7 +83,7 @@
 												    </div>
 												</div>
 												<div ng-switch-when="false">
-													<div class="alert alert-info">
+													<div class="alert alert-warning">
 														No tally results available...
 													</div>
 												</div>
@@ -72,11 +91,11 @@
 										</div>
 							    	</div>
 								</div>
+								<div ng-switch-when="false">
+									<div class="alert alert-info">Choose an election to view its tally results...</div>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div ng-switch-when="false">
-						<div class="alert alert-info">Choose an election to view its tally results...</div>
 					</div>
 				</div>
 			</div>

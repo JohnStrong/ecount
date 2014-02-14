@@ -127,3 +127,41 @@ table.gen-table tr:nth-child(1) td {
 	padding: 5%;
 	text-align: center;
 }
+
+/** live tally feed **/
+
+#live-feed .status {
+	padding: 10% 20%;
+
+	-webkit-border-radius: .2em;
+	-moz-border-radius: .2em;
+	border-radius: .2em;
+
+	background-color: #FF4444;
+	color: #FFFFFF;
+}
+
+.feed-nav.navbar-text {
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+.feed-main {
+	clear: both;
+}
+
+/**  animation **/
+.feed.ng-enter, .feed.ng-leave {
+	-webkit-transition: all 1.5s linear;
+    transition: all 1.5s linear;
+}
+
+.feed.ng-enter, 
+.feed.ng-leave.ng-leave-active {
+	opacity: 0;
+}
+
+.feed.ng-leave, 
+.feed.ng-enter.ng-enter-active {
+	opacity: 1;
+}

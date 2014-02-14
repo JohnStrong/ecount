@@ -21,7 +21,8 @@ object StatsController extends Controller {
         StatStore.getElectionEntries().map(election => {
          Json.obj(
           "id" -> election.id,
-          "title" -> election.title
+          "title" -> election.title,
+          "tallyDate" -> election.tallyDate
          )
         })
       }
