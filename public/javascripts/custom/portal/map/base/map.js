@@ -1,5 +1,5 @@
 var map = angular.module('Ecount.Map',
-	['Ecount.Map.Util']);
+	['Ecount.Map.Util', 'Ecount.Map.Elections']);
 
 map.factory('MapStyle', function() {
 
@@ -41,17 +41,35 @@ map.directive('mapBaseDirective', function() {
 });
 
 map.controller('MapController',
-	['$scope', '$route', '$location',
-	function($scope, $route, $location) {
+	['$scope', '$route', '$location', 'ElectionStatistics',
+	function($scope, $route, $location, ElectionStatistics) {
 
 		// county currently being viewed...
 		$scope.countyTarget = null;
-		
+
 		function loadCountyView() {
 			var countyId = $scope.countyTarget.id;
 
 			$location.path('/map/county/' + countyId);
 			$route.reload();
+		}
+
+		// get all election tallys, if it is currently ongoing create a live feed for it...
+		$scope.getElections = function() {
+			ElectionStatistics.getElections(function(_elections) {
+
+				var elections = [];
+
+				$.each(_elections, function(k, election) {
+					elections.push(election);
+				});
+
+				// remove latest and push it up to the feed view... (CountyController)
+				var latestElection = elections.splice(0, 1);
+
+				$scope.$broadcast('previousTallys', elections);
+				$scope.$broadcast('latestTally', latestElection[0]);
+			});
 		}
 
 		$scope.$on('target-change', function(event, args) {
