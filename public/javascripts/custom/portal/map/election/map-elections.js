@@ -191,31 +191,16 @@ mapElections.controller('ElectionController',
 	function($scope, ElectionStatistics) {
 
 		$scope.elections = [];
-		
-		var isTallyOngoing = (function() {
-
-			var DATE_SUBSTRING_SPLIT_SYMBOL = 'T';
-
-			// returns true if an election tally date matches the current date
-			return function(tallyDate) {
-				var currentISO = new Date().toISOString(),
-
-					currentDate = currentISO.substring(0, 
-						currentISO.indexOf(DATE_SUBSTRING_SPLIT_SYMBOL));
-
-				return currentDate === tallyDate;
-			};
-		})();
 
 		// get all election tallys, if it is currently ongoing create a live feed for it...
 		ElectionStatistics.getElections(function(elections) {
 			$.each(elections, function(k, election) {
-				if(isTallyOngoing(election.tallyDate)) {
-					$scope.$emit('liveTally', election);
-				} else {
-					$scope.elections.push(election);
-				}
+				$scope.elections.push(election);
 			});
+
+			// remove latest and push it up to the feed view... (CountyController)
+			var latestElection = $scope.elections.splice(0, 1);
+			$scope.$emit('latestTally', latestElection[0]);
 		});
 	}
 ]);

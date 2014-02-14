@@ -15,6 +15,13 @@ mapUtil.factory('VendorTileLayer', function() {
 	}
 });
 
+// constructor service to hold election info and handle its events...
+mapUtil.service('Election', function() {
+	return function(_election) {
+
+	};
+});
+
 mapUtil.factory('GeomAPI', ['$http',
 	function($http) {
 

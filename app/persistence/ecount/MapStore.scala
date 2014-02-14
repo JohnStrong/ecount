@@ -23,7 +23,6 @@ object MapStore {
   val getElectoralDivisions = new SelectListBy[Long, CountyElectoralDivision] {
 
     resultMap = new ResultMap[CountyElectoralDivision] {
-        result(property = "dedId", column = "ded_id")
         result(property = "gid", column = "gid")
         result(property = "label", column = "saps_label")
         result(property = "county", column = "county")
@@ -31,12 +30,11 @@ object MapStore {
     }
 
     def xsql = <xsql>
-      SELECT d.ded_id, ed.gid, ed.county, ed.saps_label,
-      ST_ASGEOJSON(ST_TRANSFORM(ST_SETSRID(ST_SIMPLIFY(ed.geom, 100), 29902), 4326)) as geom
-      FROM electoral_divisions ed, counties c, stat_bank_tally_ded as d
+      SELECT ed.gid, ed.county, ed.saps_label,
+      ST_ASGEOJSON(ST_TRANSFORM(ST_SETSRID(ST_SIMPLIFY(ed.geom, 600), 29902), 4326)) as geom
+      FROM electoral_divisions ed, counties c
       WHERE c.county_id = #{{id}}
       AND c.county = ed.county
-      AND ed.saps_label like '%'||d.ded_title||'%'
       </xsql>
   }
 
@@ -65,7 +63,7 @@ object MapStore {
     def xsql =
       """
         SELECT ST_asGeoJson(
-          ST_Transform(ST_SETSRID(ST_SIMPLIFY(cb.geom, 80), 29902), 4326)) as geom,
+        ST_Transform(ST_SETSRID(ST_SIMPLIFY(cb.geom, 500), 29902), 4326)) as geom,
         c.county_id, c.county
         FROM counties as c, county_boundries as cb
         WHERE c.county = cb.countyname

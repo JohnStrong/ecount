@@ -1,7 +1,6 @@
 package models.ecount.map
 
 class CountyElectoralDivision {
-  var dedId:Int = _
   var gid:Int = _
   var label:String = _
   var county:String = _
@@ -10,10 +9,9 @@ class CountyElectoralDivision {
 
 object CountyElectoralDivision {
 
-  def apply(dedId:Int, gid:Int, label:String, county:String, geom:String) {
+  def apply( gid:Int, label:String, county:String, geom:String) {
 
     val ed = new CountyElectoralDivision
-    ed.dedId = dedId
     ed.gid = gid
     ed.label = label
     ed.county = county
@@ -21,6 +19,6 @@ object CountyElectoralDivision {
   }
 
   def unapply(ed:CountyElectoralDivision) {
-    Some(ed.dedId, ed.gid, ed.label, ed.county, ed.geometry)
+    Some(ed.gid, ed.label, ed.county, ed.geometry)
   }
 }

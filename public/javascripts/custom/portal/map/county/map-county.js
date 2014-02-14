@@ -1,28 +1,54 @@
 var mapCounty = angular.module('Ecount.Map.County',
 	['Ecount.Map.Util']);
 
-mapCounty.service('LiveTallyFeed', 
+// service that streams tally data in near real-time from server to client
+// should be able to:
+//		- get the latest candidates and results
+//		- compute the count/percentage total at a high level
+mapCounty.service('LatestTally', 
 	[function() {
 
 		var LIVE_TALLY_RESULTS_UPDATE_INTERVAL = 10000,
 			
-			getLiveTallyResults = function() {
+			getLatestTallyResults = function() {
 				console.log('called');
 			},
 
 			getElectionCandidates = function() {
 
-			};
+			},
 
+			isTallyOngoing = (function() {
+
+				var DATE_SUBSTRING_SPLIT_SYMBOL = 'T';
+
+				// returns true if an election tally date matches the current date
+				return function(tallyDate) {
+					var currentISO = new Date().toISOString(),
+
+						currentDate = currentISO.substring(0, 
+							currentISO.indexOf(DATE_SUBSTRING_SPLIT_SYMBOL));
+
+					return currentDate === tallyDate;
+				};
+			})();
+
+		// take an election object...
 		return function(election) {
 
 			this.title = election.title;
+
 			this.date = election.tallyDate;
 
 			this.candidates = [];
+
 			this.percentageTallied = 0;
 
-			setInterval(getLiveTallyResults, LIVE_TALLY_RESULTS_UPDATE_INTERVAL);
+			this.isLive = isTallyOngoing(election.tallyDate);
+
+			if(this.isLive) {
+				setInterval(getLatestTallyResults, LIVE_TALLY_RESULTS_UPDATE_INTERVAL);
+			}
 		}
 	}
 ]);
@@ -94,14 +120,14 @@ mapCounty.controller('TallyFeedController',
 ]);
 
 mapCounty.controller('CountyController',
-	['$scope', '$route', '$location', 'LiveTallyFeed',
-	function($scope, $route, $location, LiveTallyFeed) {
+	['$scope', '$route', '$location', 'LatestTally',
+	function($scope, $route, $location, LatestTally) {
 
 		// the district we are viewing...
 		$scope.districtTarget = null;
 
-		// holds the live tally count ongoing if one exists...
-		$scope.liveTally = null;
+		// holds the latest tally (can be live or most recent)...
+		$scope.latestTally = null;
 
 		function loadDEDView() {
 			var dedId = $scope.districtTarget.dedId;
@@ -110,10 +136,10 @@ mapCounty.controller('CountyController',
 			$route.reload();
 		}
 
-		// listens for any ongoing election tallys...
-		$scope.$on('liveTally', function(source, liveElectionTally) {
-			$scope.liveTally = new LiveTallyFeed(liveElectionTally);
-			console.log($scope.liveTally);
+		// listens for an latest election tally...
+		$scope.$on('latestTally', function(source, election) {
+			// create an election object here and inject it into LatestTally...
+			$scope.latestTally = new LatestTally(election);
 		});
 
 		// check whether we are loading a district or all districts...
@@ -162,10 +188,7 @@ mapCounty.controller('IMapController',
 mapCounty.controller('DistrictsController',
 	['$scope',
 	function($scope) {
-
-		$scope.$watch('election', function() {
-			$scope.loadMap.districts();
-		});
+		$scope.loadMap.districts();
 	}
 ]);
 
@@ -175,9 +198,5 @@ mapCounty.controller('DEDController',
 
 		// load map up to corr with current election value
 		$scope.loadMap.ed();
-
-		$scope.$watch('election', function() {
-			$scope.loadMap.ed();
-		});
 	}
 ]);

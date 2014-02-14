@@ -17,6 +17,7 @@ import models.ecount.stat._
     def xsql = <xsql>
       SELECT election_id, election_title, tally_date
       FROM stat_bank_elections
+      ORDER BY tally_date DESC
     </xsql>
   }
 
