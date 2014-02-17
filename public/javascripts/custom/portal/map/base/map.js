@@ -3,11 +3,11 @@ var map = angular.module('Ecount.Map',
 
 map.factory('MapStyle', function() {
 
-	var DEFAULT_WEIGHT = 2,
-    	DEFAULT_OPACITY = 0.5,
+	var DEFAULT_OPACITY = 0.5,
     	DEAULT_COLOR = '#888888',
    		DEAULT_FILL_COLOR = '#428BCA',
-    	DEAULT_DASH_ARRAY = '3',
+    	DEAULT_DASH_ARRAY = '2',
+    	DEFAULT_WEIGHT = 2,
     	DEFAULT_FILL_OPACITY = 0.2;
 
 	var base = {
@@ -41,8 +41,8 @@ map.directive('mapBaseDirective', function() {
 });
 
 map.controller('MapController',
-	['$scope', '$route', '$location', 'ElectionStatistics',
-	function($scope, $route, $location, ElectionStatistics) {
+	['$scope', '$compile', '$route', '$location', 'ElectionStatistics',
+	function($scope, $compile, $route, $location, ElectionStatistics) {
 
 		// county currently being viewed...
 		$scope.countyTarget = null;
@@ -53,6 +53,13 @@ map.controller('MapController',
 			$location.path('/map/county/' + countyId);
 			$route.reload();
 		}
+
+		$scope.compileDom = function(domStr) {
+			var compiledDom = $compile(domStr),
+				newScope = $scope.$new();
+
+			return compiledDom(newScope)[0];
+		};
 
 		// get all election tallys, if it is currently ongoing create a live feed for it...
 		$scope.getElections = function() {
@@ -89,13 +96,17 @@ map.controller('MapBaseController',
 		var IRELAND_ZOOM = 10,
 			MAP_VIEW_DOM_ID = 'map-view',
 
-			WELCOME_HTML = '<div class="welcome-info"><h1>Welcome to ecount!</h1><p>choose a county to vew some tally statistics</p></div>',
+			WELCOME_HTML = '<div class="welcome-info info-pane">' +
+			'<h1>Welcome to ecount!</h1>' +
+			'<p>choose a county to vew some tally statistics</p></div>',
 			WELCOME_POSITION = 'topright';
 
 		$scope.initMap = function() {
 			GeomAPI.countyBounds(function(geom) {
+				var compiledWelcome = $scope.compileDom(WELCOME_HTML);
+
 				Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
-				Map.addContentLayer(WELCOME_HTML, WELCOME_POSITION);
+				Map.addContentLayer(compiledWelcome, WELCOME_POSITION);
 			});
 		};
 	}

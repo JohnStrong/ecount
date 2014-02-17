@@ -1,6 +1,17 @@
+.welcome-info {
+    color: #FFFFFF;
+    opacity: 0.8;
+    padding: 5%;
+}
+
+.info-pane {
+	background-color: #222222;
+	border-radius: 0.25em;
+    z-index: 2000;
+}
+
 .county-vis {
-	background-color: #222;
-	opacity: 0.8;
+	opacity: 0.9;
 }
 
 .vis-close {

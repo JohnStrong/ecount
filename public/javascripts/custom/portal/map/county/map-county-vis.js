@@ -78,14 +78,14 @@ ecountVis.service('StatVisualization', function() {
 			ANIMATION_DURATION = 1200,
 			ANIMATION_DELAY = 100,
 
-			BAR_WIDTH_TOTAL = 460,
+			BAR_WIDTH_TOTAL = 380,
 			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length,
 			BAR_MIN_WIDTH = 5,
 			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 1,
 
 			CANVAS_HEIGHT_PADDING = 30,
-			PADDING = [5, 15],
+			PADDING = [5, 20],
 
 			LEGEND_PADDING = 150,
 
@@ -109,7 +109,9 @@ ecountVis.service('StatVisualization', function() {
 		chart.selectAll('rect')
 			.data(dataset)
 			.enter().append('svg:rect')
-			.attr('x', PADDING[0])
+			.attr('x', function(d) {
+				return PADDING[1] + BAR_WIDTH_TOTAL/3;
+			})
 			.attr('y', function(d, i) { return yScale(i) + CANVAS_HEIGHT_PADDING; })
 			.attr('height', BAR_HEIGHT_OFFSET)
 			.transition()
@@ -121,9 +123,6 @@ ecountVis.service('StatVisualization', function() {
 					var ex  = d.count;
 					return xScale(ex) + BAR_MIN_WIDTH;
 				})
-			.attr('dx', function(d, i) {
-				return BAR_WIDTH_TOTAL + PADDING[1];
-			})
 			.style('fill', function(d, i) { return colorScale(i); })
 			.style('stroke', BAR_BORDER_COLOR)
 			.style('stroke-width', BAR_BORDER_WIDTH)
@@ -154,18 +153,17 @@ ecountVis.factory('Visualize',
 	'DialogVisualization',
 	function(FilterFor, TallyExtractor, StatVisualization, DialogVisualization) {
 
-		var COUNTY_RESULTS_VIS_ELEMENT = '#tally-results-vis';
-
-			countyFilter = FilterFor.districts,
+		var countyFilter = FilterFor.districts,
 			districtFilter = FilterFor.ded;
 
 		return function(results) {
+			
 			return {
-				county: function() {
-					$(COUNTY_RESULTS_VIS_ELEMENT).empty();
+				county: function(elem) {
+					if(elem) elem.empty();
 
 					TallyExtractor(countyFilter, results)(function(resultSet) {
-						return StatVisualization(COUNTY_RESULTS_VIS_ELEMENT, resultSet);
+						return StatVisualization(elem[0], resultSet);
 					});
 				},
 

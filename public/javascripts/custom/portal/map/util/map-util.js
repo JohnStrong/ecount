@@ -119,7 +119,7 @@ mapUtil.factory('Map',
 
 			control.draw = function() {
 				this.div = content;
-			};
+			}
 
 			control.empty = function() {
 				this.div = '';

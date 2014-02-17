@@ -1,6 +1,10 @@
+.promo {
+	background-image: url(/assets/images/home.png);
+}
+
 .promo-inner {
 	padding: 4% 0;
-	min-height: 420px;
+	min-height: 550px;
 	position: relative;
 }
 
@@ -13,6 +17,8 @@
 
 .jumbotron {
 	background-color: #428BAA;
+	opacity: 0.85;
+	border-radius: .25em;
 }
 
 .jumbotron h1,
