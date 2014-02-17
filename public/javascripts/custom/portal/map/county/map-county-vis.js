@@ -1,35 +1,91 @@
-var vis = angular.module('Ecount.Map.County.Vis',
+var ecountVis = angular.module('Ecount.Map.County.Vis',
 	[]);
 
-vis.directive('visDirective',function() {
-	return {
-		controller: 'VisualizationController'
-	};
-});
+ecountVis.factory('FilterFor',
+	[function() {
 
-vis.factory('StatVisualization', function() {
+		// filter functions for extractor utility...
+		return {
+			districts: function(datum) {
+
+				// computes the sum of all district tally results per candidate...
+				var result = datum.results.reduce(function(prev, next) {
+					return prev.result + next.result;
+				});
+
+				return {
+					'id': datum.id,
+					'name' : datum.name,
+					'count' : result
+				};
+			},
+
+			// takes the dedId (geom gid) and does a filter to find unique data set...
+			ded: function(dedId) {
+
+				return function(datum) {
+
+					var result;
+
+					// for each candidate, extracts the tally result relating to the current view...
+					$.each(datum.results, function(k, d) {
+						if(d.dedId === dedId) {
+							result = d.result;
+							return;
+						}
+					});
+
+					return {
+						'id' : datum.id,
+						'name' : datum.name,
+						'count' : result
+					};
+				}
+			}
+		};
+	}
+])
+
+// extracts tally results from the provided data set following a filter heuristic...
+ecountVis.service('TallyExtractor',
+	[function() {
+
+		return function(filter, dataSet) {
+			return function(callback) {
+				var resultSet = $.map(dataSet, function(datum) {
+					return filter(datum);
+				});
+
+				callback(resultSet);
+			}
+		};
+	}
+]);
+
+ecountVis.service('StatVisualization', function() {
 
 	"use strict";
 
-	return function(domain, dataset) {
+	return function(_domain, _dataset) {
 
-		var dataset = dataset,
+		var dataset = _dataset,
+			domain =  _domain,
 
-			WIDTH = 900,
+			WIDTH = 600,
 			HEIGHT = dataset.length * 30,
 			BAR_HEIGHT_OFFSET = 25,
 
 			ANIMATION_DURATION = 1200,
 			ANIMATION_DELAY = 100,
 
-			BAR_WIDTH_TOTAL = 600,
+			BAR_WIDTH_TOTAL = 460,
 			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length,
 			BAR_MIN_WIDTH = 5,
 			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 1,
 
 			CANVAS_HEIGHT_PADDING = 30,
-			PADDING = [5, 18],
+			PADDING = [5, 15],
 
 			LEGEND_PADDING = 150,
 
@@ -65,6 +121,9 @@ vis.factory('StatVisualization', function() {
 					var ex  = d.count;
 					return xScale(ex) + BAR_MIN_WIDTH;
 				})
+			.attr('dx', function(d, i) {
+				return BAR_WIDTH_TOTAL + PADDING[1];
+			})
 			.style('fill', function(d, i) { return colorScale(i); })
 			.style('stroke', BAR_BORDER_COLOR)
 			.style('stroke-width', BAR_BORDER_WIDTH)
@@ -75,29 +134,53 @@ vis.factory('StatVisualization', function() {
 		chart.selectAll('text.chart')
 			.data(dataset).enter()
 			.append('svg:text')
-			.attr('x', PADDING[0])
+			.attr('x', PADDING[1])
 			.attr('y', function(d, i) { return yScale(i); })
-			.attr('dx', function(d) {
-				var ex  = d.count;
-				return xScale(ex) + BAR_MIN_WIDTH;
-			})
 			.attr('dy', BAR_HEIGHT_OFFSET - BAR_TEXT_PADDING + CANVAS_HEIGHT_PADDING)
 			.attr('text-anchor', 'start')
 			.text(function(d) { return (''+d.name + ': ' + d.count); })
-			.attr('fill', '#8A8A8A');
+			.attr('fill', '#FFFFFF');
 	};
 });
 
-vis.controller('VisualizationController',
-	['$scope', '$element', 'ElectionStatistics', 'StatVisualization',
-	function($scope, $element, ElectionStatistics, StatVisualization)	{
+ecountVis.service('DialogVisualization', function() {
+	"use strict";
+});
 
-		$scope.$on('emptyVisualization', function() {
-			$($element).empty();
-		});
+ecountVis.factory('Visualize', 
+	['FilterFor', 
+	'TallyExtractor', 
+	'StatVisualization', 
+	'DialogVisualization',
+	function(FilterFor, TallyExtractor, StatVisualization, DialogVisualization) {
 
-		$scope.$on('updateVisualization', function(source, data) {
-			StatVisualization($element[0], data);
-		});
+		var COUNTY_RESULTS_VIS_ELEMENT = '#tally-results-vis';
+
+			countyFilter = FilterFor.districts,
+			districtFilter = FilterFor.ded;
+
+		return function(results) {
+			return {
+				county: function() {
+					$(COUNTY_RESULTS_VIS_ELEMENT).empty();
+
+					TallyExtractor(countyFilter, results)(function(resultSet) {
+						return StatVisualization(COUNTY_RESULTS_VIS_ELEMENT, resultSet);
+					});
+				},
+
+				ded: function(dedId) {
+					var dedDialogId = 'ded-results-vis-' + dedId,
+						dialogHTML = '<div id="' + dedDialogId + '"></div>';
+
+					bootbox.alert(dialogHTML);
+
+					var filterWithDEDId = districtFilter(dedId);
+					TallyExtractor(filterWithDEDId, results)(function(resultSet) {
+						return StatVisualization('#'+dedDialogId, resultSet);
+					});
+				}
+			};
+		};
 	}
 ]);

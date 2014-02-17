@@ -83,16 +83,19 @@ map.controller('MapController',
 ]);
 
 map.controller('MapBaseController',
-	['$scope', 'GeomAPI', 'SharedMapService', 'MapStyle',
-	function($scope, GeomAPI, SharedMapService, MapStyle)	{
+	['$scope', 'GeomAPI', 'Map', 'MapStyle',
+	function($scope, GeomAPI, Map, MapStyle)	{
 
 		var IRELAND_ZOOM = 10,
-			MAP_VIEW_DOM_ID = 'map-view';
+			MAP_VIEW_DOM_ID = 'map-view',
+
+			WELCOME_HTML = '<div class="welcome-info"><h1>Welcome to ecount!</h1><p>choose a county to vew some tally statistics</p></div>',
+			WELCOME_POSITION = 'topright';
 
 		$scope.initMap = function() {
 			GeomAPI.countyBounds(function(geom) {
-				SharedMapService.setMap(MAP_VIEW_DOM_ID, {'zoom': IRELAND_ZOOM});
-				SharedMapService.draw(geom, MapStyle.base);
+				Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
+				Map.addContentLayer(WELCOME_HTML, WELCOME_POSITION);
 			});
 		};
 	}

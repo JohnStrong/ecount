@@ -1,15 +1,18 @@
-<div class="container" ng-init="getConstituencies()">
+<div ng-init="getConstituencies()">
 	<div class="county-contain">
 		<div class="county-inner" ng-init="getElections()">
 			<div>
-				<h3 class="page-header text-primary">Tally View</h3>
+				<a href="" class="nav pull-right" ng-click="closeCountyView($event)">Close[x]</a>
+				<div class="header">
+					<h3 class="page-header text-primary">Tally View</h3>
+				</div>
 		    	<div class="row">
 					<div class="col-md-12">
-						<div ng-if="mainTally !== null" class="feed">
+						<div ng-if="mainTally !== null">
 							<div id="live-feed" class="list-group">
 								<div class="list-group-item">
 									<div class="feed-nav navbar-text navbar-right">
-										<div ng-if="mainTally.isLive">
+										<div ng-if="mainTally.live">
 											<div class="status">live!</div>
 										</div>
 									</div>
@@ -20,34 +23,12 @@
 												<small>{{mainTally.election.tallyDate}}</small>
 											</h3>
 										</div>
-										<div class="feed-body">
-											<div class="row">
-												<div class="col-md-3">
-													<div class="list-group-item">
-														<ul>
-															<li ng-repeat="c in constituencies">
-																<a href="" ng-click="mainTally.getConstituencyResults(c.id)" class="btn">
-																{{c.title}}
-																</a>
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="col-md-8">
+										<div class="list-group-item" ng-controller="DistrictsMapController">
+											<div id="imap" ng-init="loadMap()">
+												<div id="county-map-view">
+													<div style="height: 580px"></div>
 												</div>
 											</div>
-										</div>
-									</div>
-								</div>
-								<div ng-if="districtTarget !== null" class="ded-anim" ng-controller="DEDController">
-									<div class="list-group-item">
-										.. to do...
-									</div>
-								</div>
-								<div class="list-group-item" ng-controller="DistrictsMapController">
-									<div id="imap" ng-init="loadMap()">
-										<div id="county-map-view">
-											<div style="height: 580px"></div>
 										</div>
 									</div>
 								</div>

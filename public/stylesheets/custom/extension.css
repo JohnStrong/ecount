@@ -150,18 +150,36 @@ table.gen-table tr:nth-child(1) td {
 	clear: both;
 }
 
-/**  animation **/
-.feed.ng-enter, .feed.ng-leave {
-	-webkit-transition: all 1.5s linear;
-    transition: all 1.5s linear;
+.map-container {
+	position: relative;
 }
 
-.feed.ng-enter, 
-.feed.ng-leave.ng-leave-active {
-	opacity: 0;
+.map-base {
+	position: relative;
 }
 
-.feed.ng-leave, 
-.feed.ng-enter.ng-enter-active {
-	opacity: 1;
+.map-county {
+	position: absolute;
+	width: 96%;
+	top: 0;
+	z-index: 1000;
+}
+
+.county-tally-results.ng-enter, .county-tally-results.ng-leave {
+	-webkit-transition: all .6s linear;
+    transition: all .6s linear;
+}
+
+.county-tally-results.ng-enter, 
+.county-tally-results.ng-leave.ng-leave-active {
+	left: -160px;
+}
+
+.county-tally-results.ng-leave, 
+.county-tally-results.ng-enter.ng-enter-active {
+	left: -10px;
+}
+
+.dropdown-menu {
+	z-index: 2000;
 }

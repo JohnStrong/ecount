@@ -1,9 +1,9 @@
-.bar {
-	fill: blue;
+.county-vis {
+	background-color: #222;
+	opacity: 0.8;
 }
 
-.axis path, .axis line {
-  fill: none;
-  stroke: #222222;
-  shape-rendering: crispEdges;
+.vis-close {
+	float: right;
+	opacity: 1 !important;
 }

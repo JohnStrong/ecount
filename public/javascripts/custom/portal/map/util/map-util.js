@@ -1,5 +1,14 @@
 var mapUtil = angular.module('Ecount.Map.Util', []);
 
+mapUtil.service('Extend', function() {
+	return function(subClass, superClass) {
+		var F = function() {};
+		F.prototype = superClass.prototype;
+		subClass.prototype = new F();
+		subClass.prototype.constructor = subClass;
+	}
+})
+
 mapUtil.factory('VendorTileLayer', function() {
 
 	var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png',
@@ -54,7 +63,7 @@ mapUtil.factory('GeomAPI', ['$http',
 	}
 ]);
 
-mapUtil.factory('SharedMapService',
+mapUtil.factory('Map',
 	['$rootScope', 'VendorTileLayer',
 	function($rootScope, VendorTileLayer) {
 
@@ -100,33 +109,54 @@ mapUtil.factory('SharedMapService',
 			});
 		};
 
-		function removeMap() {
-			if(map !== null) {
-				map.remove();
-			}
+		function createInfoControl(content, position) {
+			var control = L.control({'position': position});
+
+			control.onAdd = function(map) {
+				this.draw();
+				return this.div;
+			};
+
+			control.draw = function() {
+				this.div = content;
+			};
+
+			control.empty = function() {
+				this.div = '';
+			};
+
+			control.addTo(map);
+			return control;
 		}
 
 		return {
 
-			setMap: function(mapId, props) {
+			draw: function(_mapId, _geom, props) {
 
-				removeMap();
+				var style = props.style || 'default';
+					zoom = props.zoom || 12;
 
-				var zoom = props.zoom || 12;
+				map = L.map(_mapId, {"zoom" : zoom });
 
-				map = L.map(mapId, {"zoom" : zoom });
 				layer = VendorTileLayer(map);
-			},
-
-			draw: function(_geom, _style) {
 
 				geoJson = L.geoJson(_geom, {
-					style: _style,
+					style: style,
 					onEachFeature: enableInteraction
 				}).addTo(map);
 
 				var bounds = geoJson.getBounds();
 				map.fitBounds(bounds);
+
+				return this;
+			},
+
+			addContentLayer: function(_content, _position) {
+				return createInfoControl(_content, _position);
+			},
+
+			getMap: function() {
+				return map;
 			}
 		};
 	}
