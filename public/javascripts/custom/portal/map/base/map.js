@@ -54,6 +54,13 @@ map.controller('MapController',
 			$route.reload();
 		}
 
+		$scope.closeCountyView = function() {
+			$scope.countyTarget = null;
+
+			$location.path('/');
+			$route.reload();
+		};
+
 		$scope.compileDom = function(domStr) {
 			var compiledDom = $compile(domStr),
 				newScope = $scope.$new();
@@ -79,8 +86,12 @@ map.controller('MapController',
 			});
 		}
 
+		// if click on map county... (i.e. Galway)...
 		$scope.$on('target-change', function(event, args) {
+
 			// check whether we are loading a district or all districts
+			// if districts, open county view...
+
 			if(!$scope.renderPath[2]) {
 				$scope.countyTarget = args[0];
 				loadCountyView();

@@ -118,11 +118,12 @@ mapUtil.factory('Map',
 			};
 
 			control.draw = function() {
+				console.log(content);
 				this.div = content;
 			}
 
 			control.empty = function() {
-				this.div = '';
+				$('#tally-results-vis').empty();
 			};
 
 			control.addTo(map);
