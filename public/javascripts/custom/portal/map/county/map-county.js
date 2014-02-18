@@ -31,7 +31,7 @@ mapCounty.factory('Tally',
 
 		function Live(election, constituencies) {
 
-			this.FEED_QUERY_TIMER = 100000;
+			this.FEED_QUERY_TIMER = 10000;
 
 			this.election = election;
 
@@ -206,7 +206,7 @@ mapCounty.controller('CountyController',
 			if($scope.renderPath[2]) {
 				var dedId = args[0].gid;
 				var results = $scope.mainTally.tallyResults.results;
-				
+
 				Visualize(results).ded(dedId);
 			}
 		});
@@ -270,6 +270,7 @@ mapCounty.controller('DistrictsMapController',
 	}
 ]);
 
+// directive that acts as a container for map control visualizations...
 mapCounty.directive('visDirective', function() {
 	return {
 		restrict: 'E',
