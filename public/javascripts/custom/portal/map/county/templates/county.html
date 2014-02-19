@@ -1,32 +1,36 @@
 <div ng-init="getConstituencies()">
 	<div class="county-contain">
-		<div class="county-inner" ng-init="getElections()">
-			<div>
-				<a href="" class="btn nav pull-right" ng-click="dump()">Close[x]</a>
-				<div class="header">
-					<h3 class="page-header text-primary">Tally View</h3>
-				</div>
-		    	<div class="row">
-					<div class="col-md-12">
-						<div ng-if="mainTally !== null">
-							<div id="live-feed" class="list-group">
-								<div class="list-group-item">
-									<div class="feed-nav navbar-text navbar-right">
-										<div ng-if="mainTally.live">
-											<div class="status">live!</div>
+		<div ng-if="constituencies !== null">
+			<div class="county-inner" ng-init="getElections()">
+				<div>
+					<a href="" class="btn nav pull-right" ng-click="dump()">Close[x]</a>
+					<div class="header">
+						<h3 class="page-header text-primary">Tally View</h3>
+					</div>
+			    	<div class="row">
+						<div class="col-md-12">
+							<div ng-if="mainTally !== null">
+								<div id="live-feed" class="list-group">
+									<div class="list-group-item">
+										<div class="feed-nav navbar-text navbar-right">
+											<div ng-if="mainTally.live">
+												<div class="status">live!</div>
+											</div>
 										</div>
-									</div>
-									<div class="feed-main">
-										<div class="feed-header">
-											<h3 class="page-header">
-												{{mainTally.election.title}}
-												<small>{{mainTally.election.tallyDate}}</small>
-											</h3>
-										</div>
-										<div class="list-group-item" ng-controller="DistrictsMapController">
-											<div id="imap" ng-init="loadMap()">
-												<div id="county-map-view">
-													<div style="height: 580px"></div>
+										<div class="feed-main">
+											<div class="feed-header">
+												<h3 class="page-header">
+													{{mainTally.election.title}}
+													<small>{{mainTally.election.tallyDate}}</small>
+												</h3>
+											</div>
+											<div ng-controller="DistrictVisController">
+											</div>
+											<div class="list-group-item" ng-controller="DistrictsMapController">
+												<div id="imap" ng-init="loadMap()">
+													<div id="county-map-view">
+														<div style="height: 580px"></div>
+													</div>
 												</div>
 											</div>
 										</div>
@@ -35,61 +39,43 @@
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="row" ng-controller="ElectionController">
-					<div class="col-md-12">
-						<div class="tally-results-body">
-							<div class="page-header">
-								<div class="form-inline" role="form">
-									<div class="form-group">
-										<h3 class="text-primary">Previous Tally Results</h3>
-										<span id="election-nav-pane">
-											<select ng-model="election" class="form-control"
-												ng-options="election.title for election in elections">
-												<option value="">-- choose election --</option>
-											</select>
-										</span>
+					<div class="row" ng-controller="ElectionController">
+						<div class="col-md-12">
+							<div class="tally-results-body">
+								<div class="page-header">
+									<div class="form-inline" role="form">
+										<div class="form-group">
+											<h3 class="text-primary">Previous Tally Results</h3>
+											<span id="election-nav-pane">
+												<select ng-model="election" class="form-control"
+													ng-options="election.title for election in elections">
+													<option value="">-- choose election --</option>
+												</select>
+											</span>
+										</div>
 									</div>
 								</div>
-							</div>
-							<div ng-switch on="election !== null">
-								<div ng-switch-when="true">
-									<div class="col-md-12">
-							    		<!-- vis controller -->
-							    		<div id="candidate" class="candidate-stats">
-							    			<div ng-switch on="constituencyTallyResults.length > 0">
-							    				<div ng-switch-when="true">
-										    		<div class="candidate-group">
-										    			<!-- both views display with the same style right now-->
-										    			<div ng-switch on="renderPath[2]">
-										    				<div ng-switch-when="districts">
-														    	<stat-tab>
-														    		<stat-pane ng-repeat="c in constituencyTallyResults" title="{{c.title}}">
-														    			<div id="{{c.title}}" width="900" height="400" vis-directive></div>
-														    		</stat-pane>
-														    	</stat-tab>
-														    </div>
-														    <div ng-switch-when="ded">
-														    	<stat-tab>
-														    		<stat-pane ng-repeat="c in constituencyTallyResults" title="{{c.title}}">
-														    			<div id="{{c.title}}" width="900" height="400" vis-directive></div>
-														    		</stat-pane>
-														    	</stat-tab>
-														    </div>
+								<div ng-switch on="election !== null">
+									<div ng-switch-when="true">
+										<div class="col-md-12">
+								    		<!-- vis controller -->
+								    		<div id="candidate" class="candidate-stats">
+								    			<div ng-switch on="constituencyTallyResults.length > 0">
+								    				<div ng-switch-when="true">
+											    		<!-- tally view object -->
+													</div>
+													<div ng-switch-when="false">
+														<div class="alert alert-warning">
+															No tally results available...
 														</div>
-												    </div>
-												</div>
-												<div ng-switch-when="false">
-													<div class="alert alert-warning">
-														No tally results available...
 													</div>
 												</div>
 											</div>
-										</div>
-							    	</div>
-								</div>
-								<div ng-switch-when="false">
-									<div class="alert alert-info">Choose an election to view its tally results...</div>
+								    	</div>
+									</div>
+									<div ng-switch-when="false">
+										<div class="alert alert-info">Choose an election to view its tally results...</div>
+									</div>
 								</div>
 							</div>
 						</div>

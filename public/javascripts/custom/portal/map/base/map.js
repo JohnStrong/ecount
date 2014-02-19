@@ -81,6 +81,8 @@ map.controller('MapController',
 				// remove latest and push it up to the feed view... (CountyController)
 				var latestElection = elections.splice(0, 1);
 
+				console.log('elections gotten');
+
 				$scope.$broadcast('previousTallys', elections);
 				$scope.$broadcast('latestTally', latestElection[0]);
 			});

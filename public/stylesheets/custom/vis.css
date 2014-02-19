@@ -10,6 +10,16 @@
     z-index: 2000;
 }
 
+.info-pane .alert {
+	margin: 0 !important;
+	padding: 10% 20%;
+}
+
+.alert-vis {
+	background-color: #222222;
+	color: #FFFFFF;
+}
+
 .county-vis {
 	opacity: 0.9;
 }

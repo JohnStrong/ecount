@@ -67,13 +67,17 @@ mapUtil.factory('Map',
 	['$rootScope', 'VendorTileLayer',
 	function($rootScope, VendorTileLayer) {
 
-		var HIGHLIGHT_WEIGHT = 2;
-		var HIGHLIGHT_CLICK_COLOR = '#555';
-		var HIGHLIGHT_FILL_OPACITY = 0.5;
+		var HIGHLIGHT_WEIGHT = 2,
+			HIGHLIGHT_CLICK_COLOR = '#555',
+			HIGHLIGHT_FILL_OPACITY = 0.5,
 
-		var map = null;
-		var layer = null;
-		var geoJson = null;
+			VIS_CONTAINER_ID = '#tally-results-vis',
+
+			map = null,
+
+			layer = null,
+
+			geoJson = null;
 
 		function enableInteraction(feature, layer) {
 
@@ -118,12 +122,15 @@ mapUtil.factory('Map',
 			};
 
 			control.draw = function() {
-				console.log(content);
 				this.div = content;
+			};
+
+			control.show = function() {
+				$(VIS_CONTAINER_ID).show();
 			}
 
 			control.empty = function() {
-				$('#tally-results-vis').empty();
+				$(VIS_CONTAINER_ID).hide();
 			};
 
 			control.addTo(map);

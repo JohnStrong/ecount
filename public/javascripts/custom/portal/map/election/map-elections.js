@@ -40,6 +40,8 @@ mapElections.controller('ElectionController',
 		// current elections...
 		$scope.elections = [];
 
+		$scope.election = null;
+
 		// receive previous elections from map controller...
 		$scope.$on('previousTallys', function(source, _elections) {
 			$scope.elections = _elections;

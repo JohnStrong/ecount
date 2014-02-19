@@ -29,7 +29,8 @@ ecountVis.factory('FilterFor',
 
 					// for each candidate, extracts the tally result relating to the current view...
 					$.each(datum.results, function(k, d) {
-						if(d.dedId === dedId) {
+						// hard coded for testing purposes for now...
+						if(d.dedId === 2469) {
 							result = d.result;
 							return;
 						}
@@ -64,56 +65,76 @@ ecountVis.service('TallyExtractor',
 
 ecountVis.service('StatVisualization', function() {
 
-	"use strict";
+	'use strict';
 
-	return function(_domain, _dataset) {
+	return function(_domain, _dataset, props) {
 
 		var dataset = _dataset,
 			domain =  _domain,
 
-			WIDTH = 600,
-			HEIGHT = dataset.length * 30,
-			BAR_HEIGHT_OFFSET = 25,
+			// general chart...
+			CANVAS_HEIGHT_PADDING = 25,
+			PADDING = [20, 180],
+
+			WIDTH = props.width,
+			HEIGHT = dataset.length * CANVAS_HEIGHT_PADDING,
+
+			BAR_HEIGHT_OFFSET = HEIGHT / dataset.length,
 
 			ANIMATION_DURATION = 1200,
 			ANIMATION_DELAY = 100,
 
-			BAR_WIDTH_TOTAL = 380,
-			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length,
-			BAR_MIN_WIDTH = 5,
+			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length - PADDING[0],
+			BAR_MIN_WIDTH = 1,
 			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 1,
-
-			CANVAS_HEIGHT_PADDING = 30,
-			PADDING = [5, 20],
 
 			LEGEND_PADDING = 150,
 
 			TEXT_OFFSET = 10,
 			BAR_TEXT_PADDING = 8,
 
-			colorScale = d3.scale.category20c();
+			// chart axis...
+			XAXIS_ORIENT = 'bottom',
+			XAXIS_TICK_TOTAL = 8,
+			XAXIS_FILL_COLOR = '#FFFFFF',
+
+			// legend...
+			LEGEND_RECT_WIDTH = 20,
+			LEGEND_RECT_HEIGHT = 10,
+
+			LEGEND_TEXT_HEIGHT = 15,
+			LEGEND_TEXT_WIDTH = 50;
 
 		var chart = d3.select(domain)
+			.attr('class', 'info-pane')
 			.append('svg:svg')
 			.attr('width', WIDTH)
-			.attr('height', HEIGHT);
+			.attr('height', HEIGHT + PADDING[0]);
 
+		// d3 api specific vars...
 		var xScale = d3.scale.linear().domain([0,
 				d3.max(dataset, function(d) {
-					return d.count; })]).rangeRound([0, BAR_WIDTH_TOTAL]),
+					return d.count; })]).range([0, WIDTH - PADDING[1] - PADDING[0]]),
 
-			yScale = d3.scale.linear().domain([0, dataset.length]).range([0, BAR_HEIGHT_TOTAL]);
+			yScale = d3.scale.linear().domain([0, dataset.length]).range([BAR_HEIGHT_OFFSET, 
+				BAR_HEIGHT_TOTAL]),
+
+			// to scale the xaxis on chart correctly...
+			xAxis = d3.svg.axis()
+		        .scale(xScale)
+		        .orient(XAXIS_ORIENT)
+		        .ticks(XAXIS_TICK_TOTAL),
+
+			colorScale = d3.scale.category20c();
 
 		// begin visualization.....
-		chart.selectAll('rect')
+		var chartMain = chart.selectAll('rect')
 			.data(dataset)
 			.enter().append('svg:rect')
-			.attr('x', function(d) {
-				return PADDING[1] + BAR_WIDTH_TOTAL/3;
-			})
-			.attr('y', function(d, i) { return yScale(i) + CANVAS_HEIGHT_PADDING; })
-			.attr('height', BAR_HEIGHT_OFFSET)
+			.attr('x', PADDING[0])
+			.attr('y', function(d, i) { return yScale(i) - PADDING[0]/2; })
+			.attr('height', BAR_HEIGHT_OFFSET/1.5)
 			.transition()
 				.ease('bounce')
 				.duration(ANIMATION_DURATION)
@@ -126,56 +147,99 @@ ecountVis.service('StatVisualization', function() {
 			.style('fill', function(d, i) { return colorScale(i); })
 			.style('stroke', BAR_BORDER_COLOR)
 			.style('stroke-width', BAR_BORDER_WIDTH)
-			.attr('index_value', function(d, i) { return "item-" + i; })
+			.attr('index_value', function(d, i) { return 'item-' + i; })
 			.attr('color_value', function(d, i) { return colorScale(i); });
 
-		//append values onto end of bar
-		chart.selectAll('text.chart')
-			.data(dataset).enter()
-			.append('svg:text')
-			.attr('x', PADDING[1])
-			.attr('y', function(d, i) { return yScale(i); })
-			.attr('dy', BAR_HEIGHT_OFFSET - BAR_TEXT_PADDING + CANVAS_HEIGHT_PADDING)
-			.attr('text-anchor', 'start')
-			.text(function(d) { return (''+d.name + ': ' + d.count); })
-			.attr('fill', '#FFFFFF');
-	};
-});
+		// chart axis...
+		chart.append('g')
+			.attr('class', 'axis')
+			.attr('transform', 'translate(' + PADDING[0] + ',' + 
+				(BAR_HEIGHT_TOTAL) + ')')
+			.style('fill', XAXIS_FILL_COLOR)
+			.call(xAxis);
 
-ecountVis.service('DialogVisualization', function() {
-	"use strict";
+		// legend...
+		chart.selectAll('g.legend').data(dataset)
+			.enter()
+			.append('g')
+			.each(function(d, i) {
+				var g = d3.select(this);
+
+				g.append('rect')
+					.attr('x', WIDTH - PADDING[1] + PADDING[0])
+					.attr('y', PADDING[0]/2 + (PADDING[0] * i))
+					.attr('width', LEGEND_RECT_WIDTH)
+					.attr('height', LEGEND_RECT_HEIGHT)
+					.style('fill', colorScale(i));
+
+				g.append('text')
+					.attr('x', WIDTH - PADDING[1] + PADDING[0]*2.5)
+					.attr('y', PADDING[0] + (PADDING[0] * i))
+					.attr('height', LEGEND_TEXT_HEIGHT)
+					.attr('width', LEGEND_TEXT_WIDTH)
+					.style('fill', colorScale(i))
+					.text('' + d.name);
+			});
+	};
 });
 
 ecountVis.factory('Visualize', 
 	['FilterFor', 
 	'TallyExtractor', 
-	'StatVisualization', 
-	'DialogVisualization',
-	function(FilterFor, TallyExtractor, StatVisualization, DialogVisualization) {
+	'StatVisualization',
+	function(FilterFor, TallyExtractor, StatVisualization) {
 
-		var countyFilter = FilterFor.districts,
+		var FAILED_VIS_MESSAGE = '<div class="alert alert-vis">' +
+		'<h3>Oops!</h3>' +
+		'<p>could not visualize tally results<p>' +
+		'</div>',
+
+		COUNTY_VIS_PIXEL_WIDTH = 520,
+
+			countyFilter = FilterFor.districts,
 			districtFilter = FilterFor.ded;
 
-		return function(results) {
+		function failedVisualizationView(container) {
+			container.html(FAILED_VIS_MESSAGE);
+		}
+
+		return function(results, elem) {
 			
 			return {
-				county: function(elem) {
+				county: function() {
 					if(elem) elem.empty();
 
 					TallyExtractor(countyFilter, results)(function(resultSet) {
-						return StatVisualization(elem[0], resultSet);
+						if(!resultSet || resultSet.length <= 0) {
+							failedVisualizationView(elem);
+							return;
+						}
+
+						return StatVisualization(elem[0], resultSet, {'width': COUNTY_VIS_PIXEL_WIDTH});
 					});
 				},
 
 				ded: function(dedId) {
-					var dedDialogId = 'ded-results-vis-' + dedId,
-						dialogHTML = '<div id="' + dedDialogId + '"></div>';
 
-					bootbox.alert(dialogHTML);
+					// empty current element to make way for fresh results...
+					if(elem) elem.empty();
 
+					// get correct filter for ded results...
 					var filterWithDEDId = districtFilter(dedId);
-					TallyExtractor(filterWithDEDId, results)(function(resultSet) {
-						return StatVisualization('#'+dedDialogId, resultSet);
+					
+					$.each(results, function(k, result) {
+						
+						TallyExtractor(filterWithDEDId, result)(function(resultSet) {
+							console.log('extractor', resultSet);
+
+							if(!resultSet || resultSet.length <= 0) {
+								failedVisualizationView(elem);
+								return;
+							}
+
+							StatVisualization(elem[0], resultSet, {'width': elem.width()});
+							return;
+						});
 					});
 				}
 			};
