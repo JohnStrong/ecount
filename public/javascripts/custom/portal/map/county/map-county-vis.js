@@ -230,6 +230,7 @@ ecountVis.factory('Visualize',
 					$.each(results, function(k, result) {
 						
 						TallyExtractor(filterWithDEDId, result)(function(resultSet) {
+							
 							console.log('extractor', resultSet);
 
 							if(!resultSet || resultSet.length <= 0) {
