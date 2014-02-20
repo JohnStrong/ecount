@@ -73,7 +73,8 @@ mapCounty.factory('Tally',
 			// values set by tally results function (contains all candidate results by constituency)...
 			this.constitunecyResults = [];
 
-			this.intervalId = setInterval(this.getTallyResults.bind(this), this.FEED_QUERY_TIMER);
+			this.intervalId = setInterval(this.getTallyResults.bind(this), 
+				this.FEED_QUERY_TIMER);
 
 			this.tallyResults = null;
 
