@@ -14,6 +14,27 @@ import models.ecount.stat.{PartyStatsExtractor, ElectionStatsExtractor, TallyRes
 
 object StatsController extends Controller {
 
+  def counties = Action.async {
+
+    def getCounties = {
+      withConnection { implicit conn => {
+          StatStore.getCounties().map(county => {
+            Json.obj(
+              "id" ->county.id,
+              "name" -> county.name
+            )
+          })
+        }
+      }
+    }
+
+    val result = scala.concurrent.Future { getCounties }
+    result.map{i => {
+        Ok(Json.toJson(i))
+      }
+    }
+  }
+
   def electionEntries = Action.async {
 
     def getAvailableElections = {

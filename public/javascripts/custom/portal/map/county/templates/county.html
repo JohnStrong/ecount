@@ -40,41 +40,37 @@
 						</div>
 					</div>
 					<div class="row" ng-controller="ElectionController">
-						<div class="col-md-12">
+						<div class="col-md-12" ng-if="elections.length > 0 && counties.length > 0">
 							<div class="tally-results-body">
-								<div class="page-header">
-									<div class="form-inline" role="form">
-										<div class="form-group">
-											<h3 class="text-primary">Previous Tally Results</h3>
-											<span id="election-nav-pane">
-												<select ng-model="election" class="form-control"
-													ng-options="election.title for election in elections">
-													<option value="">-- choose election --</option>
-												</select>
-											</span>
+								<div role="form">
+									<div class="form-group">
+										<h3 class="text-primary page-header">Previous Tally Results</h3>
+										<div id="election-nav-pane" class="election-nav">
+											<select ng-model="election" class="form-control"
+												ng-options="e.title for e in elections">
+												<option value="">-- choose election --</option>
+											</select>
+											<select ng-model="county" class="form-control"
+													ng-options="c.name for c in counties">
+													<option value="">-- choose county --</option>
+											</select>
 										</div>
 									</div>
 								</div>
-								<div ng-switch on="election !== null">
+								<div ng-switch on="county !== null && election !== null" class="tally-container">
 									<div ng-switch-when="true">
-										<div class="col-md-12">
-								    		<!-- vis controller -->
-								    		<div id="candidate" class="candidate-stats">
-								    			<div ng-switch on="constituencyTallyResults.length > 0">
-								    				<div ng-switch-when="true">
-											    		<!-- tally view object -->
-													</div>
-													<div ng-switch-when="false">
-														<div class="alert alert-warning">
-															No tally results available...
-														</div>
-													</div>
-												</div>
-											</div>
-								    	</div>
+										<div ng-controller="PreviousTallyController">
+											<h3 class="text-primary">{{county.name}}</h3>
+											<div class="col-md-12">
+									    		<!-- vis controller -->
+									    		working...
+									    	</div>
+									    </div>
 									</div>
 									<div ng-switch-when="false">
-										<div class="alert alert-info">Choose an election to view its tally results...</div>
+										<div class="alert alert-info">
+											Choose an election and county to view previous tally results...
+										</div>
 									</div>
 								</div>
 							</div>

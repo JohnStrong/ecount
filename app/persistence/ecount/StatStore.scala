@@ -3,8 +3,22 @@ package persistence.ecount
 import org.mybatis.scala.mapping._
 
 import models.ecount.stat._
+import models.ecount.map.County
 
   object StatStore {
+
+  val getCounties = new SelectList[County] {
+
+    resultMap = new ResultMap[County] {
+      result(property = "id",  column = "county_id")
+      result(property = "name", column = "county")
+    }
+
+    def xsql = <xsql>
+      SELECT county_id, county
+      FROM counties;
+    </xsql>
+  }
 
   val getElectionEntries = new SelectList[Election]{
 
@@ -75,6 +89,7 @@ import models.ecount.stat._
   }
 
   def bind = Seq(
+    getCounties,
     getElectionEntries,
     getCountyConstituencies,
     getConstituencyElectionCandidates,

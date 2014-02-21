@@ -23,6 +23,8 @@ GET     /portal/account                   controllers.PortalController.account
 GET     /tally/view                       controllers.TallyController.loadView
 
 # Statistics specific routes
+GET     /api/counties/                      controllers.StatsController.counties
+
 GET     /api/elections/                     controllers.StatsController.electionEntries
 
 GET     /api/elections/constituencies/:cid  controllers.StatsController.constituencies(cid: Long)

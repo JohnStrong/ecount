@@ -170,16 +170,42 @@ table.gen-table tr:nth-child(1) td {
     transition: all .6s linear;
 }
 
-.county-tally-results.ng-enter, 
+.county-tally-results.ng-enter,
 .county-tally-results.ng-leave.ng-leave-active {
 	left: -160px;
 }
 
-.county-tally-results.ng-leave, 
+.county-tally-results.ng-leave,
 .county-tally-results.ng-enter.ng-enter-active {
 	left: -10px;
 }
 
 .dropdown-menu {
 	z-index: 2000;
+}
+
+.election-nav {
+	padding-right: 1%;
+	padding-left: 2%;
+	padding-bottom: .5%;
+	width: 96%;
+	margin: 0 auto;
+}
+
+.election-nav select:first-child {
+	width: 40%;
+	float: left;
+}
+
+.election-nav select:last-child {
+	width: 40%;
+	float: right;
+}
+
+.election-nav:after {
+	clear: both;
+}
+
+.tally-container {
+	clear: both;
 }
