@@ -106,9 +106,6 @@ table.gen-table tr:nth-child(1) td {
 
 .county-inner {
 	background-color: #FFFFFF;
-	padding: 0 1.8%;
-	padding-top: 0.5%;
-	padding-bottom: 5%;
 
 	border: 2px solid #333333;
 	border-radius: .25em;
@@ -207,11 +204,16 @@ table.gen-table tr:nth-child(1) td {
 	clear: both;
 }
 
-.tally-container-enter,
-.tally-container-leave {
-	-webkit-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	-moz-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	-ms-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	-o-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+.county-heading-panel {
+	background-color: #333333;
+	padding: 1%;
+}
+
+.county-heading-panel button.close {
+	opacity: 1;
+	color: #EEEEEE !important;
+}
+
+.county-body {
+	margin-top: 10px;
 }

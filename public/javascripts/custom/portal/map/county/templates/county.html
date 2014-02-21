@@ -2,16 +2,18 @@
 	<div class="county-contain">
 		<div ng-if="constituencies !== null">
 			<div class="county-inner" ng-init="getElections()">
-				<div class="container">
+				<div class="county-heading-panel">
 					<div class="row">
-						<a href="" class="btn nav pull-right" ng-click="dump()">
-							<h3>Close[x]</h3>
-						</a>
+						<div class="col-md-12">
+							<button type="button" class="close" aria-hidden="true" ng-click="dump()">&times;</button>
+						</div>
 					</div>
+				</div>
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12">
 							<div ng-if="mainTally !== null">
-								<div id="live-feed" class="list-group">
+								<div id="live-feed" class="list-group county-body">
 									<div class="list-group-item">
 										<div class="feed-nav navbar-text navbar-right">
 											<div ng-if="mainTally.live">
