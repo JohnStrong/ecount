@@ -1,5 +1,4 @@
-var ecountVis = angular.module('Ecount.Map.County.Vis',
-	[]);
+var ecountVis = angular.module('Ecount.Map.County.Vis', []);
 
 ecountVis.factory('FilterFor',
 	[function() {

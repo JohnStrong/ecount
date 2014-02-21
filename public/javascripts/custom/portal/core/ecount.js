@@ -4,7 +4,8 @@ var ecount = angular.module('Ecount',
 'ngAnimate',
 'Ecount.Account',
 'Ecount.Map',
-'Ecount.Map.County',
+'Ecount.Map.County.Main',
+'Ecount.Map.County.Previous',
 'Ecount.Map.Elections',
 'Ecount.Map.County.Vis'
 ]);
