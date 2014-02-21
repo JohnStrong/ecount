@@ -7,10 +7,12 @@ ecountVis.factory('FilterFor',
 		// filter functions for extractor utility...
 		return {
 			districts: function(datum) {
-
 				// computes the sum of all district tally results per candidate...
 				var result = datum.results.reduce(function(prev, next) {
-					return prev.result + next.result;
+					var prev = prev.result || 0,
+						next = next.result || 0;
+
+					return prev + next;
 				});
 
 				return {
@@ -107,6 +109,7 @@ ecountVis.service('StatVisualization', function() {
 			LEGEND_TEXT_WIDTH = 50;
 
 		var chart = d3.select(domain)
+			.append('div')
 			.attr('class', 'info-pane')
 			.append('svg:svg')
 			.attr('width', WIDTH)
@@ -117,7 +120,7 @@ ecountVis.service('StatVisualization', function() {
 				d3.max(dataset, function(d) {
 					return d.count; })]).range([0, WIDTH - PADDING[1] - PADDING[0]]),
 
-			yScale = d3.scale.linear().domain([0, dataset.length]).range([BAR_HEIGHT_OFFSET, 
+			yScale = d3.scale.linear().domain([0, dataset.length]).range([BAR_HEIGHT_OFFSET,
 				BAR_HEIGHT_TOTAL]),
 
 			// to scale the xaxis on chart correctly...
@@ -153,7 +156,7 @@ ecountVis.service('StatVisualization', function() {
 		// chart axis...
 		chart.append('g')
 			.attr('class', 'axis')
-			.attr('transform', 'translate(' + PADDING[0] + ',' + 
+			.attr('transform', 'translate(' + PADDING[0] + ',' +
 				(BAR_HEIGHT_TOTAL) + ')')
 			.style('fill', XAXIS_FILL_COLOR)
 			.call(xAxis);
@@ -183,9 +186,9 @@ ecountVis.service('StatVisualization', function() {
 	};
 });
 
-ecountVis.factory('Visualize', 
-	['FilterFor', 
-	'TallyExtractor', 
+ecountVis.factory('Visualize',
+	['FilterFor',
+	'TallyExtractor',
 	'StatVisualization',
 	function(FilterFor, TallyExtractor, StatVisualization) {
 
@@ -204,33 +207,36 @@ ecountVis.factory('Visualize',
 		}
 
 		return function(results, elem) {
-			
+
 			return {
-				county: function() {
+				county: function(idealWidth) {
 					if(elem) elem.empty();
 
+					var width = idealWidth || COUNTY_VIS_PIXEL_WIDTH;
+
 					TallyExtractor(countyFilter, results)(function(resultSet) {
+
 						if(!resultSet || resultSet.length <= 0) {
 							failedVisualizationView(elem);
 							return;
 						}
 
-						return StatVisualization(elem[0], resultSet, {'width': COUNTY_VIS_PIXEL_WIDTH});
+						return StatVisualization(elem[0], resultSet, {'width': width});
 					});
 				},
 
-				ded: function(dedId) {
+				ded: function(dedId, props) {
 
 					// empty current element to make way for fresh results...
 					if(elem) elem.empty();
 
 					// get correct filter for ded results...
 					var filterWithDEDId = districtFilter(dedId);
-					
+
 					$.each(results, function(k, result) {
-						
+
 						TallyExtractor(filterWithDEDId, result)(function(resultSet) {
-							
+
 							console.log('extractor', resultSet);
 
 							if(!resultSet || resultSet.length <= 0) {

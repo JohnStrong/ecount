@@ -109,6 +109,11 @@ table.gen-table tr:nth-child(1) td {
 	padding: 0 1.8%;
 	padding-top: 0.5%;
 	padding-bottom: 5%;
+
+	border: 2px solid #333333;
+	border-radius: .25em;
+		-moz-border-radius: .25em;
+		-webket-border-radius: .25em;
 }
 
 .tally-results-heading {
@@ -122,7 +127,7 @@ table.gen-table tr:nth-child(1) td {
 }
 
 .alert.alert-info {
-	width: 80%;
+	width: 90%;
 	margin: 0 auto;
 	padding: 5%;
 	text-align: center;
@@ -165,7 +170,8 @@ table.gen-table tr:nth-child(1) td {
 	z-index: 1000;
 }
 
-.county-tally-results.ng-enter, .county-tally-results.ng-leave {
+.county-tally-results.ng-enter,
+.county-tally-results.ng-leave {
 	-webkit-transition: all .6s linear;
     transition: all .6s linear;
 }
@@ -192,20 +198,20 @@ table.gen-table tr:nth-child(1) td {
 	margin: 0 auto;
 }
 
-.election-nav select:first-child {
-	width: 40%;
-	float: left;
-}
-
-.election-nav select:last-child {
-	width: 40%;
-	float: right;
+.election-nav select {
+	display: inline-block;
+	width: 49%;
 }
 
 .election-nav:after {
 	clear: both;
 }
 
-.tally-container {
-	clear: both;
+.tally-container-enter,
+.tally-container-leave {
+	-webkit-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-moz-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-ms-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-o-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
 }

@@ -45,7 +45,7 @@ mapCounty.factory('Tally',
 
 		// set results data to tally results object with the added update over time for live data...
 		Tally.prototype.getConstituencyResults = function(cid) {
-			
+
 			this.getElectionTallyByConstituency(cid, function(results) {
 				console.log('callback', this, results);
 				this.tallyResults = results;
@@ -73,7 +73,7 @@ mapCounty.factory('Tally',
 			// values set by tally results function (contains all candidate results by constituency)...
 			this.constitunecyResults = [];
 
-			this.intervalId = setInterval(this.getTallyResults.bind(this), 
+			this.intervalId = setInterval(this.getTallyResults.bind(this),
 				this.FEED_QUERY_TIMER);
 
 			this.tallyResults = null;
@@ -265,7 +265,7 @@ mapCounty.controller('DistrictsMapController',
 		var DISTRICTS_ZOOM = 16,
 			DISTRICTS_VIEW_DOM_ID = 'county-map-view',
 
-			MAP_CONTENT_LIST = '<ul class="well">' +
+			MAP_CONTENT_LIST = '<ul class="well info-pane">' +
 			'<li ng-repeat="c in constituencies">' +
 			'<a href="" ng-click="visConstituencyResults(c.id)" class="btn">' +
 			'{{c.title}}' +
@@ -317,16 +317,16 @@ mapCounty.controller('DistrictsMapController',
 			var countyId = $scope.countyTarget.id,
 
 				templates = compileTemplates();
-		
+
 			// get ed geoms and set up map controls to display interactive content...
 			GeomAPI.electoralDistricts(countyId, function(geom) {
-				
+
 				Map.draw(DISTRICTS_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
 
 				Map.addContentLayer(templates[0], LIST_CONTENT_POSITION);
 
 				// districts vis control...
-				$scope.districtsVisControl = Map.addContentLayer(templates[1], 
+				$scope.districtsVisControl = Map.addContentLayer(templates[1],
 					DISTRICTS_VIS_CONTENT_POSITION);
 
 				console.log('vis control', $scope.districtsVisControl);
@@ -351,7 +351,7 @@ mapCounty.controller('DistrictsVisController',
 		// watch for updates to tally results (change on live update or selection)...
 		$scope.$watch('mainTally.tallyResults', function() {
 			if($scope.mainTally.tallyResults) {
-				
+
 				console.log('called distircts', $scope);
 
 				// set the vis container to visible before begining visualization...
@@ -365,13 +365,6 @@ mapCounty.controller('DistrictsVisController',
 	}
 ]);
 
-mapCounty.directive('districtVisDirective', function() {
-	return {
-		restrict: 'E',
-		controller: 'DistrictVisController'
-	};
-});
-
 mapCounty.controller('DistrictVisController',
 	['$scope', '$element', 'Visualize',
 	function($scope, $element, Visualize) {
@@ -380,7 +373,7 @@ mapCounty.controller('DistrictVisController',
 
 		function visualizeDistrictResults() {
 			var results = [],
-				
+
 				constitunecyResults = $scope.mainTally.constitunecyResults;
 
 			for(var r in constitunecyResults) {
@@ -395,7 +388,7 @@ mapCounty.controller('DistrictVisController',
 
 		}
 
-		// if constituency results change we have to update vis with new results... 
+		// if constituency results change we have to update vis with new results...
 		$scope.$on('districtChange', function(source, gid) {
 			$scope.districtId = gid;
 			visualizeDistrictResults();

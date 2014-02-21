@@ -2,12 +2,13 @@
 	<div class="county-contain">
 		<div ng-if="constituencies !== null">
 			<div class="county-inner" ng-init="getElections()">
-				<div>
-					<a href="" class="btn nav pull-right" ng-click="dump()">Close[x]</a>
-					<div class="header">
-						<h3 class="page-header text-primary">Tally View</h3>
+				<div class="container">
+					<div class="row">
+						<a href="" class="btn nav pull-right" ng-click="dump()">
+							<h3>Close[x]</h3>
+						</a>
 					</div>
-			    	<div class="row">
+					<div class="row">
 						<div class="col-md-12">
 							<div ng-if="mainTally !== null">
 								<div id="live-feed" class="list-group">
@@ -40,7 +41,7 @@
 						</div>
 					</div>
 					<div class="row" ng-controller="ElectionController">
-						<div class="col-md-12" ng-if="elections.length > 0 && counties.length > 0">
+						<div class="col-md-12" ng-if="elections.length > 0 && constituencies.length > 0">
 							<div class="tally-results-body">
 								<div role="form">
 									<div class="form-group">
@@ -50,21 +51,20 @@
 												ng-options="e.title for e in elections">
 												<option value="">-- choose election --</option>
 											</select>
-											<select ng-model="county" class="form-control"
-													ng-options="c.name for c in counties">
+											<select ng-model="constituency" class="form-control"
+													ng-options="c.title for c in constituencies">
 													<option value="">-- choose county --</option>
 											</select>
 										</div>
 									</div>
 								</div>
-								<div ng-switch on="county !== null && election !== null" class="tally-container">
+								<div ng-switch on="constituency !== null && election !== null" class="container tally-container">
 									<div ng-switch-when="true">
 										<div ng-controller="PreviousTallyController">
-											<h3 class="text-primary">{{county.name}}</h3>
-											<div class="col-md-12">
-									    		<!-- vis controller -->
-									    		working...
-									    	</div>
+											<h3 class="page-header">{{constituency.title}}</h3>
+											<div id="previous-tally-vis" class="col-md-12 tally-vis">
+										    	<!-- vis controller -->
+										    </div>
 									    </div>
 									</div>
 									<div ng-switch-when="false">

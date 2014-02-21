@@ -111,7 +111,8 @@ map.controller('MapBaseController',
 
 			WELCOME_HTML = '<div class="welcome-info info-pane">' +
 			'<h1>Welcome to ecount!</h1>' +
-			'<p>choose a county to vew some tally statistics</p></div>',
+			'<p>choose a county to view some tally statistics</p></div>',
+			
 			WELCOME_POSITION = 'topright';
 
 		$scope.initMap = function() {
