@@ -57,42 +57,8 @@ mapCountyMain.factory('Tally',
 
 			this.getElectionTallyByConstituency(cid, function(results) {
 				console.log('callback', this, results);
+
 				this.tallyResults = results;
-			}.bind(this));
-		};
-
-		// get tally results for all constituencies...
-		Tally.prototype.getTallyResults = function() {
-
-			// update the constituency results for each constituency
-			// if changes have occured...
-			this.getTallyResultsForConstituencies(function(data) {
-
-				var currentResults = this.constitunecyResults;
-
-				console.log('new tally result', data);
-
-				// if currentResults is less than the total constitunecy length
-				// just add the new result...
-				if(currentResults.length < this.constituencies.length) {
-					currentResults.push(data);
-					return;
-				}
-
-				// check if the returned dataset has changed from
-				// its previous instance in the current result set...
-				$.each(currentResults, function(k, result) {
-					if(result.id === data.id && !this.areSame(result, data)) {
-
-						console.log('tally result change');
-
-						result = data;
-						return;
-					}
-				}.bind(this));
-
-				console.log('current tally results', this.constitunecyResults);
-
 			}.bind(this));
 		};
 
@@ -127,6 +93,41 @@ mapCountyMain.factory('Tally',
 			}
 		};
 
+		// get tally results for all constituencies...
+		Live.prototype.getTallyResults = function() {
+
+			// update the constituency results for each constituency
+			// if changes have occured...
+			this.getTallyResultsForConstituencies(function(data) {
+
+				var currentResults = this.constitunecyResults;
+
+				console.log('new tally result', data);
+
+				// if currentResults is less than the total constitunecy length
+				// just add the new result...
+				if(currentResults.length < this.constituencies.length) {
+					currentResults.push(data);
+					return;
+				}
+
+				// check if the returned dataset has changed from
+				// its previous instance in the current result set...
+				$.each(currentResults, function(k, result) {
+					if(result.id === data.id && !this.areSame(result, data)) {
+
+						console.log('tally result change');
+
+						result = data;
+						return;
+					}
+				}.bind(this));
+
+				console.log('current tally results', this.constitunecyResults);
+
+			}.bind(this));
+		};
+
 		function Previous(constituencies, election) {
 
 			this.election = election;
@@ -139,9 +140,13 @@ mapCountyMain.factory('Tally',
 			this.tallyResults = null;
 
 			this.live = false;
+		};
 
-			// set up constituency results once...
-			this.getTallyResults();
+		// get tally results for constituencies....
+		Previous.prototype.getTallyResults = function() {
+			this.getTallyResultsForConstituencies(function(data) {
+				this.constitunecyResults.push(data);
+			});
 		};
 
 		Extend(Previous, Tally);
@@ -213,11 +218,8 @@ mapCountyMain.directive('countyDirective', function() {
 mapCountyMain.controller('CountyController',
 	['$scope',
 	'Tally',
-	'Election',
 	'ElectionStatistics',
-	'Map',
-	'Visualize',
-	function($scope, Tally, Election, ElectionStatistics, Map, Visualize) {
+	function($scope, Tally, ElectionStatistics) {
 
 		// check if tally is live...
 		var isTallyOngoing = (function() {
@@ -246,6 +248,7 @@ mapCountyMain.controller('CountyController',
 
 		// get results of constituency matching cid
 		$scope.visConstituencyResults = function(cid) {
+
 			// set the active cid (this is needed when listening for live updates)...
 			$scope.activeCid = cid;
 
@@ -287,6 +290,16 @@ mapCountyMain.controller('CountyController',
 			if($scope.renderPath[2] === 'districts') {
 				// district visualization...
 				$scope.$broadcast('districtChange', args[0].gid);
+			}
+		});
+
+		// when receiving live updates, set new tally results on change...
+		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
+
+			console.log('watching cr', newVal);
+
+			if(newVal) {
+				$scope.mainTally.getConstituencyResults($scope.activeCid);
 			}
 		});
 	}
