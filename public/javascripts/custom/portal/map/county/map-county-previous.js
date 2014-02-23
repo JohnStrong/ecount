@@ -11,7 +11,7 @@ mapCountyPrev.controller('PreviousTallyController',
 					'Could not visualize tally results' +
 				'</div>',
 
-		tallyVisElement = $(TALLY_VIS_ELEM_ID);
+		tallyVisElement = $element.find(TALLY_VIS_ELEM_ID);
 
 		// if we could not find results for the current selection, display an alert...
 		function failedToVisualize() {

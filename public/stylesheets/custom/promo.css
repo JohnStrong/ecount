@@ -16,7 +16,7 @@
 }
 
 .jumbotron {
-	background-color: #428BAA;
+	background-color: #222222;
 	opacity: 0.85;
 	border-radius: .25em;
 }
@@ -43,8 +43,7 @@
 }
 
 .tease .btn {
-	background-color: #55AA11;
-	box-shadow: 1px 0 5px #55CC22;
+	box-shadow: 1px 0 5px #558822;
 }
 
 .info {

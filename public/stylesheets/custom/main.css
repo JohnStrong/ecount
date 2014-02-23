@@ -14,7 +14,6 @@
 }
 
 html {
-    min-height: 100%;
     position: relative;
     font-size: 16px;
 }
@@ -54,6 +53,8 @@ ul {
 }
 
 .content-main {
+    max-width: 1200px;
+    margin: 1% auto;
 	clear: both;
 }
 
@@ -65,8 +66,17 @@ ul {
 *   Footer
 */
 
-body > footer {
+.footer {
     clear: both;
+}
+
+.footer {
+    padding: 2%;
+    min-height: 100px;
+    background-color: #555555;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 70px;
 }
 
 /***

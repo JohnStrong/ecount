@@ -51,8 +51,10 @@
 		    <div id="interactive-main">
 	        	<map-directive></map-directive>
 	        </div>
-		    <!--map dependencies-->
+		    <!--util dependencies-->
+		    <script src="@routes.Assets.at("javascripts/custom/portal/map/util/struts-util.js")"></script>
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/util/map-util.js")"></script>
+			<!--map dependencies-->
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county-vis.js")"></script>
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/election/map-elections.js")"></script>
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/base/map.js")"></script>
@@ -63,6 +65,9 @@
 			<script src="@routes.Assets.at("javascripts/custom/portal/core/home/account.js")"></script>
 			<!--main-->
 			<script src="@routes.Assets.at("javascripts/custom/portal/core/ecount.js")"></script>
+			<div class="footer">
+				<p>2014 E-count all rights reserved</p>
+			</div>
 		</div>
 	</div>
 </body>

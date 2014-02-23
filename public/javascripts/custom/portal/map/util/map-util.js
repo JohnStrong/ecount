@@ -1,14 +1,5 @@
 var mapUtil = angular.module('Ecount.Map.Util', []);
 
-mapUtil.service('Extend', function() {
-	return function(subClass, superClass) {
-		var F = function() {};
-		F.prototype = superClass.prototype;
-		subClass.prototype = new F();
-		subClass.prototype.constructor = subClass;
-	}
-})
-
 mapUtil.factory('VendorTileLayer', function() {
 
 	var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png',

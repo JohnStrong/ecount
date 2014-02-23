@@ -169,8 +169,8 @@ table.gen-table tr:nth-child(1) td {
 
 .county-tally-results.ng-enter,
 .county-tally-results.ng-leave {
-	-webkit-transition: all .6s linear;
-    transition: all .6s linear;
+	-webkit-transition: all 1s linear;
+    transition: all 1s linear;
 }
 
 .county-tally-results.ng-enter,
@@ -206,12 +206,14 @@ table.gen-table tr:nth-child(1) td {
 
 .county-heading-panel {
 	background-color: #333333;
-	padding: 1%;
 }
 
-.county-heading-panel button.close {
+.county-heading-panel button.close,
+.county-vis button.close,
+.district-vis button.close {
 	opacity: 1;
 	color: #EEEEEE !important;
+	padding: 1%;
 }
 
 .county-body {

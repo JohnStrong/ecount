@@ -1,5 +1,10 @@
 var mapCountyMain = angular.module('Ecount.Map.County.Main',
-	['Ecount.Map.Util', 'Ecount.Map.Elections', 'Ecount.Map.County.Vis']);
+[
+'Ecount.Map.Elections',
+'Ecount.Map.County.Vis',
+'Ecount.Map.Util',
+'Ecount.Struts.Util'
+]);
 
 mapCountyMain.service('Election',
 	[function() {
@@ -16,11 +21,15 @@ mapCountyMain.service('Election',
 //		- get the latest candidates and results
 //		- compute the count/percentage total at a high level
 mapCountyMain.factory('Tally',
-	['ElectionStatistics',
-	'Extend',
-	function(ElectionStatistics, Extend) {
+	['ElectionStatistics', 'Extend', 'Compare',
+	function(ElectionStatistics, Extend, Compare) {
 
 		function Tally() {};
+
+		// intended to compare the current dataset with the new...
+		Tally.prototype.areSame = function(firstArr, secondArr) {
+			return Compare(firstArr.results, secondArr.results);
+		};
 
 		// get all tally results from server...
 		Tally.prototype.getTallyResultsForConstituencies = function(callback) {
@@ -55,16 +64,41 @@ mapCountyMain.factory('Tally',
 		// get tally results for all constituencies...
 		Tally.prototype.getTallyResults = function() {
 
-			// update the constituency results if changes have occured...
+			// update the constituency results for each constituency
+			// if changes have occured...
 			this.getTallyResultsForConstituencies(function(data) {
-				this.constitunecyResults.push(data);
-				console.log('set cresults', this.constitunecyResults);
+
+				var currentResults = this.constitunecyResults;
+
+				console.log('new tally result', data);
+
+				// if currentResults is less than the total constitunecy length
+				// just add the new result...
+				if(currentResults.length < this.constituencies.length) {
+					currentResults.push(data);
+					return;
+				}
+
+				// check if the returned dataset has changed from
+				// its previous instance in the current result set...
+				$.each(currentResults, function(k, result) {
+					if(result.id === data.id && !this.areSame(result, data)) {
+
+						console.log('tally result change');
+
+						result = data;
+						return;
+					}
+				}.bind(this));
+
+				console.log('current tally results', this.constitunecyResults);
+
 			}.bind(this));
 		};
 
 		function Live(constituencies, election) {
 
-			this.FEED_QUERY_TIMER = 1000;
+			this.FEED_QUERY_TIMER = 10000;
 
 			this.election = election;
 
@@ -265,7 +299,7 @@ mapCountyMain.controller('DistrictsMapController',
 		var DISTRICTS_ZOOM = 16,
 			DISTRICTS_VIEW_DOM_ID = 'county-map-view',
 
-			MAP_CONTENT_LIST = '<ul class="well info-pane">' +
+			MAP_CONTENT_LIST = '<ul class="well info-pane county-vis">' +
 			'<li ng-repeat="c in constituencies">' +
 			'<a href="" ng-click="visConstituencyResults(c.id)" class="btn">' +
 			'{{c.title}}' +
@@ -276,7 +310,8 @@ mapCountyMain.controller('DistrictsMapController',
 			DISTRICTS_VIS_LAYER = '<div id="tally-results-vis" class="county-vis info-pane">' +
 				'<div>' +
 					'<div ng-if="mainTally.tallyResults !== null">' +
-						'<a href="" class="btn vis-close" ng-click="closeVis()">Close[x]</a>' +
+						'<button type="button" class="close" aria-hidden="true"' +
+							'ng-click="closeDistrictsVis()">&times;</button>' +
 						'<districts-vis-directive></districts-vis-directive>' +
 					'</div>' +
 				'</div>' +
@@ -299,7 +334,7 @@ mapCountyMain.controller('DistrictsMapController',
 
 
 		// empty the selected control...
-		$scope.closeVis = function() {
+		$scope.closeDistrictsVis = function() {
 			$scope.districtsVisControl.empty();
 			$scope.mainTally.tallyResults = null;
 		};
@@ -369,6 +404,10 @@ mapCountyMain.controller('DistrictVisController',
 	['$scope', '$element', 'Visualize',
 	function($scope, $element, Visualize) {
 
+		var DISTRICT_VIS_CONTAINER_ID = '#district-vis-body',
+
+			districtVisElem = $element.find(DISTRICT_VIS_CONTAINER_ID);
+
 		$scope.districtId = null;
 
 		function visualizeDistrictResults() {
@@ -383,9 +422,14 @@ mapCountyMain.controller('DistrictVisController',
 			}
 
 			// visualize results for ded by gid...
-			var visualize = Visualize(results, $element);
+			var visualize = Visualize(results, districtVisElem);
 			visualize.ded($scope.districtId);
 
+		}
+
+		// closes the current visualization...
+		$scope.closeDistrictVis = function() {
+			districtVisElem.empty();
 		}
 
 		// if constituency results change we have to update vis with new results...

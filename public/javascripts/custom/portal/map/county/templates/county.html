@@ -27,7 +27,10 @@
 													<small>{{mainTally.election.tallyDate}}</small>
 												</h3>
 											</div>
-											<div ng-controller="DistrictVisController">
+											<div class="district-vis" ng-controller="DistrictVisController">
+												<button type="button" class="close" aria-hidden="true"
+													ng-click="closeDistrictVis()">&times;</button>
+												<div id="district-vis-body"></div>
 											</div>
 											<div class="list-group-item" ng-controller="DistrictsMapController">
 												<div id="imap" ng-init="loadMap()">
