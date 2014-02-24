@@ -53,7 +53,7 @@ mapCountyMain.factory('Tally',
 		};
 
 		// set results data to tally results object with the added update over time for live data...
-		Tally.prototype.getConstituencyResults = function(cid) {
+		Tally.prototype.getConstituencyTallyResults = function(cid) {
 
 			this.getElectionTallyByConstituency(cid, function(results) {
 				console.log('callback', this, results);
@@ -70,35 +70,22 @@ mapCountyMain.factory('Tally',
 
 			this.constituencies = constituencies;
 
+			this.intervalId = null;
+
 			// values set by tally results function (contains all candidate results by constituency)...
 			this.constitunecyResults = [];
-
-			this.intervalId = setInterval(this.getTallyResults.bind(this),
-				this.FEED_QUERY_TIMER);
 
 			this.tallyResults = null;
 
 			this.live = true;
-
-			// get tally results initially...
-			this.getTallyResults();
 		};
 
 		Extend(Live, Tally);
 
-		// clear the current set interval on constituency change and start fresh...
-		Live.prototype.stopUpdates = function() {
-			if(this.intervalId !== null) {
-				clearInterval(this.intervalId);
-			}
-		};
-
 		// get tally results for all constituencies...
-		Live.prototype.getTallyResults = function() {
+		Live.prototype.getAllConstituencyResults = function() {
 
-			// update the constituency results for each constituency
-			// if changes have occured...
-			this.getTallyResultsForConstituencies(function(data) {
+			function _tallyResultsCallback(data) {
 
 				var currentResults = this.constitunecyResults;
 
@@ -124,8 +111,30 @@ mapCountyMain.factory('Tally',
 				}.bind(this));
 
 				console.log('current tally results', this.constitunecyResults);
+			}
 
-			}.bind(this));
+			// update the constituency results for each constituency
+			// if changes have occured...
+			var loopIt = function() {
+
+				console.log('loopit', this);
+
+				this.intervalId = setTimeout(function() {
+
+					// get results for all constituencies...
+					this.getTallyResultsForConstituencies(_tallyResultsCallback.bind(this));
+
+					// repeat it...
+					loopIt();
+
+				}.bind(this), this.FEED_QUERY_TIMER);
+
+			}.bind(this);
+
+			// initial call to get it all started....
+			loopIt();
+
+			this.getTallyResultsForConstituencies(_tallyResultsCallback.bind(this));
 		};
 
 		function Previous(constituencies, election) {
@@ -142,14 +151,14 @@ mapCountyMain.factory('Tally',
 			this.live = false;
 		};
 
+		Extend(Previous, Tally);
+
 		// get tally results for constituencies....
-		Previous.prototype.getTallyResults = function() {
+		Previous.prototype.getAllConstituencyResults = function() {
 			this.getTallyResultsForConstituencies(function(data) {
 				this.constitunecyResults.push(data);
-			});
+			}.bind(this));
 		};
-
-		Extend(Previous, Tally);
 
 		return {
 			live: function(constituencies, election) {
@@ -246,18 +255,6 @@ mapCountyMain.controller('CountyController',
 		// the constituency id of which is open in the
 		$scope.activeCid = null;
 
-		// get results of constituency matching cid
-		$scope.visConstituencyResults = function(cid) {
-
-			// set the active cid (this is needed when listening for live updates)...
-			$scope.activeCid = cid;
-
-			// get constituency results for this cid (visualize directive will be activated)...
-			console.log('viscalled', cid, $scope.mainTally);
-
-			$scope.mainTally.getConstituencyResults(cid);
-		};
-
 		$scope.getConstituencies = function() {
 			ElectionStatistics.getElectionCountyConstituencies(
 				$scope.countyTarget.id,
@@ -267,20 +264,31 @@ mapCountyMain.controller('CountyController',
 		};
 
 		// stop feed interval if live feed, close view...
+		// clear the current set interval on constituency change and start fresh...
 		$scope.dump = function() {
 			if($scope.mainTally.intervalId) {
-				$scope.mainTally.stopUpdates();
+				clearTimeout($scope.mainTally.intervalId);
 			}
 
 			$scope.closeCountyView();
 		};
 
+		// watch for live updates to constituencyResults....
+		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
+			console.log('cr watch', newVal);
+		});
+
 		// listens for an latest election tally...
 		$scope.$on('latestTally', function(source, _election) {
 			var isLive = isTallyOngoing(_election.tallyDate);
 
-			$scope.mainTally = isLive? Tally.live($scope.constituencies, _election) :
-				Tally.previous($scope.constituencies, _election);
+			if(isLive) {
+				$scope.mainTally = Tally.live($scope.constituencies, _election);
+			} else {
+				$scope.mainTally = Tally.previous($scope.constituencies, _election);
+			}
+
+			$scope.mainTally.getAllConstituencyResults();
 		});
 
 		// open ded stat view for the ded that has been selected on the imap...
@@ -290,16 +298,6 @@ mapCountyMain.controller('CountyController',
 			if($scope.renderPath[2] === 'districts') {
 				// district visualization...
 				$scope.$broadcast('districtChange', args[0].gid);
-			}
-		});
-
-		// when receiving live updates, set new tally results on change...
-		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
-
-			console.log('watching cr', newVal);
-
-			if(newVal) {
-				$scope.mainTally.getConstituencyResults($scope.activeCid);
 			}
 		});
 	}
@@ -345,6 +343,11 @@ mapCountyMain.controller('DistrictsMapController',
 		// container for the visualize view container...
 		$scope.districtsVisControl = null;
 
+		// get results of constituency matching cid
+		$scope.visConstituencyResults = function(cid) {
+			// get constituency results for this cid (visualize directive will be activated)...
+			$scope.mainTally.getConstituencyTallyResults(cid);
+		};
 
 		// empty the selected control...
 		$scope.closeDistrictsVis = function() {
