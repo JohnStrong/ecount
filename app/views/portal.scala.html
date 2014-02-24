@@ -17,10 +17,10 @@
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/extension.css")"/>
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/vis.css")"/>
 </head>
-<body class="base">
+<body>
 	<div class="account-header">
-		<div class="container">
-			<div class="navbar-inner" role="navigation">
+		<nav class="navbar navbar-default navbar-static-top" role="navigation">
+			<div class="container">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="#/home">
 						Ecount
@@ -31,20 +31,13 @@
 					<li id="account-dropdown" class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li><a href="#">Edit Account</a></li>
-							<li><a href="#">Logout</a></li>
+							<li><a href="#" ng-click="editAccount()">Edit Account</a></li>
+							<li><a href="#" ng-click="logout()">Logout</a></li>
 						</ul>
 					</li>
-					<script>
-						(function() {
-							$("a").click('#account-dropdown', function(e) {
-								e.preventDefault();
-							});
-						})();
-					</script>
 				</ul>
 			</div>
-	    </div>
+		</nav>
     </div>
 	<div class="content-main">
 		<div class="container">

@@ -7,13 +7,6 @@ body {
 	height: 100%;
 }
 
-.dim {
-	position: absolute;
-	background-color: #222222;
-	box-shadow: inset 0 0 4em #666666;
-	height: 100%;
-	width: 100%;
-}
 .container {
 	width: 55%;
 	margin: 0 auto;

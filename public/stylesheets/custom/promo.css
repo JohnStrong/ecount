@@ -1,18 +1,17 @@
-.promo {
-	background-image: url(/assets/images/home.png);
+.promo-body {
+	background: #C5C5C5 url(/assets/images/home.png) no-repeat top right;
 }
 
 .promo-inner {
 	padding: 4% 0;
-	min-height: 550px;
+	min-height: 610px;
 	position: relative;
 }
 
 .promo-inner .jumbotron {
 	position: absolute;
-	width: 65%;
+	width: 60%;
 	bottom: 1%;
-	left: 1%;
 }
 
 .jumbotron {
@@ -21,17 +20,12 @@
 	border-radius: .25em;
 }
 
-.jumbotron h1,
-.jumbotron p {
-	color: #EEE;
-}
-
 .jumbotron h1 {
-	font-size: 48px;
+	color: #EEEEEE;
+	font-size: 40px;
 }
-
 .jumbotron p {
-	font-size: 12px;
+	color: #CCCCCC;
 }
 
 .tease {
@@ -48,24 +42,16 @@
 
 .info {
 	clear: both;
-	min-height: 210px;
+	padding: 1%;
 }
 
-.text-promo {
-	padding: 2%;
+.promo-sheet li {
+	display: inline;
 }
 
 .text-promo h1,
 .text-promo p {
 	color: #EEE;
-}
-
-.info .text-promo:nth-child(1) {
-	float: left;
-}
-
-.info .text-promo:nth-child(2) {
-	float: right;
 }
 
 .info-list {
@@ -75,6 +61,5 @@
 }
 
 .info-list li {
-	font-size: 0.9em;
-	color: #333;
+	color: #CCCCCC;
 }

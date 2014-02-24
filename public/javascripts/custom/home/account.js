@@ -15,13 +15,8 @@
 		if(document.URL === URL_REGISTER_FAILED) {
 			elemToHide = '#login';
 		}
+		
 		$(elemToHide).hide();
-	});
-
-	$('form').submit('#auth', function(e) {
-		e.preventDefault();
-
-		// do stuff...... ajax stuff
 	});
 
 	$('a.primary').click('#auth-forms', function(e) {

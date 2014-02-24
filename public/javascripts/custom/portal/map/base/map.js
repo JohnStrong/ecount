@@ -119,8 +119,8 @@ map.controller('MapBaseController',
 			GeomAPI.countyBounds(function(geom) {
 				var compiledWelcome = $scope.compileDom(WELCOME_HTML);
 
-				Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
-				Map.addContentLayer(compiledWelcome, WELCOME_POSITION);
+				var imap = Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
+				imap.createInfoControl(compiledWelcome, WELCOME_POSITION);
 			});
 		};
 	}

@@ -1,18 +1,26 @@
 /* BASE STYLES FOR HOMEPAGE PROMO */
+.dim {
+	
+	width: 100%;
 
-body {
-	background-color: #222222;
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		right bottom,
+		color-stop(0, #575958),
+		color-stop(1, #0C0D0D),
+		color-stop(1, #000000)
+	);
+	
+	background-image: -o-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: -moz-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: -webkit-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: -ms-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: linear-gradient(to right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
 }
 
-.home-header {
-	background-color: #FFF;
-}
-
-.home-header nav {
-	width: 790px;
-	margin: 0 auto;
-	background-color: #FFF;
-	padding: 10px 20px;
+header .navbar {
+	margin: 0 0 !important;
 }
 
 .auth-item {
@@ -23,3 +31,17 @@ body {
 	width: 65%;
 	margin: 0 auto;
 }
+
+.contain {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* MEDIA QUERIES */
+/* iPads (portrait) ----------- */
+@media only screen and (max-width : 1024px) {
+	.jumbotron, .tease {
+		position: static;
+	}
+}
+

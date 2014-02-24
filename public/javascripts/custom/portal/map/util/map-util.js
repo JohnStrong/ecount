@@ -62,15 +62,48 @@ mapUtil.factory('Map',
 			HIGHLIGHT_CLICK_COLOR = '#555',
 			HIGHLIGHT_FILL_OPACITY = 0.5,
 
-			VIS_CONTAINER_ID = '#tally-results-vis',
+			VIS_CONTAINER_ID = '#tally-results-vis';
 
-			map = null,
+		function infoHelper() {
+			var info = L.control({position : 'bottomright'});
 
-			layer = null,
+			info.onAdd = function(map) {
+				this.container = L.DomUtil.create('div', 'info-pane info-helper');
+				this.draw();
+				return this.container;
+			}
 
-			geoJson = null;
+			info.draw = function(contents) {
+				if(contents) {
+					this.container.innerHTML = contents;
+				} 
+			}
 
-		function enableInteraction(feature, layer) {
+			return info;
+		}
+
+		function IMap(_mapId, _geom, style, zoom) {
+					
+			this.map = L.map(_mapId, {"zoom" : zoom });
+
+			this.layer = VendorTileLayer(this.map);
+
+			this.style = style;
+
+			this.zoom = zoom;
+
+			this.infoHelper = infoHelper();
+
+			this.geoJson = L.geoJson(_geom, {
+					style: style,
+					onEachFeature: this.enableInteraction.bind(this)
+				}).addTo(this.map);
+
+			this.bounds = this.geoJson.getBounds();
+			
+		}
+
+		IMap.prototype.enableInteraction = function(feature, layer) {
 
 			function highlightFeature(e) {
 
@@ -82,6 +115,9 @@ mapUtil.factory('Map',
 			        fillOpacity: HIGHLIGHT_FILL_OPACITY
 				});
 
+				var regexx = new RegExp('[^\\s*0-9^/].*', 'g');
+				var sanitized = regexx.exec(feature.properties.name);
+				this.infoHelper.draw('<h3>' + sanitized + '</h3>');
 
 				if(!L.Browser.ie && !L.Browser.opera) {
 		   			l.bringToFront();
@@ -89,7 +125,7 @@ mapUtil.factory('Map',
 			}
 
 			function resetHighlight(e) {
-				geoJson.resetStyle(e.target);
+				this.geoJson.resetStyle(e.target);
 			}
 
 			function getElectoralInformation(e){
@@ -98,13 +134,14 @@ mapUtil.factory('Map',
 			}
 
 			layer.on({
-				mouseover: highlightFeature,
-				mouseout: resetHighlight,
+				mouseover: highlightFeature.bind(this),
+				mouseout: resetHighlight.bind(this),
 				click: getElectoralInformation
 			});
 		};
 
-		function createInfoControl(content, position) {
+		IMap.prototype.createInfoControl = function(content, position) {
+			
 			var control = L.control({'position': position});
 
 			control.onAdd = function(map) {
@@ -124,38 +161,24 @@ mapUtil.factory('Map',
 				$(VIS_CONTAINER_ID).hide();
 			};
 
-			control.addTo(map);
+			control.addTo(this.map);
+
 			return control;
-		}
+		};
 
 		return {
 
 			draw: function(_mapId, _geom, props) {
-
-				var style = props.style || 'default';
+				var style = props.style || 'default',
 					zoom = props.zoom || 12;
 
-				map = L.map(_mapId, {"zoom" : zoom });
+				var imap = new IMap(_mapId, _geom, style, zoom);
 
-				layer = VendorTileLayer(map);
+				imap.map.fitBounds(imap.bounds);
 
-				geoJson = L.geoJson(_geom, {
-					style: style,
-					onEachFeature: enableInteraction
-				}).addTo(map);
+				imap.infoHelper.addTo(imap.map);
 
-				var bounds = geoJson.getBounds();
-				map.fitBounds(bounds);
-
-				return this;
-			},
-
-			addContentLayer: function(_content, _position) {
-				return createInfoControl(_content, _position);
-			},
-
-			getMap: function() {
-				return map;
+				return imap;
 			}
 		};
 	}

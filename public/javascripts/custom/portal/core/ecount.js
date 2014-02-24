@@ -62,6 +62,14 @@ ecount.controller('AppController',
 			$scope.renderPath = renderPath;
 		};
 
+		$scope.editAccount = function() {
+			console.log('edit account');
+		};
+
+		$scope.logout = function() {
+			console.log('log out');
+		};
+
 		$scope.$on('$routeChangeSuccess',
 			function($currentRoute, $previousRoute) {
 				render();

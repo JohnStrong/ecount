@@ -16,75 +16,83 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/promo.css")"/>
 </head>
 <body id="main">
-	<header class="home-header">
+	<header>
         <nav class="navbar navbar-default navbar-static-top" role="navigation">
-            <div class="nav-container">
-                <a id="brand-link" class="navbar-brand" href="">
-                    <span class="brand contrast">E-Count</span>
-                </a>
-                <ul class="nav navbar-nav navbar-right">
-	                <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a data-toggle="modal" data-target="#login-modal" href="#">Login</a></li>
-                            <li><a data-toggle="modal" data-target="#register-modal" href="#">Register</a></li>
-                        </ul>
-	                </li>
-                </ul>
+            <div class="container">
+                <div class="nav-container">
+                    <a id="brand-link" class="navbar-brand" href="">
+                        <span class="brand contrast">E-Count</span>
+                    </a>
+                    <ul class="nav navbar-nav navbar-right">
+    	                <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a data-toggle="modal" data-target="#login-modal" href="#">Login</a></li>
+                                <li><a data-toggle="modal" data-target="#register-modal" href="#">Register</a></li>
+                            </ul>
+    	                </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
-    <body id="content-main">
+    <main>
         <div class="promo">
-            <div class="content">
-                <div class="promo-inner">
-                    <div class="jumbotron">
-                        <h1>Online Tally System</h1>
-                        <p class="lead">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-                        </p>
-                    </div>
-                    <div class="tease">
-                        <p>
-                            <a class="btn btn-success btn-lg" data-toggle="modal" data-target="#register-modal" role="button">
-                                Try it out!
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+        	<div class="promo-body">
+	            <div class="content">
+	                <div class="promo-inner">
+	                    <div class="jumbotron">
+	                        <h1>Online Tally System</h1>
+	                        <p class="lead">
+	                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+	                        </p>
+	                    </div>
+	                    <div class="tease">
+	                        <p>
+	                            <a class="btn btn-success btn-lg" data-toggle="modal" data-target="#register-modal" role="button">
+	                                Try it out!
+	                            </a>
+	                        </p>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
         </div>
-        <div class="info">
-            <div class="content">
-                <div class="text-promo">
-                    <h1 class="page-header">What is Ecount?</h1>
-                    <ul class="info-list">
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                    </ul>
-                </div>
-                <div class="text-promo">
-                    <h1 class="page-header">Why is it Good?</h1>
-                    <ul class="info-list">
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                        <li>
-                           orem ipsum dolor sit amet, consectetur adipisicing elit
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="info dim">
+        	<div class="contain">
+	            <div class="content">
+	                <ul class="promo-sheet">
+	                    <li class="text-promo">
+	                        <h1 class="page-header">What is Ecount?</h1>
+	                        <ul class="info-list">
+	                            <li>
+	                               orem ipsum dolor sit amet, consectetur adipisicing elit
+	                            </li>
+	                            <li>
+	                               orem ipsum dolor sit amet, consectetur adipisicing elit
+	                            </li>
+	                            <li>
+	                               orem ipsum dolor sit amet, consectetur adipisicing elit
+	                            </li>
+	                        </ul>
+	                    </li>
+	                    <li class="text-promo">
+	                        <h1 class="page-header">Why is it Good?</h1>
+	                        <ul class="info-list">
+	                            <li>
+	                               orem ipsum dolor sit amet, consectetur adipisicing elit
+	                            </li>
+	                            <li>
+	                               orem ipsum dolor sit amet, consectetur adipisicing elit
+	                            </li>
+	                            <li>
+	                               orem ipsum dolor sit amet, consectetur adipisicing elit
+	                            </li>
+	                        </ul>
+	                    </li>
+	                </ul>
+	            </div>
+	        </div>
         </div>
         <!-- Auth Modals -->
         <div class="modal fade" id="register-modal" role="dialog" tab-index="-1"  aria-labelledby="register-label" aria-hidden="true">
@@ -185,7 +193,7 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
-    </body>
+    </main>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/home/main.js")"></script>
     <footer id="credits">
         <!-- awks will go here -->

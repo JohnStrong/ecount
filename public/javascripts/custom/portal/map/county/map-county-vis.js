@@ -30,6 +30,7 @@ ecountVis.factory('FilterFor',
 
 					// for each candidate, extracts the tally result relating to the current view...
 					$.each(datum.results, function(k, d) {
+						
 						// hard coded for testing purposes for now...
 						if(d.dedId === 2469) {
 							result = d.result;
