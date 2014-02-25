@@ -4,8 +4,8 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
-import service.dispatch.MapDispatcher
-import service.util.Cache
+import service.util.{Cache}
+import service.dispatch._
 
 object AccountController extends Controller {
 
@@ -14,23 +14,22 @@ object AccountController extends Controller {
   private val ERROR_NON_UNIQUE_EMAIL = "oops, email address matches another user"
   private val ERROR_FAILED_AUTHENTICATION = "email or password is incorrect"
 
-  private val CONSTITUENCIES = MapDispatcher.getConstituencies
+  private val FLASH_SESSION_LOGOUT_MESSAGE = "you have been logged out"
 
   def login() = CSRFCheck {
     Action {
       implicit request => {
         FormHelper.loginForm.bindFromRequest.fold(
           formWithErrors => {
-            BadRequest(views.html.auth(CONSTITUENCIES,
-              formWithErrors, FormHelper.registerForm))
+            BadRequest(views.html.auth(formWithErrors, FormHelper.registerForm))
           },
           loginData =>
             FormHelper.authenticateUser(loginData) match {
               case true =>
                 Redirect(routes.ViewController.index)
-                .withSession(USER_SESSION_ID_KEY -> loginData.email)
+                .withSession(USER_SESSION_ID_KEY -> loginData.email.toLowerCase)
               case false =>
-                BadRequest(views.html.auth(CONSTITUENCIES,
+                BadRequest(views.html.auth(
                   FormHelper.loginForm.withGlobalError(ERROR_FAILED_AUTHENTICATION),
                   FormHelper.registerForm))
             }
@@ -45,7 +44,10 @@ object AccountController extends Controller {
         Cache.removeCachedUser(user)
       }
 
-      Redirect(routes.ViewController.index())
+      // redirect to home and invalidate user session, add logout message
+      Redirect(routes.ViewController.auth).flashing {
+        "logout" -> FLASH_SESSION_LOGOUT_MESSAGE
+      }.withNewSession
     }
   }
 
@@ -53,21 +55,25 @@ object AccountController extends Controller {
     Action { implicit request => {
       FormHelper.registerForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.auth(CONSTITUENCIES,
-            FormHelper.loginForm, formWithErrors))
+          BadRequest(views.html.auth(FormHelper.loginForm, formWithErrors))
         },
         registerData => {
            FormHelper.registerUser(registerData) match {
-            case Some(i) =>
+            case Some(i) => {
               Redirect(routes.ViewController.confirmation(registerData.email))
+            }
             case _ =>
-              BadRequest(views.html.auth(CONSTITUENCIES,
-                FormHelper.loginForm,
+              BadRequest(views.html.auth(FormHelper.loginForm,
                 FormHelper.registerForm.withGlobalError(ERROR_NON_UNIQUE_EMAIL)))
           }
         }
       )
      }
    }
+  }
+
+  def verifyAccount(verificationLink: String) = Action {
+    AccountDispatcher.verifyAccount(verificationLink)
+    Redirect(routes.ViewController.auth)
   }
 }

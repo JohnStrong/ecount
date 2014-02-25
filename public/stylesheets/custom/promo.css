@@ -9,15 +9,14 @@
 }
 
 .promo-inner .jumbotron {
-	position: absolute;
-	width: 60%;
-	bottom: 1%;
+	margin-top: 200px;
 }
 
 .jumbotron {
 	background-color: #222222;
 	opacity: 0.85;
 	border-radius: .25em;
+	padding-bottom: 60px !important;
 }
 
 .jumbotron h1 {
@@ -29,11 +28,7 @@
 }
 
 .tease {
-	position: absolute;
-	bottom: .5%;
-	right: .5%;
-	padding-top: 4%;
-	padding-bottom: 4%;
+	float: right;
 }
 
 .tease .btn {

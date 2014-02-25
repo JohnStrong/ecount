@@ -8,18 +8,17 @@ import service.dispatch.MapDispatcher
 
 object ViewController extends Controller {
 
-  private val CONSTITUENCIES = MapDispatcher.getConstituencies
   private val SESSION_ID_KEY = "user.id"
 
   private def getFormDependencies = {
-    (CONSTITUENCIES, FormHelper.loginForm, FormHelper.registerForm)
+    (FormHelper.loginForm, FormHelper.registerForm)
   }
 
   def index = CSRFAddToken {
     Action { implicit request =>
       if(!session.get(SESSION_ID_KEY).isDefined) {
-        val (constituencies, loginForm, registerForm) = getFormDependencies
-        Ok(views.html.main(constituencies, loginForm, registerForm)).withNewSession
+        val (loginForm, registerForm) = getFormDependencies
+        Ok(views.html.main(loginForm, registerForm))
       } else {
         Ok(views.html.portal())
       }
@@ -28,13 +27,17 @@ object ViewController extends Controller {
 
   def auth() = CSRFAddToken {
     Action { implicit request =>
-      val (constituencies, loginForm, registerForm) = getFormDependencies
-      Ok(views.html.auth(constituencies, loginForm, registerForm))
+      val (loginForm, registerForm) = getFormDependencies
+
+      Ok(views.html.auth(loginForm, registerForm,
+          flash.get("logout")
+        )
+      )
     }
   }
 
+  // load confirmation view with new session (fixes csrf failed error)
   def confirmation(email: String) = Action {
-    Ok(views.html.confirmation(email))
+    Ok(views.html.confirmation(email)).withNewSession
   }
-
 }

@@ -2,7 +2,6 @@ var ecount = angular.module('Ecount',
 [
 'ngRoute',
 'ngAnimate',
-'Ecount.Account',
 'Ecount.Map',
 'Ecount.Map.County.Main',
 'Ecount.Map.County.Previous',
@@ -51,7 +50,7 @@ ecount.controller('AppController',
 	['$scope', '$route', '$routeParams',
 	function($scope, $route, $routeParams) {
 
-		$scope.user = {};
+		$scope.user = null;
 
 		var render = function() {
 
@@ -60,14 +59,6 @@ ecount.controller('AppController',
 
 			$scope.renderAction = renderAction;
 			$scope.renderPath = renderPath;
-		};
-
-		$scope.editAccount = function() {
-			console.log('edit account');
-		};
-
-		$scope.logout = function() {
-			console.log('log out');
 		};
 
 		$scope.$on('$routeChangeSuccess',

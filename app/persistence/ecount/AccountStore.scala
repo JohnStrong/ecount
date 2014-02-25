@@ -43,10 +43,18 @@ object AccountStore {
 
   val insertNewAccount = new Insert[NewAccount] {
     def xsql = <xsql>
-      INSERT INTO users (email, hash, salt, verified)
-      VALUES (#{{email}}, #{{hash}}, #{{salt}}, false)
+      INSERT INTO users (email, hash, salt, verified, verification_link)
+      VALUES (#{{email}}, #{{hash}}, #{{salt}}, false, #{{verificationLink}})
     </xsql>
   }
 
-  def bind = Seq(getAccountDetails, getAccountSaltAndHash, insertNewAccount)
+  val verifyAccountWithLink = new Update[String] {
+    def xsql = <xsql>
+      UPDATE users
+      SET verified = 'true'
+      WHERE verification_link = #{{verificationLink}}
+    </xsql>
+  }
+
+  def bind = Seq(getAccountDetails, getAccountSaltAndHash, insertNewAccount, verifyAccountWithLink)
 }

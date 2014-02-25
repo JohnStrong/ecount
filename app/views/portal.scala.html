@@ -31,8 +31,7 @@
 					<li id="account-dropdown" class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li><a href="#" ng-click="editAccount()">Edit Account</a></li>
-							<li><a href="#" ng-click="logout()">Logout</a></li>
+							<li><a href="/logout">Logout</a></li>
 						</ul>
 					</li>
 				</ul>
@@ -41,7 +40,9 @@
     </div>
 	<div class="content-main">
 		<div class="container">
-		    <div id="interactive-main">
+			<div id="account-holder">
+			</div>
+			<div id="interactive-main">
 	        	<map-directive></map-directive>
 	        </div>
 		    <!--util dependencies-->
@@ -53,9 +54,6 @@
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/base/map.js")"></script>
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county-main.js")"></script>
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county-previous.js")"></script>
-			<!--account dependencies-->
-			<script src="@routes.Assets.at("javascripts/custom/portal/core/home/util/account-util.js")"></script>
-			<script src="@routes.Assets.at("javascripts/custom/portal/core/home/account.js")"></script>
 			<!--main-->
 			<script src="@routes.Assets.at("javascripts/custom/portal/core/ecount.js")"></script>
 			<div class="footer">

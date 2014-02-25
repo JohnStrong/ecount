@@ -9,7 +9,7 @@ import service.util.Crypto
 import service.util
 
 
-case class NewAccount(email: String, salt: String, hash: String)
+case class NewAccount(email: String, salt: String, hash: String, verificationLink: String)
 case class UserAccount(email:String, name: String, constituency: String, profession: String)
 
 object AccountDispatcher {
@@ -18,7 +18,7 @@ object AccountDispatcher {
    withConnection { implicit conn =>
    AccountStore.getAccountSaltAndHash(userEmail) match {
        case Some(accountSaH) => {
-          val (salt, hash) = Crypto.hashPassword(
+          val (salt, hash) = Crypto.password(
           userPassword, () => accountSaH.salt)
           hash.equals(accountSaH.hash)
        }
@@ -50,11 +50,19 @@ object AccountDispatcher {
     }
   }
 
-  def insertNewUnverifiedAccount(userEmail: String, unHashedPassword: String) = {
+  def insertNewUnverifiedAccount(userEmail: String, unHashedPassword: String, verificationLink: String) = {
     withConnection { implicit conn =>
-      val hashedSaltedPassword =  util.Crypto.hashPassword(unHashedPassword)
-      val newUser = NewAccount(userEmail, hashedSaltedPassword._1, hashedSaltedPassword._2)
+      val hashedSaltedPassword =  util.Crypto.password(unHashedPassword)
+      val newUser = NewAccount(userEmail, hashedSaltedPassword._1,
+        hashedSaltedPassword._2, verificationLink)
+
       AccountStore.insertNewAccount(newUser)
+    }
+  }
+
+  def verifyAccount(verificationLink: String) = {
+    withConnection { implicit conn =>
+      AccountStore.verifyAccountWithLink(verificationLink)
     }
   }
 

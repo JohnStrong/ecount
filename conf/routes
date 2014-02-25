@@ -14,10 +14,9 @@ POST    /auth/login                       controllers.AccountController.login
 
 POST    /auth/register                    controllers.AccountController.register
 
-GET     /logout                           controllers.AccountController.logout
+GET     /auth/verification                controllers.AccountController.verifyAccount(id: String)
 
-# Portal core routes
-GET     /portal/account                   controllers.PortalController.account
+GET     /logout                           controllers.AccountController.logout
 
 # Tally Feed routes
 GET     /tally/view                       controllers.TallyController.loadView

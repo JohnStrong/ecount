@@ -31,10 +31,14 @@ object Crypto {
     toHex(byteData).toString
   }
 
-  def hashPassword(unHashed: String, saltFunction: () => String = generateSecureSalt) = {
+  def password(unHashed: String, saltFunction: () => String = generateSecureSalt) = {
     val salt = saltFunction()
     val hash = SHA256(List(unHashed, salt).mkString)
 
     (salt, hash)
+  }
+
+  def verificationLink() = {
+    generateSecureSalt()
   }
 }

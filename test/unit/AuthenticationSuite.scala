@@ -38,7 +38,7 @@ object AuthenticationSuite extends FlatSpec with Matchers {
   val CORRECT_SALT_AND_HASH_BYTE_SIZE = 32
 
   private def getHashAndSalt(password: String) = {
-    Crypto.hashPassword(password)
+    Crypto.password(password)
   }
 
   "The login service" should "allow users access to the portal when given correct information" in {

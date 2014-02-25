@@ -1,42 +1,27 @@
 package service.util
 
-import java.util._
-import javax.mail._
-import javax.mail.internet._
-import javax.activation._
+import play.api.Play.current
+import com.typesafe.plugin._
 
 object Mail {
 
-  private val SERVICE_PROPERTY_TYPE = "mail.smtp.host"
-  private val MAIL_SMTP_HOST = "localhost"
-
-  private val VERIFICATION_MAIL_ORIGIN = "EcountVeri123567832@gmail.com"
+  private val VERIFICATION_MAIL_ORIGIN = "John Strong <ecountveri123567832@gmail.com>"
 
   private val VERIFICATION_MAIL_SUBJECT = "Welcome to Ecount!"
-  private val VERIFICATION_MAIL_BODY = "this is a test"
+  private val MAIL_BODY_TEXT_PLAIN = "Follow this link to verify your account and begin using ecount:"
 
   // todo: fix setProperty issues where connect fails
-  def sendEmailVerification(userEmail: String) {
-     val props:Properties = System.getProperties
-     props.setProperty(SERVICE_PROPERTY_TYPE, MAIL_SMTP_HOST)
+  def sendVerificationEmail(userEmail: String, verificationLink: String) {
 
-     val session:Session = Session.getDefaultInstance(props)
+    val mail = use[MailerPlugin].email
+    mail.setSubject(VERIFICATION_MAIL_SUBJECT)
+    mail.setRecipient(userEmail, userEmail)
+    mail.setFrom(VERIFICATION_MAIL_ORIGIN)
 
-     try {
-        val message:MimeMessage = new MimeMessage(session)
+    val verificationLinkHtml = "<a href='localhost:9000/auth/verification?id=" +
+      verificationLink + "'>continue</a>"
 
-        message.setFrom(new InternetAddress(VERIFICATION_MAIL_ORIGIN))
-        message.addRecipient(Message.RecipientType.TO,
-          new InternetAddress(userEmail));
+    mail.send(MAIL_BODY_TEXT_PLAIN, verificationLinkHtml)
 
-        message.setSubject(VERIFICATION_MAIL_SUBJECT)
-        message.setText(VERIFICATION_MAIL_BODY)
-
-        Transport.send(message)
-
-     } catch {
-       case messageException:MessagingException =>
-          messageException.printStackTrace
-     }
   }
 }
