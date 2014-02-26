@@ -6,11 +6,13 @@ object Crypto {
 
   private val SALT_SCRAMBLE_BYTE_SIZE = 32
 
+  private val TO_HEX_SUBSTRING = 1
+
   private def toHex(data:Array[Byte]) = {
 
     val buff:StringBuffer = new StringBuffer();
     for(datum <- data) {
-      buff.append(Integer.toString((datum & 0xff) + 0x100, 16).substring(1))
+      buff.append(Integer.toString((datum & 0xff) + 0x100, 16).substring(TO_HEX_SUBSTRING))
     }
 
     buff

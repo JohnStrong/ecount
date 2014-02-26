@@ -14,16 +14,16 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
-    <title>Login</title>
+    <title>Ecount</title>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
-     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/auth.css")"/>
 </head>
 <body id="auth" class="dim">
 	<div class="contain">
 		<div class="container">
 			<div class="auth-body" id="auth-forms">
-				<div id="login" class="list-group">
+				<div id="login" class="list-group form-anim">
 					@message match {
 						case Some(m) => {
 							<div class="alert alert-info">@m</div>
@@ -80,7 +80,7 @@
 						}
 					</div>
 				</div>
-				<div id="register" class="list-group">
+				<div id="register" class="list-group form-anim">
 					<div class="list-group-item">
 						<div class="form-heading">
 							<div class="row">
