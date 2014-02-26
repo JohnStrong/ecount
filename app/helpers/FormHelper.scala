@@ -26,8 +26,8 @@ object FormHelper {
         "main" -> text(minLength=8, maxLength=16),
         "confirm" -> text
       ).verifying(
-          "Passwords don't match", password => password._1 == password._2
-        )
+        "Passwords don't match", password => password._1 == password._2
+      )
     )
     {
       (email, password) => RegisterData(email, password._1)

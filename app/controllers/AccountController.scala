@@ -13,6 +13,7 @@ object AccountController extends Controller {
 
   private val ERROR_NON_UNIQUE_EMAIL = "oops, email address matches another user"
   private val ERROR_FAILED_AUTHENTICATION = "email or password is incorrect"
+  private val ERROR_HONEYPOT_FIELD_FILLED = "registration failed, are you a robot?"
 
   private val FLASH_SESSION_LOGOUT_MESSAGE = "you have been logged out"
 
@@ -58,7 +59,8 @@ object AccountController extends Controller {
           BadRequest(views.html.auth(FormHelper.loginForm, formWithErrors))
         },
         registerData => {
-           FormHelper.registerUser(registerData) match {
+          // verify that registration is not spam
+          FormHelper.registerUser(registerData) match {
             case Some(i) => {
               Redirect(routes.ViewController.confirmation(registerData.email))
             }
@@ -68,8 +70,7 @@ object AccountController extends Controller {
           }
         }
       )
-     }
-   }
+    }}
   }
 
   def verifyAccount(verificationLink: String) = Action {

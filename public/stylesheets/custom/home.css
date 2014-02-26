@@ -32,3 +32,7 @@ header .navbar {
 	margin: 0 auto;
 }
 
+.get-this #honeypot_field {
+	display: none;
+}
+

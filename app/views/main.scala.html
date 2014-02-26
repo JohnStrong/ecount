@@ -1,4 +1,5 @@
-@(loginForm: Form[helpers.LoginData], registerForm: Form[helpers.RegisterData])(implicit token: play.filters.csrf.CSRF.Token)
+@(loginForm: Form[helpers.LoginData], 
+registerForm: Form[helpers.RegisterData])(implicit token: play.filters.csrf.CSRF.Token)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -107,8 +108,8 @@
                         <button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
                         <h4 class="modal-title" id="register-label">Register</h4>
                     </div>
-                    @form(action = routes.AccountController.register) {
-                        <div class="modal-body">
+                    @form(action = routes.AccountController.register, 'id -> "register-form") {
+                        <div class="modal-body form-body">
                             <div class="form-group">
                                 @input(
                                     registerForm("email"),
@@ -139,7 +140,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success">Confirm</button>
+                            <button type="submit" class="submit btn btn-success">Confirm</button>
                         </div>
                     }
                 </div><!-- /.modal-content -->
@@ -181,6 +182,7 @@
         </div><!-- /.modal -->
     </main>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/home/main.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/home/useful.js")"></script>
     <footer id="credits">
         <!-- awks will go here -->
     </footer>
