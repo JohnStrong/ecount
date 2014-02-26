@@ -8,7 +8,57 @@
 
 
 		LOGIN_ELEM_DEEP_LINK = '#login',
-		REGISTER_ELEM_DEEP_LINK = '#register';
+		REGISTER_ELEM_DEEP_LINK = '#register',
+
+		MAYBE_LOGOUT_ALERT = '#logout',
+
+		// utility for applying jquery animations to auth forms...
+		anim = (function() {
+		
+			var ELEM_ANIMATE_TIMER = 300,
+				ALERT_ANIM_WAIT = 3000;
+
+			return {
+				register: function() {
+					$(LOGIN_ELEM_DEEP_LINK).animate({
+						'opacity': 0
+					}, ELEM_ANIMATE_TIMER, function() {
+						
+						$(this).hide();
+						
+						$(REGISTER_ELEM_DEEP_LINK).show()
+							.css({'opacity' : 1});	
+					});
+					
+				},
+
+				login: function() {
+					$(REGISTER_ELEM_DEEP_LINK).animate({
+						'opacity': 0
+					}, ELEM_ANIMATE_TIMER, function() {
+						
+						$(this).hide();
+
+						$(LOGIN_ELEM_DEEP_LINK).show()
+							.css({'opacity' : 1});
+					});
+				},
+
+				logout: function() {
+					var logoutAlert = $(MAYBE_LOGOUT_ALERT);
+
+					if(logoutAlert) {
+						setTimeout(function() {
+							logoutAlert.animate({
+								'opacity' : 0
+							}, ELEM_ANIMATE_TIMER, function() {
+								$(this).hide();
+							});
+						}, ALERT_ANIM_WAIT);
+					}
+				}
+			};
+		})();
 
 	$(document).ready(function() {
 
@@ -25,40 +75,9 @@
 		}
 		
 		$(elemToHide).hide();
+
+		anim.logout();
 	});
-
-	// utility for applying jquery animations to auth forms...
-	var show = (function() {
-		
-		var ANIMATE_TIMER = 500;
-
-		return {
-			register: function() {
-				$(LOGIN_ELEM_DEEP_LINK).animate({
-					'opacity': 0
-				}, ANIMATE_TIMER, function() {
-					
-					$(this).hide();
-					
-					$(REGISTER_ELEM_DEEP_LINK).show()
-						.css({'opacity' : 1});	
-				});
-				
-			},
-
-			login: function() {
-				$(REGISTER_ELEM_DEEP_LINK).animate({
-					'opacity': 0
-				}, ANIMATE_TIMER, function() {
-					
-					$(this).hide();
-
-					$(LOGIN_ELEM_DEEP_LINK).show()
-						.css({'opacity' : 1});
-				});
-			}
-		};
-	})();
 
 	$('a.primary').click('#auth-forms', function(e) {
 		e.preventDefault();
@@ -66,9 +85,9 @@
 		var formId = $(this).closest('form').attr('id');
 
 		if(formId === LOGIN_FORM_ID) {
-			show.register();
+			anim.register();
 		} else {
-			show.login();
+			anim.login();
 		}
 	});
 

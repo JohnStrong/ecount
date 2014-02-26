@@ -334,6 +334,7 @@ mapCountyMain.controller('DistrictsMapController',
 		// get results of constituency matching cid
 		$scope.visConstituencyResults = function(cid) {
 			$scope.activeCid = cid;
+			$scope.$broadcast('cidChange');
 		};
 
 		// empty the selected control...
@@ -385,28 +386,35 @@ mapCountyMain.controller('DistrictsVisController',
 	['$scope', '$element', 'Visualize',
 	function($scope, $element, Visualize) {
 
-		// watch for updates to tally results or the selected constituency id (change on live update or selection)...
-		$scope.$watchCollection('[activeCid, mainTally.constitunecyResults]', function(newVals) {
+		$scope.visualize = function() {
+			var cid = $scope.activeCid;
 
-			console.log('dvc mcr', newVals);
+			// get the tally results for the active cid...
+			var tallyResults = $scope.mainTally.getConstituencyTallyResults(cid);
 
-			var activeCid = newVals[0],
-				constituencyResults = newVals[1];
+			// set the vis container to visible before begining visualization...
+			$scope.districtsVisControl.show();
 
-			if(activeCid && constituencyResults) {
+			var visualize = Visualize(tallyResults.results, $element);
+			visualize.county();
+		}
 
-				console.log('called distircts', $scope);
+		// watch for updates to tally results or the selected constituency id 
+		// (change on live update or selection)...
+		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
 
-				// get the tally results for the active cid...
-				var tallyResults = $scope.mainTally.getConstituencyTallyResults(activeCid);
+			console.log('dvc mcr', newVal);
 
-				// set the vis container to visible before begining visualization...
-				$scope.districtsVisControl.show();
-
-				var visualize = Visualize(tallyResults.results, $element);
-				visualize.county();
+			// only visualize automatically if 
+			// 1) a constituency is being viewed by the user
+			// 2) there is data to view... 
+			if($scope.activeCid && newVal) {
+				$scope.visualize();
 			}
 		});
+
+		// event triggered when user chooses an constituency to view..
+		$scope.$on('cidChange', $scope.visualize);
 	}
 ]);
 
@@ -420,10 +428,13 @@ mapCountyMain.controller('DistrictVisController',
 
 		$scope.districtId = null;
 
+		// visualizes tally results for the active district (using districtId)...
 		function visualizeDistrictResults() {
 			var results = [],
 
 				constitunecyResults = $scope.mainTally.constitunecyResults;
+
+			console.log('vis district');
 
 			for(var r in constitunecyResults) {
 				if(constitunecyResults[r].results.length > 0) {
@@ -446,6 +457,18 @@ mapCountyMain.controller('DistrictVisController',
 		$scope.$on('districtChange', function(source, gid) {
 			$scope.districtId = gid;
 			visualizeDistrictResults();
+		});
+
+		// event triggered when constituencyResults is updated in the Tally object...
+		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
+			console.log('district vis cr', newVal);
+
+			// only visualize automatically if 
+			// 1) a district is being viewed by the user
+			// 2) there is data to view... 
+			if($scope.districtId && newVal) {
+				visualizeDistrictResults();
+			}
 		});
 	}
 ]);

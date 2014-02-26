@@ -26,7 +26,7 @@
 				<div id="login" class="list-group form-anim">
 					@message match {
 						case Some(m) => {
-							<div class="alert alert-info">@m</div>
+							<div id="logout" class="alert alert-info">@m</div>
 						}
 
 						case None => { }
@@ -72,7 +72,7 @@
 						    <div class="form-group">
 							    <div class="form-footer">
 							        <button type="submit" class="btn btn-success">Confirm</button>
-							        <span>
+							        <span class="suggestion">
 								        <small>not a member? <a href="" class="primary">register</a></small>
 								    </span>
 						   		</div>
@@ -133,7 +133,7 @@
 						    <div class="form-body">
 							    <div class="form-footer">
 							        <button type="submit" class="btn btn-success">Confirm</button>
-							        <span>
+							        <span class="suggestion">
 							        	<small>already a memeber? <a href="" class="primary">sign up</a></small>
 							        </span>
 							    </div>

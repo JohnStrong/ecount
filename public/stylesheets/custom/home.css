@@ -27,21 +27,8 @@ header .navbar {
 	padding-left: 10px;
 }
 
-.content {
-	width: 65%;
-	margin: 0 auto;
-}
-
 .contain {
 	max-width: 1200px;
 	margin: 0 auto;
-}
-
-/* MEDIA QUERIES */
-/* iPads (portrait) ----------- */
-@media only screen and (max-width : 1024px) {
-	.jumbotron, .tease {
-		position: static;
-	}
 }
 

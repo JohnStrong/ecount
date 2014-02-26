@@ -27,6 +27,10 @@
 	color: #CCCCCC;
 }
 
+.details {
+	padding: 0 1em;
+}
+
 .tease {
 	float: right;
 }
@@ -41,8 +45,8 @@
 	background-color: #222222;
 }
 
-.promo-sheet li {
-	display: inline;
+.promo-sheet {
+	text-align: center;
 }
 
 .text-promo h1,
@@ -50,6 +54,7 @@
 	color: #EEE;
 }
 
+.promo-sheet,
 .info-list {
 	list-style: none;
 	margin-left: 0;
