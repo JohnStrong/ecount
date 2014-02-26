@@ -1,4 +1,15 @@
 /* BASE STYLES FOR HOMEPAGE PROMO */
+.pin {
+	position: relative;
+}
+
+.no-js {
+	position: absolute;
+	width: 70%;
+	margin: 0 15%;
+	top: 20px;
+}
+
 .dim {
 	
 	width: 100%;

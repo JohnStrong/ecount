@@ -38,7 +38,15 @@ registerForm: Form[helpers.RegisterData])(implicit token: play.filters.csrf.CSRF
             </div>
         </nav>
     </header>
-    <main>
+    <main class="pin">
+    	<noscript>
+    		<div class="no-js container">
+	    		<div class="alert alert-danger">
+	    			Ecount requires <strong>javascript</strong>.
+	    			please enable javascript in your browser and reload the page to continue.
+	    		</div>
+	    	</div>
+    	</noscript>
         <div class="promo">
         	<div class="promo-body">
 	            <div class="contain">
