@@ -16,8 +16,8 @@ mapElections.factory('ElectionStatistics', ['$http',
 					.success(callback);
 			},
 
-			getElectionCountyConstituencies: function(countyId, callback) {
-				$http.get(ALL_COUNTY_COUNSTITUENCIES_URL + countyId)
+			getElectionCountyConstituencies: function(countyId, electionId, callback) {
+				$http.get(ALL_COUNTY_COUNSTITUENCIES_URL + electionId + '/' + countyId)
 					.success(callback)
 			},
 
@@ -34,13 +34,26 @@ mapElections.controller('ElectionController',
 	function($scope) {
 
 		// current elections...
-		$scope.elections = [];
+		$scope.elections = null;
+
+		// constituencies for the currently selected election...
+		$scope.constituencies = null;
 
 		// holds the user election selection...
 		$scope.election = null;
 
 		// holds users constituency selection for current county...
 		$scope.constituency = null;
+
+		// get constituencies for the election of choice...
+		$scope.getConstituenciesForElection = function(eid) {
+			$scope.getConstituencies(eid, function(constituencies) {
+				
+				$scope.constituencies = constituencies;
+
+				console.log('gcfe', $scope.constituencies);
+			});
+		}
 
 		// receive previous elections from map controller...
 		$scope.$on('previousTallys', function(source, _elections) {

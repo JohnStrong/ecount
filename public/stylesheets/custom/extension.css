@@ -42,7 +42,10 @@
     background: white;
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
+
+    -moz-border-radius: 5px;
+    	-webket-border-radius: 5px;
+    		border-radius: 5px;
 }
 
 .imap-info h4 {
@@ -108,9 +111,10 @@ table.gen-table tr:nth-child(1) td {
 	background-color: #FFFFFF;
 
 	border: 2px solid #333333;
-	border-radius: .25em;
-		-moz-border-radius: .25em;
+
+	-moz-border-radius: .25em;
 		-webket-border-radius: .25em;
+			border-radius: .25em;
 }
 
 .tally-results-heading {
@@ -123,7 +127,8 @@ table.gen-table tr:nth-child(1) td {
 	padding: 0.8% 0;
 }
 
-.alert.alert-info {
+.alert.alert-info,
+.alert.alert-danger {
 	width: 90%;
 	margin: 0 auto;
 	padding: 5%;
@@ -136,8 +141,8 @@ table.gen-table tr:nth-child(1) td {
 	padding: 10% 20%;
 
 	-webkit-border-radius: .2em;
-	-moz-border-radius: .2em;
-	border-radius: .2em;
+		-moz-border-radius: .2em;
+			border-radius: .2em;
 
 	background-color: #FF4444;
 	color: #FFFFFF;
@@ -193,15 +198,6 @@ table.gen-table tr:nth-child(1) td {
 	padding-bottom: .5%;
 	width: 96%;
 	margin: 0 auto;
-}
-
-.election-nav select {
-	display: inline-block;
-	width: 49%;
-}
-
-.election-nav:after {
-	clear: both;
 }
 
 .county-heading-panel {

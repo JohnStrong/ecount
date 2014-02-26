@@ -10,7 +10,7 @@ import PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 
-import models.ecount.stat.{PartyStatsExtractor, ElectionStatsExtractor, TallyResultsExtractor}
+import models.ecount.stat.{ConstituencyExtractor, TallyResultsExtractor}
 
 object StatsController extends Controller {
 
@@ -57,11 +57,12 @@ object StatsController extends Controller {
     }
   }
 
-  def constituencies(countyId: Long) = Action.async {
+  def constituencies(electionId: Long, countyId: Long) = Action.async {
 
     def getCountyConstituencies = {
       withConnection { implicit conn => {
-          StatStore.getCountyConstituencies(countyId).map(c => {
+          val ce = ConstituencyExtractor(electionId, countyId)
+          StatStore.getCountyConstituencies(ce).map(c => {
             Json.obj(
               "id" -> c.id,
               "title" -> c.title

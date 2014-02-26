@@ -35,7 +35,7 @@ import models.ecount.map.County
     </xsql>
   }
 
-  val getCountyConstituencies = new SelectListBy[Long, Constituency] {
+  val getCountyConstituencies = new SelectListBy[ConstituencyExtractor, Constituency] {
 
     resultMap = new ResultMap[Constituency] {
       result( property = "id", column = "constituency_id")
@@ -46,8 +46,12 @@ import models.ecount.map.County
       SELECT sbc.constituency_id, sbc.constituency_title
       FROM
       stat_bank_constituencies as sbc,
-      stat_bank_counties_constituencies sbcc, counties as c
-      WHERE c.county_id = #{{id}}
+      stat_bank_counties_constituencies sbcc,
+      stat_bank_election_to_constituency as etc,
+      counties as c
+      WHERE c.county_id = #{{countyId}}
+      AND etc.election_id = #{{electionId}}
+      AND etc.constituency_id = sbc.constituency_id
       AND sbcc.county_id = c.county_id
       AND sbc.constituency_id = sbcc.constituency_id;
     </xsql>

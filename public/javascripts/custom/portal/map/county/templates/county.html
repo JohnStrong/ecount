@@ -1,6 +1,6 @@
-<div ng-init="getConstituencies()">
+<div>
 	<div class="county-contain">
-		<div ng-if="constituencies !== null">
+		<div>
 			<div class="county-inner" ng-init="getElections()">
 				<div class="county-heading-panel">
 					<div class="row">
@@ -46,20 +46,28 @@
 						</div>
 					</div>
 					<div class="row" ng-controller="ElectionController">
-						<div class="col-md-12" ng-if="elections.length > 0 && constituencies.length > 0">
+						<div class="col-md-12" ng-if="elections">
 							<div class="tally-results-body">
 								<div role="form">
 									<div class="form-group">
 										<h3 class="text-primary page-header">Previous Tally Results</h3>
 										<div id="election-nav-pane" class="election-nav">
-											<select ng-model="election" class="form-control"
-												ng-options="e.title for e in elections">
-												<option value="">-- choose election --</option>
-											</select>
-											<select ng-model="constituency" class="form-control"
-													ng-options="c.title for c in constituencies">
-													<option value="">-- choose constituency --</option>
-											</select>
+											<div class="list-group-item">
+												<select ng-model="election" class="form-control"
+													ng-options="e.title for e in elections">
+													<option value="">-- choose election --</option>
+												</select>
+											</div>
+											<div ng-if="election" ng-init="getConstituenciesForElection(election.id)">
+												<div ng-if="constituencies.length > 0">
+													<div class="list-group-item">
+														<select ng-model="$parent.constituency" class="form-control"
+																ng-options="c.title for c in constituencies">
+																<option value="">-- choose constituency --</option>
+														</select>
+													</div>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -73,8 +81,18 @@
 									    </div>
 									</div>
 									<div ng-switch-when="false">
-										<div class="alert alert-info">
-											Choose an election and constituency to begin viewing previous tally results...
+										<div ng-switch on="constituencies.length == 0">
+											<div ng-switch-when="true">
+												<div class="alert alert-danger">
+													Could not retrieve constituencies for the selected election. 
+													Sorry about that 
+												</div>
+											</div>
+											<div ng-switch-when="false">
+												<div class="alert alert-info">
+													Choose an election and constituency to begin viewing previous tally results...
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>

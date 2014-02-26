@@ -241,11 +241,12 @@ mapCountyMain.controller('CountyController',
 		// the constituency id of which is open in the
 		$scope.activeCid = null;
 
-		$scope.getConstituencies = function() {
+		// gets the constituencies for the current election...
+		$scope.getConstituencies = function(eid, callback) {
 			ElectionStatistics.getElectionCountyConstituencies(
-				$scope.countyTarget.id,
+				$scope.countyTarget.id, eid,
 				function(data) {
-					$scope.constituencies = data;
+					callback(data);
 				});
 		};
 
@@ -268,13 +269,19 @@ mapCountyMain.controller('CountyController',
 		$scope.$on('latestTally', function(source, _election) {
 			var isLive = isTallyOngoing(_election.tallyDate);
 
-			if(isLive) {
-				$scope.mainTally = Tally.live($scope.constituencies, _election);
-			} else {
-				$scope.mainTally = Tally.previous($scope.constituencies, _election);
-			}
+			$scope.getConstituencies(_election.id, function(constituencies) {
+				
+				$scope.constituencies = constituencies;
+				
+				if(isLive) {
+					$scope.mainTally = Tally.live($scope.constituencies, _election);
+				} else {
+					$scope.mainTally = Tally.previous($scope.constituencies, _election);
+				}
 
-			$scope.mainTally.getAllConstituencyResults();
+				$scope.mainTally.getAllConstituencyResults();
+
+			});
 		});
 
 		// open ded stat view for the ded that has been selected on the imap...
