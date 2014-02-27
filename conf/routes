@@ -35,8 +35,6 @@ GET     /map/geo/county/                    controllers.MapController.countyBoun
 
 GET     /map/geo/county/districts/:cid      controllers.MapController.electoralDistricts(cid:Long)
 
-GET     /map/geo/county/district/:gid       controllers.MapController.electoralDistrict(gid:Long)
-
 # Template Loader
 GET     /templates/*file                    controllers.TemplateAssetsController.at(file)
 

@@ -61,26 +61,4 @@ object MapController extends Controller {
       )
     }
   }
-
-  def electoralDistrict(gid: Long) = Action.async {
-
-    def getDedById =
-      withConnection {  implicit conn =>
-         MapStore.getElectoralDivision(gid).map(ed => {
-            Json.obj(
-              "type" -> "Feature",
-              "geometry" -> Json.parse(ed.geom)
-           )}
-        )
-      }
-
-    val ded = scala.concurrent.Future { getDedById }
-
-    ded.map { i =>
-       Ok(Json.obj(
-         "type" -> "FeatureCollection",
-          "features" -> Json.toJson(i))
-       )
-    }
-  }
 }

@@ -42,13 +42,6 @@ mapUtil.factory('GeomAPI', ['$http',
 					.success(function(geom) {
 						callback(geom);
 					});
-			},
-
-			electoralDistrict: function(gid, callback) {
-				return $http.get(ELECTORAL_DISTRICT_REQ_URL + gid)
-					.success(function(data) {
-						callback(data);
-					});
 			}
 		};
 	}

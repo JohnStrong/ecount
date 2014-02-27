@@ -3,7 +3,7 @@
 	var CHECKBOX_MARKUP = '<div class="checkbox">' +
 		'<label>' +
 		'<input type="checkbox" name="human" id="human" value=1>' +
-		'yes, I am a Human' +
+		'yes, I am Human' +
 		'</label>' +
 		'</div>';
 	

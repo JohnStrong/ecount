@@ -60,13 +60,16 @@ object FormHelper {
       AccountDispatcher.isUniqueAccount(email) match {
         case true => {
 
-          // generate and send verification link to user
+          // generate verification hash
           val verificationLink = Crypto.verificationLink()
-          Mail.sendVerificationEmail(email, verificationLink)
 
           // add new user (unverified) to the system
           val update = AccountDispatcher.insertNewUnverifiedAccount(email.toLowerCase,
             password, verificationLink)
+
+          // mail verification link to registered user
+          Mail.sendVerificationEmail(email, verificationLink)
+
           Some(update)
         }
         case false =>
