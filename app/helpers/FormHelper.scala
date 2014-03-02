@@ -12,6 +12,8 @@ case class RegisterData(email:String, password: String) extends FormBinding
 
 object FormHelper {
 
+  private val PASSWORD_VERIFICATION_FAILED_MESSAGE = "passwords do not match"
+
   val loginForm: Form[LoginData] = Form[LoginData](
     mapping(
       "email" -> email,
@@ -26,7 +28,7 @@ object FormHelper {
         "main" -> text(minLength=8, maxLength=16),
         "confirm" -> text
       ).verifying(
-        "Passwords don't match", password => password._1 == password._2
+          PASSWORD_VERIFICATION_FAILED_MESSAGE, password => password._1 == password._2
       )
     )
     {
@@ -36,6 +38,11 @@ object FormHelper {
       registerData => Some(registerData.email, (registerData.password, ""))
     }
   )
+
+
+  def verifyCorrectSecurityQuestion(email: String, securityQuestionAnswer: String) = {
+    true
+  }
 
   def authenticateUser(loginData: LoginData) = {
 

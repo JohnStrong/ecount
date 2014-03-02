@@ -7,20 +7,21 @@ mapCountyPrev.controller('PreviousTallyController',
 
 		var TALLY_VIS_ELEM_ID = '#previous-tally-vis',
 
-			FAILED_TO_VIS_TEMPLATE = '<div class="alert alert-info">' +
-					'Could not visualize tally results' +
-				'</div>',
-
-		tallyVisElement = $element.find(TALLY_VIS_ELEM_ID);
+			FAILED_TO_VIS_TEMPLATE = '<div class="alert alert-info bottom">' +
+					'no results available for the selected area' +
+				'</div>';
 
 		// if we could not find results for the current selection, display an alert...
 		function failedToVisualize() {
-			tallyVisElement.empty()
+			$(TALLY_VIS_ELEM_ID).empty()
 				.html(FAILED_TO_VIS_TEMPLATE);
 		}
 
 		// evaluated when the user selects/changes an election and constituency to view...
 		function getTallyResults(election, constituency) {
+
+			console.log('previous tally', election, constituency);
+
 			ElectionStatistics.getElectionTallyByConstituency(
 				election.id, constituency.id,
 				function(tallyResults) {
@@ -30,14 +31,19 @@ mapCountyPrev.controller('PreviousTallyController',
 						return;
 					}
 
+					var tallyVisElement = $element.find(TALLY_VIS_ELEM_ID);
+
 					// if we get a useful result set, visualize the tally results...
 					Visualize(tallyResults.results, tallyVisElement)
-						.county(tallyVisElement.width());
+						.county({'width' : tallyVisElement.width()});
 				});
 		}
 
-		$scope.$watchCollection('[election, constituency]', function(newVals) {
-			if(newVals[0] && newVals[1]) getTallyResults(newVals[0], newVals[1]);
+		$scope.$watch('constituency', function(newVal) {
+			
+			console.log('vals', newVal);
+
+			if(newVal) getTallyResults($scope.election, newVal);
 		});
 
 	}

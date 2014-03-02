@@ -31,6 +31,7 @@ import models.ecount.map.County
     def xsql = <xsql>
       SELECT election_id, election_title, tally_date
       FROM stat_bank_elections
+      WHERE active = 'true'
       ORDER BY tally_date DESC
     </xsql>
   }

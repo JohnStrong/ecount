@@ -7,12 +7,13 @@ ecountVis.factory('FilterFor',
 		return {
 			districts: function(datum) {
 				// computes the sum of all district tally results per candidate...
-				var result = datum.results.reduce(function(prev, next) {
-					var prev = prev.result || 0,
-						next = next.result || 0;
+				var result = 0;
 
-					return prev + next;
-				});
+				for(var r in datum.results) {
+					result += datum.results[r].result;
+				}
+
+				console.log(datum.name, result);
 
 				return {
 					'id': datum.id,
@@ -30,7 +31,7 @@ ecountVis.factory('FilterFor',
 
 					// for each candidate, extracts the tally result relating to the current view...
 					$.each(datum.results, function(k, d) {
-						
+
 						// hard coded for testing purposes for now...
 						if(d.dedId === 2469) {
 							result = d.result;
@@ -106,8 +107,13 @@ ecountVis.service('StatVisualization', function() {
 			LEGEND_RECT_HEIGHT = 10,
 
 			LEGEND_TEXT_HEIGHT = 15,
-			LEGEND_TEXT_WIDTH = 50;
+			LEGEND_TEXT_WIDTH = 50,
 
+			TOOLTIP_COLOR_ID_OFFSET = 1;
+
+		console.log('domain', domain);
+
+		// set up chart with container styles and svg vector...
 		var chart = d3.select(domain)
 			.append('div')
 			.attr('class', 'info-pane')
@@ -118,7 +124,7 @@ ecountVis.service('StatVisualization', function() {
 		// d3 api specific vars...
 		var xScale = d3.scale.linear().domain([0,
 				d3.max(dataset, function(d) {
-					return d.count; })]).range([0, WIDTH - PADDING[1] - PADDING[0]]),
+					return d.count; })]).range([0, WIDTH - PADDING[0] - PADDING[1] - PADDING[0]]),
 
 			yScale = d3.scale.linear().domain([0, dataset.length]).range([BAR_HEIGHT_OFFSET,
 				BAR_HEIGHT_TOTAL]),
@@ -132,7 +138,7 @@ ecountVis.service('StatVisualization', function() {
 			colorScale = d3.scale.category20c();
 
 		// begin visualization.....
-		var chartMain = chart.selectAll('rect')
+		var chartMain = chart.selectAll('rect.bar')
 			.data(dataset)
 			.enter().append('svg:rect')
 			.attr('x', PADDING[0])
@@ -183,6 +189,16 @@ ecountVis.service('StatVisualization', function() {
 					.style('fill', colorScale(i))
 					.text('' + d.name);
 			});
+
+		// add tipsy tooltip, called when a bar from chart is hovered over...
+		$('svg rect').tipsy({
+			gravity: 'w',
+			html: true,
+			title: function() {
+				var d = this.__data__;
+				return '<span style="color:#222222">' + d.count + '</span>';
+			}
+		});
 	};
 });
 
@@ -197,6 +213,7 @@ ecountVis.factory('Visualize',
 		'<p>could not visualize tally results<p>' +
 		'</div>',
 
+		TOOLTIP_ELEM = 'body',
 		COUNTY_VIS_PIXEL_WIDTH = 520,
 
 			countyFilter = FilterFor.districts,
@@ -209,11 +226,12 @@ ecountVis.factory('Visualize',
 		return function(results, elem) {
 
 			return {
-				county: function(idealWidth) {
+				county: function(props) {
+
+					var width = props? props.width : COUNTY_VIS_PIXEL_WIDTH;
+
 					if(elem) elem.empty();
-
-					var width = idealWidth || COUNTY_VIS_PIXEL_WIDTH;
-
+					
 					TallyExtractor(countyFilter, results)(function(resultSet) {
 
 						if(!resultSet || resultSet.length <= 0) {
@@ -221,7 +239,8 @@ ecountVis.factory('Visualize',
 							return;
 						}
 
-						return StatVisualization(elem[0], resultSet, {'width': width});
+						StatVisualization(elem[0], resultSet, {'width': width});
+						return;
 					});
 				},
 
@@ -243,7 +262,7 @@ ecountVis.factory('Visualize',
 								failedVisualizationView(elem);
 								return;
 							}
-
+							
 							StatVisualization(elem[0], resultSet, {'width': elem.width()});
 							return;
 						});

@@ -233,10 +233,7 @@ mapCountyMain.controller('CountyController',
 		})();
 
 		// holds the latest tally (can be live or most recent)...
-		$scope.mainTally = null;
-
-		// get constituencies for this county...
-		$scope.constituencies = null;
+		$scope.mainTallies = [];
 
 		// the constituency id of which is open in the
 		$scope.activeCid = null;
@@ -253,46 +250,59 @@ mapCountyMain.controller('CountyController',
 		// stop feed interval if live feed, close view...
 		// clear the current set interval on constituency change and start fresh...
 		$scope.dump = function() {
-			if($scope.mainTally.intervalId) {
-				clearTimeout($scope.mainTally.intervalId);
-			}
+			$.each($scope.mainTallies, function(ith, tally) {
+				if(tally.intervalId) {
+					clearTimeout(tally.intervalId);
+				}
+			});
 
 			$scope.closeCountyView();
 		};
 
 		// watch for live updates to constituencyResults....
-		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
+		$scope.$watchCollection('mainTallies', function(newVal) {
 			console.log('cr watch', newVal);
 		});
 
 		// listens for an latest election tally...
-		$scope.$on('latestTally', function(source, _election) {
-			var isLive = isTallyOngoing(_election.tallyDate);
+		$scope.$on('latestTally', function(source, _elections) {
+			
+			$.each(_elections, function(ith, _election) {
+				var isLive = isTallyOngoing(_election.tallyDate),
 
-			$scope.getConstituencies(_election.id, function(constituencies) {
+					tally = null;
+
+				$scope.getConstituencies(_election.id, function(constituencies) {
 				
-				$scope.constituencies = constituencies;
-				
-				if(isLive) {
-					$scope.mainTally = Tally.live($scope.constituencies, _election);
-				} else {
-					$scope.mainTally = Tally.previous($scope.constituencies, _election);
-				}
+					if(isLive) {
+						tally = Tally.live(constituencies, _election);
+					} else {
+						tally = Tally.previous(constituencies, _election);
+					}
 
-				$scope.mainTally.getAllConstituencyResults();
+					tally.getAllConstituencyResults();
 
+					$scope.mainTallies.push(tally);
+				});
 			});
 		});
+	}
+]);
 
-		// open ded stat view for the ded that has been selected on the imap...
-		$scope.$on('target-change', function(event, args) {
+mapCountyMain.directive('mainTallyDirective', function() {
+	return {
+		restrict: 'E',
+		transclude: true,
+		scope: {
+			tally: '=tally'
+		},
+		controller: 'MainTallyController'
+	}
+});
 
-			// visualize ded results if renderPath == ded...
-			if($scope.renderPath[2] === 'districts') {
-				// district visualization...
-				$scope.$broadcast('districtChange', args[0].gid);
-			}
-		});
+// isolate our scope...
+mapCountyMain.controller('MainTallyController',
+	['$scope', function($scope) {
 	}
 ]);
 
@@ -301,10 +311,9 @@ mapCountyMain.controller('DistrictsMapController',
 	function($scope, $compile, Map, GeomAPI, MapStyle) {
 
 		var DISTRICTS_ZOOM = 16,
-			DISTRICTS_VIEW_DOM_ID = 'county-map-view',
-
+			
 			MAP_CONTENT_LIST = '<ul class="well info-pane county-vis">' +
-			'<li ng-repeat="c in constituencies">' +
+			'<li ng-repeat="c in mainTally.constituencies">' +
 			'<a href="" ng-click="visConstituencyResults(c.id)" class="btn">' +
 			'{{c.title}}' +
 			'</a>' +
@@ -338,6 +347,11 @@ mapCountyMain.controller('DistrictsMapController',
 
 		$scope.activeCid = null;
 
+		// distirct is selected for vis...
+		$scope.districtChange = function(gid) {
+			$scope.$broadcast('districtVis', gid);
+		};
+
 		// get results of constituency matching cid
 		$scope.visConstituencyResults = function(cid) {
 			$scope.activeCid = cid;
@@ -365,16 +379,20 @@ mapCountyMain.controller('DistrictsMapController',
 
 			// get ed geoms and set up map controls to display interactive content...
 			GeomAPI.electoralDistricts(countyId, function(geom) {
+				var id = $scope.$index,
 
-				var imap = Map.draw(DISTRICTS_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
+					imap = Map.draw('imap-' + id, geom, {'style' : MapStyle.base}, 
+						function(target) {
+
+							// district visualization...
+							$scope.districtChange(target.gid);
+						});
 
 				imap.createInfoControl(templates[0], LIST_CONTENT_POSITION);
 
 				// districts vis control...
 				$scope.districtsVisControl = imap.createInfoControl(templates[1],
 					DISTRICTS_VIS_CONTENT_POSITION);
-
-				console.log('vis control', $scope.districtsVisControl);
 			});
 		}
 	}
@@ -461,13 +479,14 @@ mapCountyMain.controller('DistrictVisController',
 		}
 
 		// if constituency results change we have to update vis with new results...
-		$scope.$on('districtChange', function(source, gid) {
+		$scope.$on('districtVis', function(source, gid) {
 			$scope.districtId = gid;
 			visualizeDistrictResults();
 		});
 
 		// event triggered when constituencyResults is updated in the Tally object...
 		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
+			
 			console.log('district vis cr', newVal);
 
 			// only visualize automatically if 

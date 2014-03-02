@@ -12,35 +12,39 @@
 				<div class="container">
 					<div class="row">
 						<div class="col-md-12">
-							<div ng-if="mainTally !== null">
-								<div id="live-feed" class="list-group county-body">
-									<div class="list-group-item">
-										<div class="feed-nav navbar-text navbar-right">
-											<div ng-if="mainTally.live">
-												<div class="status">live!</div>
-											</div>
-										</div>
-										<div class="feed-main">
-											<div class="feed-header">
-												<h3 class="page-header">
-													{{mainTally.election.title}}
-													<small>{{mainTally.election.tallyDate}}</small>
-												</h3>
-											</div>
-											<div class="district-vis" ng-controller="DistrictVisController">
-												<button type="button" class="close" aria-hidden="true"
-													ng-click="closeDistrictVis()">&times;</button>
-												<div id="district-vis-body"></div>
-											</div>
-											<div class="list-group-item" ng-controller="DistrictsMapController">
-												<div id="imap" ng-init="loadMap()">
-													<div id="county-map-view">
-														<div style="height: 580px"></div>
+							<div ng-if="mainTallies.length > 0">
+								<div ng-repeat="mainTally in mainTallies">
+									<main-tally-directive tally="mainTally" ng-transclude>
+										<div id="live-feed" class="list-group county-body">
+											<div class="list-group-item">
+												<div class="feed-nav navbar-text navbar-right">
+													<div ng-if="mainTally.live">
+														<div class="status">live!</div>
+													</div>
+												</div>
+												<div class="feed-main" ng-controller="DistrictsMapController">
+													<div class="feed-header">
+														<h3 class="page-header">
+															{{mainTally.election.title}}
+															<small>{{mainTally.election.tallyDate}}</small>
+														</h3>
+													</div>
+													<div class="district-vis" ng-controller="DistrictVisController">
+														<button type="button" class="close" aria-hidden="true"
+															ng-click="closeDistrictVis()">&times;</button>
+														<div id="district-vis-body"></div>
+													</div>
+													<div class="list-group-item">
+														<div id="imap-{{$index}}" ng-init="loadMap()">
+															<div id="county-map-view">
+																<div style="height: 580px"></div>
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>
 										</div>
-									</div>
+									</main-tally-directive>
 								</div>
 							</div>
 						</div>
@@ -54,14 +58,16 @@
 										<div id="election-nav-pane" class="election-nav">
 											<div class="list-group-item">
 												<select ng-model="election" class="form-control"
+													ng-change="constituency = null; getConstituenciesForElection(election.id)"
 													ng-options="e.title for e in elections">
 													<option value="">-- choose election --</option>
 												</select>
 											</div>
-											<div ng-if="election" ng-init="getConstituenciesForElection(election.id)">
-												<div ng-if="constituencies.length > 0">
+											<div ng-show="election">
+												<div ng-show="constituencies.length > 0">
 													<div class="list-group-item">
-														<select ng-model="$parent.constituency" class="form-control"
+														<select ng-model="constituency" 
+														class="form-control"
 																ng-options="c.title for c in constituencies">
 																<option value="">-- choose constituency --</option>
 														</select>
@@ -74,7 +80,7 @@
 								<div ng-switch on="constituency !== null && election !== null" class="container tally-container">
 									<div ng-switch-when="true">
 										<div ng-controller="PreviousTallyController">
-											<h3 class="page-header">{{constituency.title}}</h3>
+											<h3 class="page-header">{{constituency.title}} <small>{{election.title}}</small></h3>
 											<div id="previous-tally-vis" class="col-md-12 tally-vis">
 										    	<!-- vis controller -->
 										    </div>

@@ -47,12 +47,14 @@ mapElections.controller('ElectionController',
 
 		// get constituencies for the election of choice...
 		$scope.getConstituenciesForElection = function(eid) {
-			$scope.getConstituencies(eid, function(constituencies) {
-				
-				$scope.constituencies = constituencies;
+			if(eid) {
+				$scope.getConstituencies(eid, function(constituencies) {
+					
+					$scope.constituencies = constituencies;
 
-				console.log('gcfe', $scope.constituencies);
-			});
+					console.log('gcfe', $scope);
+				});
+			}
 		}
 
 		// receive previous elections from map controller...

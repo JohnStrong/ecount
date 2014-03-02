@@ -75,11 +75,13 @@ mapUtil.factory('Map',
 			return info;
 		}
 
-		function IMap(_mapId, _geom, style, zoom) {
+		function IMap(_mapId, _geom, _onClick, style, zoom) {
 					
 			this.map = L.map(_mapId, {"zoom" : zoom });
 
 			this.layer = VendorTileLayer(this.map);
+
+			this.onClick = _onClick;
 
 			this.style = style;
 
@@ -122,14 +124,15 @@ mapUtil.factory('Map',
 			}
 
 			function getElectoralInformation(e){
+				
 				var target = e.target.feature.properties;
-				$rootScope.$broadcast("target-change", [target]);
+				this.onClick(target);
 			}
 
 			layer.on({
 				mouseover: highlightFeature.bind(this),
 				mouseout: resetHighlight.bind(this),
-				click: getElectoralInformation
+				click: getElectoralInformation.bind(this)
 			});
 		};
 
@@ -161,11 +164,11 @@ mapUtil.factory('Map',
 
 		return {
 
-			draw: function(_mapId, _geom, props) {
+			draw: function(_mapId, _geom, props, _clickCallback) {
 				var style = props.style || 'default',
 					zoom = props.zoom || 12;
 
-				var imap = new IMap(_mapId, _geom, style, zoom);
+				var imap = new IMap(_mapId, _geom, _clickCallback, style, zoom);
 
 				imap.map.fitBounds(imap.bounds);
 

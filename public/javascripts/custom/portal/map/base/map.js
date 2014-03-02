@@ -47,7 +47,7 @@ map.controller('MapController',
 		// county currently being viewed...
 		$scope.countyTarget = null;
 
-		function loadCountyView() {
+		$scope.loadCountyView = function() {
 			var countyId = $scope.countyTarget.id;
 
 			$location.path('/map/county/' + countyId);
@@ -72,33 +72,34 @@ map.controller('MapController',
 		$scope.getElections = function() {
 			ElectionStatistics.getElections(function(_elections) {
 
-				var elections = [];
+				var elections = [],
+
+					latestElections = [],
+					sameDay = [];
 
 				$.each(_elections, function(k, election) {
 					elections.push(election);
 				});
 
 				// remove latest and push it up to the feed view... (CountyController)
-				var latestElection = elections.splice(0, 1);
+				latestElections.push(elections.splice(0, 1)[0]);
 
-				console.log('elections gotten');
+				$.each(elections, function(ith, election) {
+					if(election.tallyDate === latestElections[0].tallyDate) {
+						sameDay.push(ith);
+					}
+				});
+
+				$.each(sameDay, function(ith) {
+					latestElections.push(elections.splice(ith, 1)[0]);
+				});
+
+				console.log('elections gotten', latestElections);
 
 				$scope.$broadcast('previousTallys', elections);
-				$scope.$broadcast('latestTally', latestElection[0]);
+				$scope.$broadcast('latestTally', latestElections);
 			});
 		}
-
-		// if click on map county... (i.e. Galway)...
-		$scope.$on('target-change', function(event, args) {
-
-			// check whether we are loading a district or all districts
-			// if districts, open county view...
-
-			if(!$scope.renderPath[2]) {
-				$scope.countyTarget = args[0];
-				loadCountyView();
-			}
-		});
 	}
 ]);
 
@@ -119,7 +120,11 @@ map.controller('MapBaseController',
 			GeomAPI.countyBounds(function(geom) {
 				var compiledWelcome = $scope.compileDom(WELCOME_HTML);
 
-				var imap = Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base});
+				var imap = Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base}, 
+					function(target) {
+						$scope.countyTarget = target;
+						$scope.loadCountyView();
+					});
 				imap.createInfoControl(compiledWelcome, WELCOME_POSITION);
 			});
 		};

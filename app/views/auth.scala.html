@@ -1,7 +1,8 @@
 @(
 	loginForm: Form[helpers.LoginData], 
 	registerForm: Form[helpers.RegisterData],
-	message: Option[String] = None
+	message: Option[String] = None,
+	passwordHelper: Option[String] = None
 )(implicit token: play.filters.csrf.CSRF.Token)
 
 @import helper._
@@ -63,6 +64,10 @@
 		                        <div class="form-group">
 		                            @input(loginForm("password")) { (id, name, value, args) =>
 		                                <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+		                                @passwordHelper match {
+		                                	case Some(m) => { <span>@m <a href="/auth/reset">reset</a></span> }
+		                                	case None => { }
+		                                }
 		                            }
 		                        </div>
 		                        <span>
@@ -107,7 +112,7 @@
 						                registerForm("email"),
 						                '_showErrors -> true
 						            ) { (id, name, value, args) =>
-						                <input type="email" name="@name" class="form-control" id="@id" @toHtmlArgs(args)>
+						                <input type="email" name="@name" class="form-control" id="@id" placeholder="johnDoe14@@example.com" @toHtmlArgs(args)>
 						            }
 						        </div>
 						        <div class="form-group">

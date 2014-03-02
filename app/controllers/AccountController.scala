@@ -15,6 +15,7 @@ object AccountController extends Controller {
   private val ERROR_FAILED_AUTHENTICATION = "email or password is incorrect"
 
   private val FLASH_SESSION_LOGOUT_MESSAGE = "you have been logged out"
+  private val FLASH_FORGOTTEN_PASSWORD_MESSAGE = "forgotten your password? click here to have it"
 
   def login() = CSRFCheck {
     Action {
@@ -23,16 +24,20 @@ object AccountController extends Controller {
           formWithErrors => {
             BadRequest(views.html.auth(formWithErrors, FormHelper.registerForm))
           },
-          loginData =>
+          loginData => {
             FormHelper.authenticateUser(loginData) match {
               case true =>
                 Redirect(routes.ViewController.index)
                 .withSession(USER_SESSION_ID_KEY -> loginData.email.toLowerCase)
-              case false =>
+              case false => {
                 BadRequest(views.html.auth(
                   FormHelper.loginForm.withGlobalError(ERROR_FAILED_AUTHENTICATION),
-                  FormHelper.registerForm))
+                  FormHelper.registerForm,
+                  None, Some(FLASH_FORGOTTEN_PASSWORD_MESSAGE)
+                ))
+              }
             }
+          }
         )
       }
     }
@@ -46,7 +51,7 @@ object AccountController extends Controller {
 
       // redirect to home and invalidate user session, add logout message
       Redirect(routes.ViewController.auth).flashing {
-        "logout" -> FLASH_SESSION_LOGOUT_MESSAGE
+        "auth message" -> FLASH_SESSION_LOGOUT_MESSAGE
       }.withNewSession
     }
   }
@@ -67,6 +72,20 @@ object AccountController extends Controller {
               BadRequest(views.html.auth(FormHelper.loginForm,
                 FormHelper.registerForm.withGlobalError(ERROR_NON_UNIQUE_EMAIL)))
           }
+        }
+      )
+    }}
+  }
+
+  def passwordReset = CSRFCheck {
+    Action { implicit request => {
+      FormHelper.registerForm.bindFromRequest.fold(
+        formWithErrors => {
+           BadRequest(views.html.resetPassword(formWithErrors))
+        },
+        passwordResetData => {
+          // TODO...
+          Ok("password reset link has been sent to your email address")
         }
       )
     }}
