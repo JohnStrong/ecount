@@ -15,7 +15,9 @@
 			<div id="dashboard">
 				<div class="list-group">
 					<div id="dash-main" class="list-group-item">
-						<h3 class="page-header">@ballotBox.ballotTitle</h3>
+						<div class="page-header">
+							<h3 class="lead"><strong>BallotBox:</strong> @ballotBox.ballotTitle</h3>
+						</div>
 						<ul id="candidates" class="list-group list-inline">
 							@candidates.map { candidate =>
 								<li class="list-group-item">

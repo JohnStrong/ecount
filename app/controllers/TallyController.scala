@@ -3,16 +3,13 @@ package controllers
 import play.api.mvc._
 import play.filters.csrf._
 
-import helpers.TallyFormHelper
+import helpers.{TallyFormHelper, FormErrors}
 import service.util.Cache
 import models.ecount.tallysys.UserAccountAccess
 
 object TallyController extends Controller {
 
   private val DASHBOARD_SESSION_KEY = "sys.account"
-
-  private val ERROR_INVALID_VERIFICATION_KEY = "invalid verification key or username"
-  private val NO_BALLOT_BOX__FOR_ACCOUNT = "no ballot box has been allocated for the specified account"
 
   private def getSupervisedBallotBox(ballotId:Int) = {
     TallyFormHelper.getSupervisedBallotBox(ballotId)
@@ -26,7 +23,6 @@ object TallyController extends Controller {
       }
       case _ => None
     }
-
   }
 
   def index = CSRFAddToken {
@@ -53,10 +49,7 @@ object TallyController extends Controller {
              }
             }
             case _ => {
-              val formWithGlobalError = TallyFormHelper.authForm.withGlobalError{
-                ERROR_INVALID_VERIFICATION_KEY
-              }
-
+              val formWithGlobalError = FormErrors.invalidVerificationId
               BadRequest(views.html.tally(formWithGlobalError))
             }
           }
@@ -71,16 +64,12 @@ object TallyController extends Controller {
         case Some(sessId) => {
           Cache.getAccountFromCache(sessId) match {
             case Some(account) => {
-
               getDashboardDependencies(account) match {
-                case Some(depens) => {
-                  Ok(views.html.tallyDashboard(depens._1, depens._2))
+                case Some(dependencies) => {
+                  Ok(views.html.tallyDashboard(dependencies._1, dependencies._2))
                 }
                 case _ => {
-                  val formWithGlobalError = TallyFormHelper.authForm.withGlobalError{
-                    NO_BALLOT_BOX__FOR_ACCOUNT
-                  }
-
+                  val formWithGlobalError = FormErrors.noBallotBoxForAccount
                   BadRequest(views.html.tally(formWithGlobalError)).withNewSession
                 }
               }
