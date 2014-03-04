@@ -26,10 +26,10 @@ object AccountController extends Controller {
           },
           loginData => {
             FormHelper.authenticateUser(loginData) match {
-              case true =>
+              case Some(id) =>
                 Redirect(routes.ViewController.index)
-                .withSession(USER_SESSION_ID_KEY -> loginData.email.toLowerCase)
-              case false => {
+                .withSession(USER_SESSION_ID_KEY -> id)
+              case _ => {
                 BadRequest(views.html.auth(
                   FormHelper.loginForm.withGlobalError(ERROR_FAILED_AUTHENTICATION),
                   FormHelper.registerForm,

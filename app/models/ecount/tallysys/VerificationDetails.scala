@@ -1,8 +1,12 @@
 package models.ecount.tallysys
 
-/**
- * Created by User 1 on 03/03/14.
- */
 class VerificationDetails {
+  var constituencyId:Int = _
+  var verificationId:Int = _
+}
 
+object VerificationDetails {
+  def apply(verificationDetails: VerificationDetails) = {
+    Some(verificationDetails.constituencyId, verificationDetails.verificationId)
+  }
 }

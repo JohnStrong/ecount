@@ -23,7 +23,11 @@ GET     /auth/verification                controllers.AccountController.verifyAc
 GET     /logout                           controllers.AccountController.logout
 
 # Tally System routes
-GET     /tally                            controllers.TallyController.loadView
+GET     /tally                            controllers.TallyController.index
+
+POST    /tally/verification               controllers.TallyController.verification
+
+GET     /tally/dashboard                  controllers.TallyController.dashboard
 
 # API routes
 GET     /api/counties/                      controllers.StatsController.counties
@@ -32,7 +36,7 @@ GET     /api/elections/                     controllers.StatsController.election
 
 GET     /api/elections/constituencies/:eid/:cid  controllers.StatsController.constituencies(eid: Long, cid: Long)
 
-GET     /api/elections/tally/:eid/:cid      controllers.StatsController.constituencyTallyResults(eid: Long, cid:Long)
+GET     /api/elections/tally/:eid/:cid      controllers.StatsController.constituencyTallyResults(eid:Int, cid:Int)
 
 # Ecount Portal map routes
 GET     /map/geo/county/                    controllers.MapController.countyBounds()

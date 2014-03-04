@@ -1,8 +1,13 @@
 package models.ecount.tallysys
 
-/**
- * Created by User 1 on 04/03/14.
- */
 class UserAccountAccess {
+   var electionId:Int = _
+   var constituencyId:Int = _
+   var ballotId:Int = _
+}
 
+object UserAccountAccess {
+  def apply(userAccountAccess: UserAccountAccess) = {
+    Some(userAccountAccess.electionId, userAccountAccess.constituencyId, userAccountAccess.ballotId)
+  }
 }

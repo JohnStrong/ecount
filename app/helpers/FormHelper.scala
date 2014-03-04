@@ -2,7 +2,6 @@ package helpers
 
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.mvc._
 import service.dispatch.AccountDispatcher
 import service.util.{Mail, Crypto, Cache}
 
@@ -54,10 +53,11 @@ object FormHelper {
 
     verifyLogin match {
       case Some(user) => {
-        Cache.cacheUser(user)
-        true
+        val sessId = Crypto.generateSession(user.email)
+        Cache.cacheUser(sessId, user)
+        Some(sessId)
       }
-      case _ => false
+      case _ => None
     }
   }
 

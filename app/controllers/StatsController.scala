@@ -39,11 +39,14 @@ object StatsController extends Controller {
 
     def getAvailableElections = {
       withConnection { implicit conn => {
-        StatStore.getElectionEntries().map(election => {
+        val availables = StatStore.getElectionEntries().filter(_.isAvailable)
+
+        availables.map(election => {
          Json.obj(
           "id" -> election.id,
           "title" -> election.title,
-          "tallyDate" -> election.tallyDate
+          "tallyDate" -> election.tallyDate,
+          "isLive" -> election.isLive
          )
         })
       }
@@ -79,7 +82,7 @@ object StatsController extends Controller {
     })
   }
 
-  def constituencyTallyResults(electionId: Long, constituencyId: Long) = Action.async {
+  def constituencyTallyResults(electionId: Int, constituencyId: Int) = Action.async {
 
     def getTallyResults = {
       withConnection { implicit conn => {

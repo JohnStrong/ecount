@@ -1,8 +1,12 @@
 package models.ecount.stat
 
-/**
- * Created by User 1 on 03/03/14.
- */
 class District {
+  var id:Int =  _
+  var title:String = _
+}
 
+object District {
+  def apply(district: District) = {
+    Some(district.id, district.title)
+  }
 }

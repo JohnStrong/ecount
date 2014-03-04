@@ -1,0 +1,33 @@
+@(candidates: List[models.ecount.stat.ElectionCandidate], ballotBox: models.ecount.tallysys.ElectionBallotBox)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" >
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/dashboard.css")"/>
+</head>
+<body class="dim">
+	<div class="contain">
+		<div class="container">
+			<div id="dashboard">
+				<div class="list-group">
+					<div id="dash-main" class="list-group-item">
+						<h3 class="page-header">@ballotBox.ballotTitle</h3>
+						<ul id="candidates" class="list-group list-inline">
+							@candidates.map { candidate =>
+								<li class="list-group-item">
+									<div class="candidate-entry">@candidate.name</div>
+								</li>
+							}
+						</ul>
+					</div>
+					<script type="text/javascript" src="@routes.Assets.at("javascripts/custom/tallysys/dashboard.js")"></script>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

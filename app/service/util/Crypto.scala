@@ -43,4 +43,9 @@ object Crypto {
   def verificationLink() = {
     generateSecureSalt()
   }
+
+  def generateSession(identifier:String) = {
+    val salt = generateSecureSalt()
+    SHA256(List(identifier, salt).mkString)
+  }
 }

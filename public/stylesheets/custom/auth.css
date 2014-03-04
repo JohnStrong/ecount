@@ -26,7 +26,8 @@ body {
 	padding-right: 2%;
 }
 
-.auth-body #login {
+.auth-body #login,
+.auth-body #tally-verification {
 	padding-top: 24%;
 }
 

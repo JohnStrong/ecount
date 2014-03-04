@@ -5,7 +5,7 @@ import org.mybatis.scala.mapping._
 import models.ecount.stat._
 import models.ecount.map.County
 
-  object StatStore {
+object StatStore {
 
   val getCounties = new SelectList[County] {
 
@@ -26,12 +26,13 @@ import models.ecount.map.County
       result(property = "id", column = "election_id")
       result(property = "title", column = "election_title")
       result(property = "tallyDate", column = "tally_date")
+      result(property = "isAvailable", column = "available")
+      result(property = "isLive", column = "live")
     }
 
     def xsql = <xsql>
-      SELECT election_id, election_title, tally_date
+      SELECT election_id, election_title, tally_date, available, live
       FROM stat_bank_elections
-      WHERE active = 'true'
       ORDER BY tally_date DESC
     </xsql>
   }
@@ -81,15 +82,17 @@ import models.ecount.map.County
 
     resultMap = new ResultMap[ElectionCandidateTally] {
       result(property = "result", column = "count")
-      result(property = "dedId", column = "ded_id")
+      result(property = "dedId", column = "gid")
     }
 
     def xsql = <xsql>
-      SELECT cr.count, cr.ded_id
+      SELECT cr.count, d.gid
       FROM stat_bank_tally_candidate_to_results as ctr,
-      stat_bank_tally_candidate_results as cr
+      stat_bank_tally_candidate_results as cr,
+      stat_bank_tally_ded_details as d
       WHERE ctr.candidate_id = #{{id}}
       AND cr.results_id = ctr.results_id
+      AND d.ded_id = cr.ded_id
     </xsql>
   }
 
