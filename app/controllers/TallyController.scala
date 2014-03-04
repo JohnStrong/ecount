@@ -10,19 +10,44 @@ object TallyController extends Controller {
 
   private val DASHBOARD_SESSION_KEY = "sys.account"
 
+  private val VERIFICATION_KEY_COOKIE_ID = "verificationKey"
+
   def index = CSRFAddToken {
     Action { implicit request => {
-      if(session.get(DASHBOARD_SESSION_KEY).isDefined) {
-        Redirect(routes.TallyController.dashboard)
+      if(request.cookies.get(VERIFICATION_KEY_COOKIE_ID).isDefined) {
+        if(session.get(DASHBOARD_SESSION_KEY).isDefined) {
+          Redirect(routes.TallyController.dashboard)
+        } else {
+          Ok(views.html.tally(TallyFormHelper.RepresentativeForm))
+        }
       } else {
-        Ok(views.html.tally(TallyFormHelper.authForm))
+        Ok(views.html.tallyVerification(TallyFormHelper.authForm))
       }
     }}
   }
 
-  def verification = CSRFCheck {
+  def verification = CSRFAddToken {
     Action { implicit request => {
       TallyFormHelper.authForm.bindFromRequest.fold(
+        hasError => {
+          BadRequest(views.html.tallyVerification(hasError))
+        },
+        verificationKey => {
+          if(TallyFormHelper.isValidKey(verificationKey)) {
+            Ok(views.html.tally(TallyFormHelper.RepresentativeForm)).withCookies{
+              Cookie(VERIFICATION_KEY_COOKIE_ID, verificationKey)
+            }
+          } else {
+            Ok("verification failed")
+          }
+        }
+      )
+    }}
+  }
+
+  def access = CSRFCheck {
+    Action { implicit request => {
+      TallyFormHelper.RepresentativeForm.bindFromRequest.fold(
         formWithErrors => {
          BadRequest(views.html.tally(formWithErrors))
         },
@@ -51,22 +76,13 @@ object TallyController extends Controller {
         case Some(sessId) => {
           Cache.getAccountFromCache(sessId) match {
             case Some(account) => {
-              /*
-              getDashboardDependencies(account) match {
-               case Some(dependencies) => {
-                  Ok(views.html.tallyDashboard(dependencies._1, dependencies._2))
-                }
-                case _ => {
-                  val formWithGlobalError = FormErrors.noBallotBoxForAccount
-                  BadRequest(views.html.tally(formWithGlobalError)).withNewSession
-                }
-              }
-              */
-              Ok("")
+              val ballotBoxId = account.ballotBoxId
+              val candidates = TallyFormHelper.getElectionCandidates(ballotBoxId)
+              Ok(views.html.tallyDashboard(candidates))
             }
             case _ => {
               val formWithGlobalError = FormErrors.cacheFailure
-              Ok(views.html.tally(formWithGlobalError))
+              Ok(views.html.tally(formWithGlobalError)).withNewSession
             }
           }
         }

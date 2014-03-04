@@ -1,4 +1,4 @@
-@(candidates: List[models.ecount.stat.ElectionCandidate], ballotBox: models.ecount.tallysys.ElectionBallotBox)
+@(candidates:List[models.ecount.stat.ElectionCandidate])
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +16,7 @@
 				<div class="list-group">
 					<div id="dash-main" class="list-group-item">
 						<div class="page-header">
-							<h3 class="lead"><strong>BallotBox:</strong> @ballotBox.title</h3>
+							<h3 class="lead">{{ELECTION_TITLE}} <small>{{BALLOT BOX TITLE}}</small></h3>
 						</div>
 						<ul id="candidates" class="list-group list-inline">
 							@candidates.map { candidate =>

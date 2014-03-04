@@ -9,25 +9,25 @@ object FormErrors {
   private val ERROR_FAILED_TO_LOCATE_ACCOUNT = "could not retrieve account details, you have been signed out"
 
   val invalidVerificationId = {
-    TallyFormHelper.authForm.withGlobalError{
+    TallyFormHelper.RepresentativeForm.withGlobalError{
       ERROR_INVALID_VERIFICATION_KEY
     }
   }
 
   val noBallotBoxForAccount = {
-    TallyFormHelper.authForm.withGlobalError{
+    TallyFormHelper.RepresentativeForm.withGlobalError{
       ERROR_NO_BALLOT_BOX__FOR_ACCOUNT
     }
   }
 
   val accountRegistrationFailed = {
-    TallyFormHelper.authForm.withGlobalError{
+    TallyFormHelper.RepresentativeForm.withGlobalError{
       ERROR_FAILED_TO_REGISTER_ACCOUNT
     }
   }
 
   val cacheFailure = {
-    TallyFormHelper.authForm.withGlobalError{
+    TallyFormHelper.RepresentativeForm.withGlobalError{
       ERROR_FAILED_TO_LOCATE_ACCOUNT
     }
   }

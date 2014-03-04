@@ -11,7 +11,11 @@ import service.util.{Cache, Crypto}
 
 object TallyFormHelper {
 
-  val authForm:Form[RepresentativeAccount] = Form[RepresentativeAccount] {
+  val authForm:Form[String] = Form[String] {
+   "key" -> text
+  }
+
+  val RepresentativeForm:Form[RepresentativeAccount] = Form[RepresentativeAccount] {
     mapping(
       "username" -> text,
       "fname" -> text,
@@ -22,11 +26,11 @@ object TallyFormHelper {
       ).verifying(
        "passwords do not match", password => password._1 == password._2
       ),
-      "select a ballot box" -> number
+      "ballot box" -> number
     )
     {
-      (username, fname, surname, password, ballotBox) =>
-          RepresentativeAccount.apply(username, fname, surname, password._1, ballotBox)
+      (username, fname, surname, password, ballotBoxId) =>
+          RepresentativeAccount.apply(username, fname, surname, password._1, ballotBoxId)
     }
     {
        ra => Some(ra.username, ra.fname, ra.surname, ("", ""), ra.ballotBoxId)
@@ -37,6 +41,15 @@ object TallyFormHelper {
     val sessId = Crypto.generateSession(account.username)
     Cache.cacheAccount(sessId, account)
     Some(sessId)
+  }
+
+  def isValidKey(verificationKey:String) = {
+    withConnection { implicit conn => {
+      Tally.isValidVerificationKey(verificationKey) match {
+        case Some(key) => true
+        case _ => false
+      }
+    }}
   }
 
   def getBallotBoxes(verificationKey:String) = {
@@ -58,10 +71,9 @@ object TallyFormHelper {
     }}
   }
 
-  def getElectionCandidates(constituencyId:Int, electionId:Int) = {
+  def getElectionCandidates(ballotBoxId:Int) = {
     withConnection { implicit conn => {
-      val ece = ElectionCandidateExtractor(constituencyId, electionId)
-      Tally.getElectionCandidates(ece).toList
+      Tally.getElectionCandidates(ballotBoxId).toList
     }}
   }
 }

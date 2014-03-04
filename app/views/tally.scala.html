@@ -1,4 +1,5 @@
-@(authForm: Form[models.ecount.tallysys.RepresentativeAccount])(implicit token: play.filters.csrf.CSRF.Token)
+@(authForm:Form[models.ecount.tallysys.RepresentativeAccount])(implicit request:play.api.mvc.RequestHeader, token:play.filters.csrf.CSRF.Token)
+
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -35,16 +36,8 @@
 						            </div>
 						        </div>
 						    </div>
-					        @form(action = routes.TallyController.verification) {
+					        @form(action = routes.TallyController.access) {
 					        	<div class="form-body">
-			                        <div class="form-group">
-			                            @input(
-			                                authForm("verification key"),
-			                                '_showErrors -> true
-			                            ) { (id, name, value, args) =>
-			                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-			                            }
-			                        </div>
 			                        <div class="form-group">
 			                        	@input(
 			                            	authForm("username"),
@@ -91,13 +84,15 @@
 			                        </div>
 			                        <div class="form-group">
 			                        	@input(
-			                            	authForm("select a ballot box"),
+			                            	authForm("ballot box"),
 			                            	'_showErrors -> true
 			                            ) { (id, name, value, args) =>
 			                                <select type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-			                                	@helpers.TallyFormHelper.getBallotBoxes("234").map { ballotBox =>
-			                                		<option value="@ballotBox.id">@ballotBox.title</option>
-			                                	}
+			                                	@if(request.cookies.get("verificationKey").isDefined) {
+			                                		@helpers.TallyFormHelper.getBallotBoxes(request.cookies.get("verificationKey").get.value).map { ballotBox =>
+			                                			<option value="@ballotBox.id">@ballotBox.title</option>
+			                                		}
+			                                	}	
 			                                </select>
 			                            }
 			                        </div>
@@ -107,7 +102,7 @@
 			                    </div>
 							    <div class="form-group">
 								    <div class="form-footer">
-								        <button type="submit" class="btn btn-success">Continue</button>
+								        <button type="submit" class="btn btn-success">create account</button>
 								   		<span class="suggestion">
 							        		<small>coming back? <a href="" class="primary">login here</a></small>
 							        	</span>

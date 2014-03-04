@@ -22,6 +22,14 @@ object Tally {
     </xsql>
   }
 
+  val isValidVerificationKey = new SelectOneBy[String, String] {
+    def xsql = <xsql>
+      SELECT verification_key
+      FROM tally_sys_verification
+      WHERE verification_key = #{{key}}
+    </xsql>
+  }
+
   val isUnique = new SelectOneBy[String, String] {
     def xsql = <xsql>
     SELECT username
@@ -45,7 +53,7 @@ object Tally {
     </xsql>
   }
 
-  val getElectionCandidates = new SelectListBy[ElectionCandidateExtractor, ElectionCandidate] {
+  val getElectionCandidates = new SelectListBy[Int, ElectionCandidate] {
 
     resultMap = new ResultMap[ElectionCandidate] {
       result(property = "id", column = "candidate_id")
@@ -53,12 +61,15 @@ object Tally {
     }
 
     def xsql = <xsql>
-      SELECT c.candidate_id, c.candidate_name
-      FROM stat_bank_tally_constituency_candidates as c,
-      stat_bank_tally_election_to_const_candidates as ecc
-      WHERE c.constituency_id = #{{constituencyId}}
-      AND ecc.election_id = #{{electionId}}
-      AND c.candidate_id = ecc.candidate_id
+      select cc.candidate_id, cc.candidate_name
+      FROM
+      stat_bank_tally_constituency_candidates as cc,
+      tally_sys_ballot_box as b,
+      stat_bank_election_to_constituency as ec
+      WHERE b.ballot_box_id = #{{id}}
+      AND ec.election_id = b.election_id
+      AND cc.constituency_id = b.constituency_id
+      AND cc.constituency_id = ec.constituency_id
     </xsql>
   }
 
@@ -67,5 +78,6 @@ object Tally {
     getInactiveBallotBoxes,
     insertNewAccount,
     isUnique,
+    isValidVerificationKey,
     lockBallotBox)
 }

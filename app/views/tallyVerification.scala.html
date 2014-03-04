@@ -1,0 +1,65 @@
+@(verificationForm: Form[String])(implicit token: play.filters.csrf.CSRF.Token)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" >
+    <title>Tally System Authentication</title>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/auth.css")"/>
+</head>
+<body id="tallyAuth" class="dim">
+	<div class="contain">
+		<div class="container">
+			<div class="auth-body">
+				<div id="tally-verification" class="list-group">
+					<div class="list-group-item">
+						<div class="form-heading">
+							<div class="row">
+								<div class="col-md-6">
+									<h3>Online Tally System</h3>
+								</div>
+								<div class="col-md-6">
+									<div class="error-body">
+										@if(verificationForm.hasGlobalErrors) {
+							                <div class="alert form-alert">
+							                    @verificationForm.globalError.map { error =>
+							                        <p class="text-danger"><small>@error.message</small></p>
+							                    }
+							                </div>
+							            }
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						@form(action = routes.TallyController.verification) {
+							<div class="form-body">
+								<div class="form-group">
+									@input(
+		                            	verificationForm("key"),
+		                            	'_showErrors -> true
+		                            ) { (id, name, value, args) =>
+		                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+		                            }
+								</div>
+								<span>
+									@CSRF.formField
+								</span>
+							</div>
+							<div class="form-group">
+							    <div class="form-footer">
+							        <button type="submit" class="btn btn-success">Continue</button>
+						   		</div>
+						   	</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
