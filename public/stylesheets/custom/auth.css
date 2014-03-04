@@ -26,13 +26,16 @@ body {
 	padding-right: 2%;
 }
 
-.auth-body #login,
-.auth-body #tally-verification {
+.auth-body #login {
 	padding-top: 24%;
 }
 
 .auth-body #register {
 	padding-top: 20%;
+}
+
+.auth-body #tally-verification {
+	padding-top: 10%;
 }
 
 .auth-body .list-group-item {

@@ -1,14 +1,10 @@
 package service.util
 
-/**
- * Created by User 1 on 23/01/14.
- */
-
 import play.api.cache.Cache._
 import play.api.Play.current
 
 import models.ecount.account.User
-import models.ecount.tallysys.UserAccountAccess
+import models.ecount.tallysys.RepresentativeAccount
 
 object Cache {
 
@@ -16,7 +12,7 @@ object Cache {
       set("user." + sessId, user)
   }
 
-  def cacheAccount(sessId: String, account: UserAccountAccess) {
+  def cacheAccount(sessId:String, account:RepresentativeAccount) {
     set("tallysys.account." + sessId, account)
   }
 
@@ -29,6 +25,6 @@ object Cache {
   }
 
   def getAccountFromCache(sessId: String) = {
-    getAs[UserAccountAccess]("tallysys.account." + sessId)
+    getAs[RepresentativeAccount]("tallysys.account." + sessId)
   }
 }

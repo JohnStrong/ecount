@@ -5,35 +5,56 @@ import play.api.data.Forms._
 
 import persistence.ecount.PersistenceContext._
 import persistence.ecount.Tally
-import models.ecount.tallysys.VerificationDetailsExtractor
+import models.ecount.tallysys.{RepresentativeAccount}
 import models.ecount.stat.ElectionCandidateExtractor
 import service.util.{Cache, Crypto}
 
-case class RepresentativeAuthData(authenticationKey: String, username: String)
-
 object TallyFormHelper {
 
-  val authForm:Form[RepresentativeAuthData] = Form[RepresentativeAuthData] {
+  val authForm:Form[RepresentativeAccount] = Form[RepresentativeAccount] {
     mapping(
-      "verification key" -> text,
-      "username" -> text
-    )(RepresentativeAuthData.apply)(RepresentativeAuthData.unapply)
+      "username" -> text,
+      "fname" -> text,
+      "surname" -> text,
+      "password" -> tuple(
+        "main" -> text(minLength = 6),
+        "confirm" -> text
+      ).verifying(
+       "passwords do not match", password => password._1 == password._2
+      ),
+      "select a ballot box" -> number
+    )
+    {
+      (username, fname, surname, password, ballotBox) =>
+          RepresentativeAccount.apply(username, fname, surname, password._1, ballotBox)
+    }
+    {
+       ra => Some(ra.username, ra.fname, ra.surname, ("", ""), ra.ballotBoxId)
+    }
   }
 
-  def getAccountAccess(verificationKey: String, username: String) = {
+  private def generateAccountSession(implicit account: models.ecount.tallysys.RepresentativeAccount) = {
+    val sessId = Crypto.generateSession(account.username)
+    Cache.cacheAccount(sessId, account)
+    Some(sessId)
+  }
+
+  def getBallotBoxes(verificationKey:String) = {
+   withConnection { implicit conn =>
+     Tally.getInactiveBallotBoxes(verificationKey)
+   }
+  }
+
+  def createAccessAccount(implicit newAccount: models.ecount.tallysys.RepresentativeAccount) = {
     withConnection { implicit conn => {
-      val vde = VerificationDetailsExtractor(verificationKey, username)
-      val account = Tally.getAccountAccess(vde)
-
-      account match {
-        case Some(a) => {
-          val sessId = Crypto.generateSession(username)
-          Cache.cacheAccount(sessId, a)
-          Some(sessId)
-        }
-
-        case _ => None
-      }
+     Tally.isUnique(newAccount.username) match {
+       case None => {
+         Tally.insertNewAccount(newAccount)
+         Tally.lockBallotBox(newAccount.ballotBoxId)
+         generateAccountSession
+       }
+       case _ => None
+     }
     }}
   }
 
@@ -41,12 +62,6 @@ object TallyFormHelper {
     withConnection { implicit conn => {
       val ece = ElectionCandidateExtractor(constituencyId, electionId)
       Tally.getElectionCandidates(ece).toList
-    }}
-  }
-
-  def getSupervisedBallotBox(ballotBoxId:Int) = {
-    withConnection{ implicit conn => {
-      Tally.getBallotBox(ballotBoxId)
     }}
   }
 }

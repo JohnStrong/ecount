@@ -5,29 +5,18 @@ import play.filters.csrf._
 
 import helpers.{TallyFormHelper, FormErrors}
 import service.util.Cache
-import models.ecount.tallysys.UserAccountAccess
 
 object TallyController extends Controller {
 
   private val DASHBOARD_SESSION_KEY = "sys.account"
 
-  private def getSupervisedBallotBox(ballotId:Int) = {
-    TallyFormHelper.getSupervisedBallotBox(ballotId)
-  }
-
-  private def getDashboardDependencies(account:UserAccountAccess) = {
-    getSupervisedBallotBox(account.ballotId) match {
-      case Some(ballot) => {
-        val candidates = TallyFormHelper.getElectionCandidates(account.constituencyId, account.electionId)
-        Some((candidates, ballot))
-      }
-      case _ => None
-    }
-  }
-
   def index = CSRFAddToken {
     Action { implicit request => {
-      Ok(views.html.tally(TallyFormHelper.authForm))
+      if(session.get(DASHBOARD_SESSION_KEY).isDefined) {
+        Redirect(routes.TallyController.dashboard)
+      } else {
+        Ok(views.html.tally(TallyFormHelper.authForm))
+      }
     }}
   }
 
@@ -38,18 +27,16 @@ object TallyController extends Controller {
          BadRequest(views.html.tally(formWithErrors))
         },
         representativeAuthData => {
-          val key = representativeAuthData.authenticationKey
-          val username = representativeAuthData.username
+          val access = TallyFormHelper.createAccessAccount(representativeAuthData)
 
-          TallyFormHelper.getAccountAccess(key, username) match {
-
-            case Some(sessId) => {
-             Redirect(routes.TallyController.dashboard).withSession{
-               DASHBOARD_SESSION_KEY -> sessId
-             }
+          access match {
+            case Some(sessionId) => {
+              Redirect(routes.TallyController.dashboard).withSession{
+                DASHBOARD_SESSION_KEY -> sessionId
+              }
             }
             case _ => {
-              val formWithGlobalError = FormErrors.invalidVerificationId
+              val formWithGlobalError = FormErrors.accountRegistrationFailed
               BadRequest(views.html.tally(formWithGlobalError))
             }
           }
@@ -58,14 +45,15 @@ object TallyController extends Controller {
     }}
   }
 
-  def dashboard = Action {
-    implicit request => {
+  def dashboard = CSRFAddToken {
+    Action { implicit request => {
       session.get(DASHBOARD_SESSION_KEY) match {
         case Some(sessId) => {
           Cache.getAccountFromCache(sessId) match {
             case Some(account) => {
+              /*
               getDashboardDependencies(account) match {
-                case Some(dependencies) => {
+               case Some(dependencies) => {
                   Ok(views.html.tallyDashboard(dependencies._1, dependencies._2))
                 }
                 case _ => {
@@ -73,12 +61,17 @@ object TallyController extends Controller {
                   BadRequest(views.html.tally(formWithGlobalError)).withNewSession
                 }
               }
+              */
+              Ok("")
             }
-            case _ => Unauthorized("unauthorized access to the tally system")
+            case _ => {
+              val formWithGlobalError = FormErrors.cacheFailure
+              Ok(views.html.tally(formWithGlobalError))
+            }
           }
         }
-        case _ => Unauthorized("unauthorized access to the tally system")
+        case _ => Redirect(routes.TallyController.index)
       }
-    }
+    }}
   }
 }
