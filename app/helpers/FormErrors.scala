@@ -26,7 +26,7 @@ object FormErrors {
     }
   }
 
-  val cacheFailure = {
+  val invalidAccount = {
     TallyFormHelper.RepresentativeForm.withGlobalError{
       ERROR_FAILED_TO_LOCATE_ACCOUNT
     }

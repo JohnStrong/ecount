@@ -4,24 +4,36 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.{TallyFormHelper, FormErrors}
-import service.util.Cache
+import service.dispatch.tallysys.AccountDispatcher
 
 object TallyController extends Controller {
 
-  private val DASHBOARD_SESSION_KEY = "sys.account"
-
+  private val DASHBOARD_SESSION_KEY = "sys.account."
   private val VERIFICATION_KEY_COOKIE_ID = "verificationKey"
 
   def index = CSRFAddToken {
     Action { implicit request => {
-      if(request.cookies.get(VERIFICATION_KEY_COOKIE_ID).isDefined) {
-        if(session.get(DASHBOARD_SESSION_KEY).isDefined) {
-          Redirect(routes.TallyController.dashboard)
-        } else {
-          Ok(views.html.tally(TallyFormHelper.RepresentativeForm))
+     val key = request.cookies.get(VERIFICATION_KEY_COOKIE_ID)
+     key match {
+       case Some(key) => {
+         if(session.get(DASHBOARD_SESSION_KEY).isDefined) {
+           Redirect(routes.TallyController.dashboard)
+         } else {
+           Redirect(routes.TallyController.account)
+         }
+       }
+       case None => {
+          Ok(views.html.tallyVerification(TallyFormHelper.authForm))
         }
-      } else {
-        Ok(views.html.tallyVerification(TallyFormHelper.authForm))
+     }
+    }}
+  }
+
+  def account = CSRFAddToken {
+    Action { implicit request => {
+      request.cookies.get(VERIFICATION_KEY_COOKIE_ID) match {
+        case Some(c) => Ok(views.html.tallyAuth(TallyFormHelper.RepresentativeForm))
+        case None => Redirect(routes.TallyController.index)
       }
     }}
   }
@@ -33,12 +45,12 @@ object TallyController extends Controller {
           BadRequest(views.html.tallyVerification(hasError))
         },
         verificationKey => {
-          if(TallyFormHelper.isValidKey(verificationKey)) {
-            Ok(views.html.tally(TallyFormHelper.RepresentativeForm)).withCookies{
+          if(AccountDispatcher.isValidKey(verificationKey)) {
+            Redirect(routes.TallyController.account).withCookies(
               Cookie(VERIFICATION_KEY_COOKIE_ID, verificationKey)
-            }
+            )
           } else {
-            Ok("verification failed")
+            Unauthorized("verification failed")
           }
         }
       )
@@ -49,7 +61,7 @@ object TallyController extends Controller {
     Action { implicit request => {
       TallyFormHelper.RepresentativeForm.bindFromRequest.fold(
         formWithErrors => {
-         BadRequest(views.html.tally(formWithErrors))
+          Ok(views.html.tallyAuth(formWithErrors))
         },
         representativeAuthData => {
           val access = TallyFormHelper.createAccessAccount(representativeAuthData)
@@ -61,8 +73,8 @@ object TallyController extends Controller {
               }
             }
             case _ => {
-              val formWithGlobalError = FormErrors.accountRegistrationFailed
-              BadRequest(views.html.tally(formWithGlobalError))
+              val formWithGlobalErrors = FormErrors.accountRegistrationFailed
+              Unauthorized(views.html.tallyAuth(formWithGlobalErrors))
             }
           }
         }
@@ -74,15 +86,22 @@ object TallyController extends Controller {
     Action { implicit request => {
       session.get(DASHBOARD_SESSION_KEY) match {
         case Some(sessId) => {
-          Cache.getAccountFromCache(sessId) match {
+          AccountDispatcher.getAccount(sessId) match {
             case Some(account) => {
               val ballotBoxId = account.ballotBoxId
-              val candidates = TallyFormHelper.getElectionCandidates(ballotBoxId)
-              Ok(views.html.tallyDashboard(candidates))
+
+              AccountDispatcher.getElectionByBallotBoxId(ballotBoxId) match {
+                case Some(election) => {
+                  val candidates = AccountDispatcher.getElectionCandidates(election.id)
+                  Ok(views.html.tallyDashboard(election, candidates))
+                }
+                case _ => {
+                  BadRequest("")
+                }
+              }
             }
-            case _ => {
-              val formWithGlobalError = FormErrors.cacheFailure
-              Ok(views.html.tally(formWithGlobalError)).withNewSession
+            case None => {
+              Redirect(routes.TallyController.index)
             }
           }
         }

@@ -2,6 +2,20 @@
 	padding-top: 10%;
 }
 
-.candidate-entry {
-	padding: 1%
+.candidate-inner {
+	padding: 1.5%
+}
+
+.candidate-left {
+	width: 85%;
+}
+
+.candidate-entry a,
+.candidate-entry a:hover,
+.candidate-entry a:visited,
+.candidate-entry a:focus {
+	border:none;
+	outline:none;
+	text-decoration:none;
+	color:inherit;
 }

@@ -25,6 +25,8 @@ GET     /logout                           controllers.AccountController.logout
 # Tally System routes
 GET     /tally                            controllers.TallyController.index
 
+GET     /tally/account                    controllers.TallyController.account
+
 POST    /tally/access                     controllers.TallyController.access
 
 POST    /tally/verification               controllers.TallyController.verification
