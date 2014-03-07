@@ -1,4 +1,8 @@
 /* BASE STYLES FOR HOMEPAGE PROMO */
+html {
+	height: 100%;
+}
+
 .pin {
 	position: relative;
 }

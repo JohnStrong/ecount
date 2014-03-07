@@ -8,8 +8,10 @@ import service.dispatch.tallysys.AccountDispatcher
 
 object TallyController extends Controller {
 
-  private val DASHBOARD_SESSION_KEY = "sys.account."
+  private val DASHBOARD_SESSION_KEY = "sys.account"
   private val VERIFICATION_KEY_COOKIE_ID = "verificationKey"
+
+  private val BAD_TALLY_RESULTS_POST = "poor request. please do not try that again."
 
   def index = CSRFAddToken {
     Action { implicit request => {
@@ -22,7 +24,7 @@ object TallyController extends Controller {
            Redirect(routes.TallyController.account)
          }
        }
-       case None => {
+       case _ => {
           Ok(views.html.tallyVerification(TallyFormHelper.authForm))
         }
      }
@@ -86,6 +88,8 @@ object TallyController extends Controller {
     Action { implicit request => {
       session.get(DASHBOARD_SESSION_KEY) match {
         case Some(sessId) => {
+          Console.println(sessId)
+
           AccountDispatcher.getAccount(sessId) match {
             case Some(account) => {
               val ballotBoxId = account.ballotBoxId
@@ -100,13 +104,26 @@ object TallyController extends Controller {
                 }
               }
             }
-            case None => {
-              Redirect(routes.TallyController.index)
+            case _ => {
+              Redirect(routes.TallyController.account)
             }
           }
         }
         case _ => Redirect(routes.TallyController.index)
       }
     }}
+  }
+
+  def receiveTally = Action {
+    implicit request => {
+      val body = request.body
+      val jsonBody = body.asJson
+
+      jsonBody.map { json =>
+        Ok("works...")
+      }.getOrElse {
+        BadRequest(BAD_TALLY_RESULTS_POST)
+      }
+    }
   }
 }

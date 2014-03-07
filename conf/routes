@@ -33,6 +33,8 @@ POST    /tally/verification               controllers.TallyController.verificati
 
 GET     /tally/dashboard                  controllers.TallyController.dashboard
 
+POST    /tally/vote                       controllers.TallyController.receiveTally
+
 # API routes
 GET     /api/counties/                      controllers.StatsController.counties
 

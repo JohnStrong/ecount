@@ -13,7 +13,7 @@ object Cache {
   }
 
   def cacheAccount(sessId:String, account:RepresentativeAccount) {
-    set("tallysys.account." + sessId, account)
+    set("tallysys.account", account)
   }
 
   def removeCachedUser(userId: String) = {
@@ -25,6 +25,6 @@ object Cache {
   }
 
   def getAccountFromCache(sessId: String) = {
-    getAs[RepresentativeAccount]("tallysys.account." + sessId)
+    getAs[RepresentativeAccount]("tallysys.account")
   }
 }
