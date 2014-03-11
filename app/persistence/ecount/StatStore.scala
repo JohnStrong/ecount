@@ -26,13 +26,13 @@ object StatStore {
       result(property = "id", column = "election_id")
       result(property = "title", column = "election_title")
       result(property = "tallyDate", column = "tally_date")
-      result(property = "isAvailable", column = "available")
       result(property = "isLive", column = "live")
     }
 
     def xsql = <xsql>
-      SELECT election_id, election_title, tally_date, available, live
+      SELECT election_id, election_title, tally_date, live
       FROM stat_bank_elections
+      WHERE available = 'true'
       ORDER BY tally_date DESC
     </xsql>
   }

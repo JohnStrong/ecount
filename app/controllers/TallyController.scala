@@ -3,8 +3,17 @@ package controllers
 import play.api.mvc._
 import play.filters.csrf._
 
+import play.api.libs.json._
+import play.api.libs.iteratee._
+import play.api.libs.concurrent.Execution.Implicits._
+
 import helpers.{TallyFormHelper, FormErrors}
-import service.dispatch.tallysys.AccountDispatcher
+import service.dispatch.tallysys.{AccountDispatcher, ResultsDispatcher}
+
+case class Candidate(id:Int, name:String, tally:Int)
+case class TallyGroup(candidates:List[Candidate])
+
+case class SocketClient(channel:Concurrent.Channel[String])
 
 object TallyController extends Controller {
 
@@ -12,6 +21,30 @@ object TallyController extends Controller {
   private val VERIFICATION_KEY_COOKIE_ID = "verificationKey"
 
   private val BAD_TALLY_RESULTS_POST = "poor request. please do not try that again."
+  private val VERIFICATION_KEY_MISSING_FROM_REQUEST = "could not verify request. please try again."
+  private val FAILED_TO_PERSIST_CANDIDATE_TALLIES = "failed to publish tally results. please try again."
+
+  implicit val candidateRds = Json.reads[Candidate]
+  implicit val resultsRds = Json.reads[TallyGroup]
+
+  private val clients:Map[String, List[SocketClient]] = Map.empty
+  private var c:List[SocketClient] = List.empty
+
+  def feed(eid:Int) = WebSocket.using[String] { request => {
+
+    val (out, channel) = Concurrent.broadcast[String]
+
+    val client = SocketClient(channel)
+    c = c.+:(client)
+
+    Console.println(c)
+
+    val in = Iteratee.foreach[String] { msg =>
+      channel.push("RESPONSE")
+    }
+
+    (in, out)
+  }}
 
   def index = CSRFAddToken {
     Action { implicit request => {
@@ -114,15 +147,29 @@ object TallyController extends Controller {
     }}
   }
 
-  def receiveTally = Action {
+  def receiveTally = Action(parse.json) {
     implicit request => {
-      val body = request.body
-      val jsonBody = body.asJson
+      Console.println(request.body)
 
-      jsonBody.map { json =>
-        Ok("works...")
-      }.getOrElse {
-        BadRequest(BAD_TALLY_RESULTS_POST)
+      request.body.validate[TallyGroup].map{
+        case tallies => {
+          Console.println("tally")
+          val candidates = tallies.candidates
+
+          session.get(DASHBOARD_SESSION_KEY).map(key => {
+            AccountDispatcher.getBallotBoxElectionDependencies(key).map(ballot => {
+              ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
+
+              Ok("complete")
+            }).getOrElse {
+              BadRequest(FAILED_TO_PERSIST_CANDIDATE_TALLIES)
+            }
+          }).getOrElse{
+            BadRequest(VERIFICATION_KEY_MISSING_FROM_REQUEST)
+          }
+        }
+      }.recoverTotal {
+        e => BadRequest(BAD_TALLY_RESULTS_POST)
       }
     }
   }

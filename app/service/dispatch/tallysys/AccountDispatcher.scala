@@ -55,4 +55,14 @@ object AccountDispatcher {
       }
     }
   }
+
+  def getBallotBoxElectionDependencies(sessId:String) = {
+    withConnection { implicit conn => {
+      getAccount(sessId).map{account =>
+        Tally.getBallotBoxElectionDetails(account.ballotBoxId)
+      }.getOrElse{
+        None
+      }
+    }}
+  }
 }

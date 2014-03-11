@@ -2,6 +2,8 @@ package persistence.ecount
 
 import org.mybatis.scala.mapping._
 
+import service.dispatch.tallysys.{UpdatedCandidateResult, NewCandidateResult}
+
 import models.ecount.tallysys._
 import models.ecount.stat.{ElectionCandidate, Election}
 
@@ -102,6 +104,51 @@ object Tally {
     </xsql>
   }
 
+  val getBallotBoxElectionDetails = new SelectOneBy[Int, ElectionBallotBox] {
+    resultMap = new ResultMap[ElectionBallotBox] {
+      result(property = "dedId", column = "ded_id")
+      result(property = "electionId", column = "election_id")
+      result(property = "constituencyId", column = "constituency_id")
+    }
+
+    def xsql = <xsql>
+      SELECT ded_id, election_id, constituency_id
+      FROM tally_sys_ballot_box
+      WHERE ballot_box_id = #{{id}}
+    </xsql>
+  }
+
+  val hasPartialTallyForCandidate = new SelectOneBy[Int, Int] {
+    def xsql = <xsql>
+      SELECT cr.results_id
+      FROM stat_bank_tally_candidate_to_results as ctr,
+      stat_bank_tally_candidate_results as cr
+      WHERE ctr.candidate_id = #{{id}}
+      AND cr.results_id = ctr.results_id
+    </xsql>
+  }
+
+  val insertNewCandidateTallyResult = new Insert[NewCandidateResult] {
+    def xsql = <xsql>
+      INSERT INTO stat_bank_tally_candidate_results(results_id, count, ded_id)
+      VALUES
+        (nextval('candidate_results_id_seq'), #{{candidateTally}}, #{{dedId}});
+      INSERT INTO stat_bank_tally_candidate_to_results
+      VALUES
+        ((SELECT MAX(results_id) from stat_bank_tally_candidate_results), #{{candidateId}});
+      UPDATE stat_bank_elections
+      SET available = 'true' WHERE election_id = #{{electionId}};
+    </xsql>
+  }
+
+  val updateCandidateTallyResult = new Update[UpdatedCandidateResult] {
+    def xsql = <xsql>
+      UPDATE stat_bank_tally_candidate_results
+      SET count = count + #{{tally}}
+      WHERE results_id = #{{resultsId}}
+    </xsql>
+  }
+
   def bind = Seq(
     getElectionById,
     getElectionCandidates,
@@ -110,5 +157,10 @@ object Tally {
     isUnique,
     isValidVerificationKey,
     lockBallotBox,
-    getAccountByUsername)
+    getAccountByUsername,
+    getBallotBoxElectionDetails,
+    hasPartialTallyForCandidate,
+    insertNewCandidateTallyResult,
+    updateCandidateTallyResult
+  )
 }

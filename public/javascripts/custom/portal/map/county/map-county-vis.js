@@ -142,7 +142,7 @@ ecountVis.service('StatVisualization', function() {
 			.data(dataset)
 			.enter().append('svg:rect')
 			.attr('x', PADDING[0])
-			.attr('y', function(d, i) { return yScale(i) - PADDING[0]/2; })
+			.attr('y', function(d, i) { return yScale(i); })
 			.attr('height', BAR_HEIGHT_OFFSET/1.5)
 			.transition()
 				.ease('bounce')

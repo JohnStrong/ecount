@@ -54,7 +54,7 @@
 	$confirmTally.click(function(e) {
 		var tally = {};
 			
-		tally.results = candidatesToJson();
+		tally.candidates = candidatesToJson();
 			
 		console.log(tally);
 

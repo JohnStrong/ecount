@@ -54,7 +54,7 @@ mapCountyMain.factory('Tally',
 
 		function Live(constituencies, election) {
 
-			this.FEED_QUERY_TIMER = 50000;
+			this.FEED_QUERY_TIMER = 10000;
 
 			this.election = election;
 
@@ -77,8 +77,6 @@ mapCountyMain.factory('Tally',
 
 				var currentResults = this.constitunecyResults;
 
-				console.log('new tally result', data);
-
 				// if currentResults is less than the total constitunecy length
 				// just add the new result...
 				if(currentResults.length < this.constituencies.length) {
@@ -88,17 +86,17 @@ mapCountyMain.factory('Tally',
 
 				// check if the returned dataset has changed from
 				// its previous instance in the current result set...
-				$.each(currentResults, function(k, result) {
-					if(result.id === data.id && !this.areSame(result, data)) {
+				this.constituencyResults = $.map(currentResults, function(result) {
+					var r = result;
 
+					if(result.id === data.id) {
 						console.log('tally result change');
 
-						result = data;
-						return;
+						r = data;
 					}
-				}.bind(this));
 
-				console.log('current tally results', this.constitunecyResults);
+					return r;
+				}.bind(this));
 			}
 
 			// update the constituency results for each constituency
@@ -268,7 +266,7 @@ mapCountyMain.controller('CountyController',
 		$scope.$on('latestTally', function(source, _elections) {
 			
 			$.each(_elections, function(ith, _election) {
-				var isLive = isTallyOngoing(_election.tallyDate),
+				var isLive = _election.isLive,
 
 					tally = null;
 

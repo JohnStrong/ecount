@@ -39,7 +39,7 @@ object StatsController extends Controller {
 
     def getAvailableElections = {
       withConnection { implicit conn => {
-        val availables = StatStore.getElectionEntries().filter(_.isAvailable)
+        val availables = StatStore.getElectionEntries()
 
         availables.map(election => {
          Json.obj(
