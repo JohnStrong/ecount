@@ -14,6 +14,24 @@ import models.ecount.stat.{ConstituencyExtractor, TallyResultsExtractor}
 
 object StatsController extends Controller {
 
+  private def getTallyResults(eid:Int, cid:Int) = {
+    withConnection { implicit conn => {
+      val tre = TallyResultsExtractor.apply(cid, eid)
+      StatStore.getConstituencyElectionCandidates(tre).map(candidate => {
+        Json.obj(
+          "id" -> candidate.id,
+          "name" -> candidate.name,
+          "results" -> StatStore.getConstituencyTallyResults(candidate.id).map(res => {
+            Json.obj(
+              "result" -> res.result,
+              "dedId" -> res.dedId
+            )
+          })
+        )
+      })
+    }}
+  }
+
   def counties = Action.async {
 
     def getCounties = {
@@ -84,25 +102,7 @@ object StatsController extends Controller {
 
   def constituencyTallyResults(electionId: Int, constituencyId: Int) = Action.async {
 
-    def getTallyResults = {
-      withConnection { implicit conn => {
-        val tre = TallyResultsExtractor.apply(constituencyId, electionId)
-        StatStore.getConstituencyElectionCandidates(tre).map(candidate => {
-          Json.obj(
-            "id" -> candidate.id,
-            "name" -> candidate.name,
-            "results" -> StatStore.getConstituencyTallyResults(candidate.id).map(res => {
-              Json.obj(
-                "result" -> res.result,
-                "dedId" -> res.dedId
-              )
-            })
-          )
-        })
-      }}
-    }
-
-    val res = scala.concurrent.Future { getTallyResults }
+    val res = scala.concurrent.Future { getTallyResults(electionId, constituencyId) }
     res.map(i => {
       Ok(Json.obj(
         "id" -> constituencyId,

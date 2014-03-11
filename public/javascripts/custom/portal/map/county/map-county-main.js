@@ -60,6 +60,14 @@ mapCountyMain.factory('Tally',
 
 			this.constituencies = constituencies;
 
+			this.socket = new WebSocket('ws://localhost:9000/feed?eid=' + this.election.id)
+
+			// listens for an update on constitueny results...
+			this.socket.onmessage = function(evt) {
+				console.log("'MESSAGE FROM SERVER: ", evt);
+				this.constitunecyResults = evt.data;
+			}
+
 			this.intervalId = null;
 
 			// values set by tally results function (contains all candidate results by constituency)...
@@ -73,54 +81,7 @@ mapCountyMain.factory('Tally',
 		// get tally results for all constituencies...
 		Live.prototype.getAllConstituencyResults = function() {
 
-			function _tallyResultsCallback(data) {
-
-				var currentResults = this.constitunecyResults;
-
-				// if currentResults is less than the total constitunecy length
-				// just add the new result...
-				if(currentResults.length < this.constituencies.length) {
-					currentResults.push(data);
-					return;
-				}
-
-				// check if the returned dataset has changed from
-				// its previous instance in the current result set...
-				this.constituencyResults = $.map(currentResults, function(result) {
-					var r = result;
-
-					if(result.id === data.id) {
-						console.log('tally result change');
-
-						r = data;
-					}
-
-					return r;
-				}.bind(this));
-			}
-
-			// update the constituency results for each constituency
-			// if changes have occured...
-			var loopIt = function() {
-
-				console.log('loopit', this);
-
-				this.intervalId = setTimeout(function() {
-
-					// get results for all constituencies...
-					this.getTallyResultsForConstituencies(_tallyResultsCallback.bind(this));
-
-					// repeat it...
-					loopIt();
-
-				}.bind(this), this.FEED_QUERY_TIMER);
-
-			}.bind(this);
-
-			// initial call to get it all started....
-			loopIt();
-
-			this.getTallyResultsForConstituencies(_tallyResultsCallback.bind(this));
+			// do nothing...
 		};
 
 		function Previous(constituencies, election) {

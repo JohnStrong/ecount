@@ -9,6 +9,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import helpers.{TallyFormHelper, FormErrors}
 import service.dispatch.tallysys.{AccountDispatcher, ResultsDispatcher}
+import models.ecount.tallysys.ElectionBallotBox
 
 case class Candidate(id:Int, name:String, tally:Int)
 case class TallyGroup(candidates:List[Candidate])
@@ -27,8 +28,27 @@ object TallyController extends Controller {
   implicit val candidateRds = Json.reads[Candidate]
   implicit val resultsRds = Json.reads[TallyGroup]
 
-  private val clients:Map[String, List[SocketClient]] = Map.empty
+  //private val clients:Map[String, List[SocketClient]] = Map.empty
   private var c:List[SocketClient] = List.empty
+
+  // receives ballot/candidate dependencies for latest live tally and broadcasts the result to clients...
+  private def broadcastCandidateTallyResults(ballot:ElectionBallotBox, candidates:List[Candidate]) = {
+    // TODO: improve response before working on front end... should work with map of clients (not list)
+    val obj = Json.obj(
+      "cid" -> ballot.constituencyId,
+      "eid" -> ballot.electionId,
+      "results" -> candidates.map{candidate =>
+        Json.obj(
+          "id" -> candidate.id,
+          "name" -> candidate.name,
+          "tally" -> candidate.tally
+        )
+      }
+    )
+    c.foreach{client =>
+      client.channel.push(obj.toString())
+    }
+  }
 
   def feed(eid:Int) = WebSocket.using[String] { request => {
 
@@ -36,8 +56,6 @@ object TallyController extends Controller {
 
     val client = SocketClient(channel)
     c = c.+:(client)
-
-    Console.println(c)
 
     val in = Iteratee.foreach[String] { msg =>
       channel.push("RESPONSE")
@@ -153,13 +171,13 @@ object TallyController extends Controller {
 
       request.body.validate[TallyGroup].map{
         case tallies => {
-          Console.println("tally")
           val candidates = tallies.candidates
 
           session.get(DASHBOARD_SESSION_KEY).map(key => {
             AccountDispatcher.getBallotBoxElectionDependencies(key).map(ballot => {
               ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
 
+              broadcastCandidateTallyResults(ballot, candidates)
               Ok("complete")
             }).getOrElse {
               BadRequest(FAILED_TO_PERSIST_CANDIDATE_TALLIES)
