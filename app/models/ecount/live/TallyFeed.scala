@@ -12,7 +12,7 @@ import models.ecount.tallysys.implicits.Candidate
 
 import service.dispatch.tallysys.AccountDispatcher
 
-case class SocketClient(channel:Concurrent.Channel[JsValue])
+case class SocketClient(channel:Concurrent.Channel[String])
 
 object TallyFeed {
 
@@ -26,7 +26,7 @@ object TallyFeed {
     val channels = clients.find(_._1 == (ballot.electionId, countyId))
 
     channels.foreach { c =>
-      c._2.foreach(_.channel.push(results))
+      c._2.foreach(_.channel.push(results.toString))
     }
   }
 
@@ -51,7 +51,7 @@ object TallyFeed {
     }
   }
 
-  def addNewClient(channel:Concurrent.Channel[JsValue], keys:(Int, Int)) {
+  def addNewClient(channel:Concurrent.Channel[String], keys:(Int, Int)) {
 
     val newClient = SocketClient(channel)
     addOrUpdateClients(keys, newClient, isKey)

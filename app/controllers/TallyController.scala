@@ -25,14 +25,14 @@ object TallyController extends Controller {
   implicit val candidateRds = Json.reads[Candidate]
   implicit val resultsRds = Json.reads[TallyGroup]
 
-  def feed(eid:Int, cid:Int) = WebSocket.async[JsValue] { request => {
+  def feed(eid:Int, cid:Int) = WebSocket.async[String] { request => {
 
-    val (out, channel) = Concurrent.broadcast[JsValue]
+    val (out, channel) = Concurrent.broadcast[String]
 
     TallyFeed.addNewClient(channel, (eid, cid))
 
-    val in = Iteratee.foreach[JsValue] { msg =>
-      channel.push(Json.obj("response" -> "successful"))
+    val in = Iteratee.foreach[String] { msg =>
+      channel.push("success")
     }
 
     scala.concurrent.Future { (in, out) }

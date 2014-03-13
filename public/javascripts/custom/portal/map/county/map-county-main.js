@@ -16,13 +16,9 @@ mapCountyMain.service('Election',
 	}
 ]);
 
-// service that streams tally data in near real-time from server to client
-// should be able to:
-//		- get the latest candidates and results
-//		- compute the count/percentage total at a high level
 mapCountyMain.factory('Tally',
-	['ElectionStatistics', 'Extend', 'Compare',
-	function(ElectionStatistics, Extend, Compare) {
+	['ElectionStatistics', 'Extend', 'Compare', 'Updater', '$rootScope',
+	function(ElectionStatistics, Extend, Compare, Updater, $rootScope) {
 
 		function Tally() {};
 
@@ -61,8 +57,6 @@ mapCountyMain.factory('Tally',
 
 		function Live(constituencies, election, county) {
 
-			this.FEED_QUERY_TIMER = 10000;
-
 			this.election = election;
 
 			this.county = county;
@@ -75,16 +69,15 @@ mapCountyMain.factory('Tally',
 
 			// this function will return the latest distirct tally for the specified election id...
 			this.socket.onmessage = function(e) {
+				var updatedTally = JSON.parse(e.data);
+				
+				this.constitunecyResults = new Updater(this.constitunecyResults, updatedTally);
 
-				console.log('updated tally', e.data);
-				console.log('constituency results', this.constitunecyResults);
+				// alert the districts visualization view that an update has occured...
+				$rootScope.$broadcast('liveTallyUpdate');
 
-				//this.constitunecyResults = e.data;
-			}
+			}.bind(this);
 
-			this.intervalId = null;
-
-			// values set by tally results function (contains all candidate results by constituency)...
 			this.constitunecyResults = [];
 
 			this.live = true;
@@ -97,8 +90,7 @@ mapCountyMain.factory('Tally',
 			this.election = election;
 
 			this.constituencies = constituencies;
-
-			// values set by tally results function...
+			
 			this.constitunecyResults = [];
 
 			this.live = false;
@@ -210,19 +202,8 @@ mapCountyMain.controller('CountyController',
 		// stop feed interval if live feed, close view...
 		// clear the current set interval on constituency change and start fresh...
 		$scope.dump = function() {
-			$.each($scope.mainTallies, function(ith, tally) {
-				if(tally.intervalId) {
-					clearTimeout(tally.intervalId);
-				}
-			});
-
 			$scope.closeCountyView();
 		};
-
-		// watch for live updates to constituencyResults....
-		$scope.$watchCollection('mainTallies', function(newVal) {
-			console.log('cr watch', newVal);
-		});
 
 		// listens for an latest election tally...
 		$scope.$on('latestTally', function(source, _elections) {
@@ -387,15 +368,19 @@ mapCountyMain.controller('DistrictsVisController',
 		}
 
 		// watch for updates to tally results or the selected constituency id
-		// (change on live update or selection)...
-		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
-
-			console.log('dvc mcr', newVal);
+		$scope.$watch('mainTally', function(newVal) {
 
 			// only visualize automatically if
 			// 1) a constituency is being viewed by the user
 			// 2) there is data to view...
 			if($scope.activeCid && newVal) {
+				$scope.visualize();
+			}
+		});
+
+		// a live tally update has occured...
+		$scope.$on('liveTallyUpdate', function() {
+			if($scope.activeCid) {
 				$scope.visualize();
 			}
 		});

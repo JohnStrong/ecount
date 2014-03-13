@@ -82,11 +82,11 @@ object StatStore {
 
     resultMap = new ResultMap[ElectionCandidateTally] {
       result(property = "result", column = "count")
-      result(property = "dedId", column = "gid")
+      result(property = "dedId", column = "ded_id")
     }
 
     def xsql = <xsql>
-      SELECT cr.count, d.gid
+      SELECT cr.count, cr.ded_id
       FROM stat_bank_tally_candidate_to_results as ctr,
       stat_bank_tally_candidate_results as cr,
       stat_bank_tally_ded_details as d

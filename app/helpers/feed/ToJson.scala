@@ -10,7 +10,7 @@ object ToJson {
   def tallyResults(ballot:ElectionBallotBox, candidates:List[Candidate]) = {
     Json.obj(
       "cid" -> ballot.constituencyId,
-      "eid" -> ballot.electionId,
+      "dedId" -> ballot.dedId,
       "results" -> candidates.map{candidate =>
         Json.obj(
           "id" -> candidate.id,
