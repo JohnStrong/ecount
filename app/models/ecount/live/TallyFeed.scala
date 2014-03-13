@@ -38,10 +38,11 @@ object TallyFeed {
 
     isKey(keyPair) match {
       case true => {
-        val client = clients.find(client => client._1 == keyPair)
-        client.map { c =>
-          c._1 -> c._2.:+(newClient)
-        }
+        val existing = clients.find(_._1 == keyPair)
+        val updated = existing.map { e => (e._1 -> e._2.:+(newClient)) }
+
+        clients.-=(keyPair)
+        clients.+=(updated.get)
       }
       case false => {
         val newClientList = ListBuffer(newClient)
@@ -54,8 +55,6 @@ object TallyFeed {
 
     val newClient = SocketClient(channel)
     addOrUpdateClients(keys, newClient, isKey)
-
-    Console.println(clients)
   }
 
   def broadcastCandidateTallyResults(ballot:ElectionBallotBox, candidates:List[Candidate]) = {

@@ -74,12 +74,12 @@ mapCountyMain.factory('Tally',
 				this.election.id + '&cid=' + this.county.id)
 
 			// this function will return the latest distirct tally for the specified election id...
-			this.socket.onmessage = function(evt) {
-				// TODO: update constituencyResults with new results...
+			this.socket.onmessage = function(e) {
 
-				console.log("'MESSAGE FROM SERVER: ", evt);
+				console.log('updated tally', e.data);
+				console.log('constituency results', this.constitunecyResults);
 
-				this.constitunecyResults = evt.data;
+				//this.constitunecyResults = e.data;
 			}
 
 			this.intervalId = null;
