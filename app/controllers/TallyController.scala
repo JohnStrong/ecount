@@ -9,12 +9,9 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import helpers.{TallyFormHelper, FormErrors}
 import service.dispatch.tallysys.{AccountDispatcher, ResultsDispatcher}
-import models.ecount.tallysys.ElectionBallotBox
 
-case class Candidate(id:Int, name:String, tally:Int)
-case class TallyGroup(candidates:List[Candidate])
-
-case class SocketClient(channel:Concurrent.Channel[String])
+import models.ecount.tallysys.implicits.{Candidate, TallyGroup}
+import models.ecount.live.TallyFeed
 
 object TallyController extends Controller {
 
@@ -28,34 +25,11 @@ object TallyController extends Controller {
   implicit val candidateRds = Json.reads[Candidate]
   implicit val resultsRds = Json.reads[TallyGroup]
 
-  //private val clients:Map[String, List[SocketClient]] = Map.empty
-  private var c:List[SocketClient] = List.empty
-
-  // receives ballot/candidate dependencies for latest live tally and broadcasts the result to clients...
-  private def broadcastCandidateTallyResults(ballot:ElectionBallotBox, candidates:List[Candidate]) = {
-    // TODO: improve response before working on front end... should work with map of clients (not list)
-    val obj = Json.obj(
-      "cid" -> ballot.constituencyId,
-      "eid" -> ballot.electionId,
-      "results" -> candidates.map{candidate =>
-        Json.obj(
-          "id" -> candidate.id,
-          "name" -> candidate.name,
-          "tally" -> candidate.tally
-        )
-      }
-    )
-    c.foreach{client =>
-      client.channel.push(obj.toString())
-    }
-  }
-
-  def feed(eid:Int) = WebSocket.using[String] { request => {
+  def feed(eid:Int, cid:Int) = WebSocket.using[String] { request => {
 
     val (out, channel) = Concurrent.broadcast[String]
 
-    val client = SocketClient(channel)
-    c = c.+:(client)
+    TallyFeed.addNewClient(channel, (eid, cid))
 
     val in = Iteratee.foreach[String] { msg =>
       channel.push("RESPONSE")
@@ -167,8 +141,6 @@ object TallyController extends Controller {
 
   def receiveTally = Action(parse.json) {
     implicit request => {
-      Console.println(request.body)
-
       request.body.validate[TallyGroup].map{
         case tallies => {
           val candidates = tallies.candidates
@@ -177,7 +149,8 @@ object TallyController extends Controller {
             AccountDispatcher.getBallotBoxElectionDependencies(key).map(ballot => {
               ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
 
-              broadcastCandidateTallyResults(ballot, candidates)
+              TallyFeed.broadcastCandidateTallyResults(ballot, candidates)
+
               Ok("complete")
             }).getOrElse {
               BadRequest(FAILED_TO_PERSIST_CANDIDATE_TALLIES)

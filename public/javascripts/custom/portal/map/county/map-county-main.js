@@ -52,18 +52,31 @@ mapCountyMain.factory('Tally',
 			}
 		};
 
-		function Live(constituencies, election) {
+		// get tally results for constituencies....
+		Tally.prototype.getAllConstituencyResults = function() {
+			this.getTallyResultsForConstituencies(function(data) {
+				this.constitunecyResults.push(data);
+			}.bind(this));
+		};
+
+		function Live(constituencies, election, county) {
 
 			this.FEED_QUERY_TIMER = 10000;
 
 			this.election = election;
 
+			this.county = county;
+
 			this.constituencies = constituencies;
 
-			this.socket = new WebSocket('ws://localhost:9000/feed?eid=' + this.election.id)
+			// set up web socket connection for live updates...
+			this.socket = new WebSocket('ws://localhost:9000/feed?eid=' + 
+				this.election.id + '&cid=' + this.county.id)
 
-			// listens for an update on constitueny results...
+			// this function will return the latest distirct tally for the specified election id...
 			this.socket.onmessage = function(evt) {
+				// TODO: update constituencyResults with new results...
+				
 				console.log("'MESSAGE FROM SERVER: ", evt);
 				this.constitunecyResults = evt.data;
 			}
@@ -77,12 +90,6 @@ mapCountyMain.factory('Tally',
 		};
 
 		Extend(Live, Tally);
-
-		// get tally results for all constituencies...
-		Live.prototype.getAllConstituencyResults = function() {
-
-			// do nothing...
-		};
 
 		function Previous(constituencies, election) {
 
@@ -98,16 +105,9 @@ mapCountyMain.factory('Tally',
 
 		Extend(Previous, Tally);
 
-		// get tally results for constituencies....
-		Previous.prototype.getAllConstituencyResults = function() {
-			this.getTallyResultsForConstituencies(function(data) {
-				this.constitunecyResults.push(data);
-			}.bind(this));
-		};
-
 		return {
-			live: function(constituencies, election) {
-				return new Live(constituencies, election);
+			live: function(constituencies, election, county) {
+				return new Live(constituencies, election, county);
 			},
 			previous: function(constituencies, election) {
 				return new Previous(constituencies, election);
@@ -226,6 +226,8 @@ mapCountyMain.controller('CountyController',
 		// listens for an latest election tally...
 		$scope.$on('latestTally', function(source, _elections) {
 			
+			console.log('latest tally', $scope);
+
 			$.each(_elections, function(ith, _election) {
 				var isLive = _election.isLive,
 
@@ -234,7 +236,7 @@ mapCountyMain.controller('CountyController',
 				$scope.getConstituencies(_election.id, function(constituencies) {
 				
 					if(isLive) {
-						tally = Tally.live(constituencies, _election);
+						tally = Tally.live(constituencies, _election, $scope.countyTarget);
 					} else {
 						tally = Tally.previous(constituencies, _election);
 					}

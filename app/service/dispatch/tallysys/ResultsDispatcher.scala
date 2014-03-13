@@ -1,6 +1,6 @@
 package service.dispatch.tallysys
 
-import controllers.Candidate
+import models.ecount.tallysys.implicits.Candidate
 
 import persistence.ecount.Tally
 import persistence.ecount.PersistenceContext._

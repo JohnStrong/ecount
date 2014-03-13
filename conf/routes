@@ -36,7 +36,7 @@ GET     /tally/dashboard                  controllers.TallyController.dashboard
 POST    /tally/vote                       controllers.TallyController.receiveTally
 
 # live event stream
-GET     /feed                             controllers.TallyController.feed(eid:Int)
+GET     /feed                             controllers.TallyController.feed(eid:Int, cid:Int)
 
 # API routes
 GET     /api/counties/                      controllers.StatsController.counties
