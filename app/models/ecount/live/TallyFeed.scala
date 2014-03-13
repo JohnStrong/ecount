@@ -62,13 +62,10 @@ object TallyFeed {
     val resultsJson = ToJson.tallyResults(ballot, candidates)
     val emit = broadcast(resultsJson)_
 
-    AccountDispatcher.getCountyIdForConstituency(ballot.constituencyId).map {
-      countyId => {
-        emit(ballot, countyId)
-        true
-      }
-    }.getOrElse {
-       false
+    AccountDispatcher.getCountyIdForConstituency(ballot.constituencyId) match {
+      case Some(countyId) =>
+        emit(ballot, countyId); true
+      case _ => false
     }
   }
 }
