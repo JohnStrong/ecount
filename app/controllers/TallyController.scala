@@ -25,17 +25,17 @@ object TallyController extends Controller {
   implicit val candidateRds = Json.reads[Candidate]
   implicit val resultsRds = Json.reads[TallyGroup]
 
-  def feed(eid:Int, cid:Int) = WebSocket.using[String] { request => {
+  def feed(eid:Int, cid:Int) = WebSocket.async[JsValue] { request => {
 
-    val (out, channel) = Concurrent.broadcast[String]
+    val (out, channel) = Concurrent.broadcast[JsValue]
 
     TallyFeed.addNewClient(channel, (eid, cid))
 
-    val in = Iteratee.foreach[String] { msg =>
-      channel.push("RESPONSE")
+    val in = Iteratee.foreach[JsValue] { msg =>
+      channel.push(Json.obj("response" -> "successful"))
     }
 
-    (in, out)
+    scala.concurrent.Future { (in, out) }
   }}
 
   def index = CSRFAddToken {
@@ -139,19 +139,23 @@ object TallyController extends Controller {
     }}
   }
 
+  // TODO: refractor function to be more cohesive
   def receiveTally = Action(parse.json) {
     implicit request => {
       request.body.validate[TallyGroup].map{
         case tallies => {
+
           val candidates = tallies.candidates
 
           session.get(DASHBOARD_SESSION_KEY).map(key => {
             AccountDispatcher.getBallotBoxElectionDependencies(key).map(ballot => {
+
               ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
 
-              TallyFeed.broadcastCandidateTallyResults(ballot, candidates)
-
-              Ok("complete")
+              TallyFeed.broadcastCandidateTallyResults(ballot, candidates) match {
+                case true =>  Ok("complete")
+                case _ => InternalServerError("failed. please try again")
+              }
             }).getOrElse {
               BadRequest(FAILED_TO_PERSIST_CANDIDATE_TALLIES)
             }

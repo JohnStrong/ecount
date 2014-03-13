@@ -149,6 +149,14 @@ object Tally {
     </xsql>
   }
 
+  val getCountyIdForConstituency = new SelectOneBy[Int, Int] {
+    def xsql = <xsql>
+      SELECT county_id
+      FROM stat_bank_counties_constituencies
+      WHERE constituency_id = #{{id}}
+    </xsql>
+  }
+
   def bind = Seq(
     getElectionById,
     getElectionCandidates,
@@ -161,6 +169,7 @@ object Tally {
     getBallotBoxElectionDetails,
     hasPartialTallyForCandidate,
     insertNewCandidateTallyResult,
-    updateCandidateTallyResult
+    updateCandidateTallyResult,
+    getCountyIdForConstituency
   )
 }

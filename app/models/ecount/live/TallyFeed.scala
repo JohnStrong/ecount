@@ -1,33 +1,33 @@
 package models.ecount.live
 
-import play.api.libs.json.Json
+import collection.mutable.{ListBuffer, HashMap}
+
+import play.api.libs.json._
 import play.api.libs.iteratee.Concurrent
+
+import helpers.feed.ToJson
 
 import models.ecount.tallysys.ElectionBallotBox
 import models.ecount.tallysys.implicits.Candidate
 
-case class SocketClient(channel:Concurrent.Channel[String])
+import service.dispatch.tallysys.AccountDispatcher
+
+case class SocketClient(channel:Concurrent.Channel[JsValue])
 
 object TallyFeed {
 
-  private var clients:Map[(Int,Int), List[SocketClient]] = Map.empty
+  private val clients:HashMap[(Int,Int), ListBuffer[SocketClient]] = HashMap.empty
 
   private def isKey(keyPair:(Int,Int)):Boolean = {
     clients.isDefinedAt(keyPair)
   }
 
-  private def resultToJson(ballot:ElectionBallotBox, candidates:List[Candidate]) = {
-    Json.obj(
-      "cid" -> ballot.constituencyId,
-      "eid" -> ballot.electionId,
-      "results" -> candidates.map{candidate =>
-        Json.obj(
-          "id" -> candidate.id,
-          "name" -> candidate.name,
-          "tally" -> candidate.tally
-        )
-      }
-    )
+  private def broadcast(results:JsValue)(ballot:ElectionBallotBox, countyId:Int) = {
+    val channels = clients.find(_._1 == (ballot.electionId, countyId))
+
+    channels.foreach { c =>
+      c._2.foreach(_.channel.push(results))
+    }
   }
 
   private def addOrUpdateClients(
@@ -40,17 +40,17 @@ object TallyFeed {
       case true => {
         val client = clients.find(client => client._1 == keyPair)
         client.map { c =>
-          c._2.++(newClient::List())
+          c._1 -> c._2.:+(newClient)
         }
       }
       case false => {
-        val newClientList = List(newClient)
-        clients = clients.+(keyPair -> newClientList)
+        val newClientList = ListBuffer(newClient)
+        clients.+=(keyPair -> newClientList)
       }
     }
   }
 
-  def addNewClient(channel:Concurrent.Channel[String], keys:(Int, Int)) {
+  def addNewClient(channel:Concurrent.Channel[JsValue], keys:(Int, Int)) {
 
     val newClient = SocketClient(channel)
     addOrUpdateClients(keys, newClient, isKey)
@@ -58,11 +58,17 @@ object TallyFeed {
     Console.println(clients)
   }
 
-  // TODO: improve response before working on front end... should work with map of clients (not list)
   def broadcastCandidateTallyResults(ballot:ElectionBallotBox, candidates:List[Candidate]) = {
-    val resultsJson = resultToJson(ballot, candidates)
+    val resultsJson = ToJson.tallyResults(ballot, candidates)
+    val emit = broadcast(resultsJson)_
 
-    // TODO: broadcast results....
-
+    AccountDispatcher.getCountyIdForConstituency(ballot.constituencyId).map {
+      countyId => {
+        emit(ballot, countyId)
+        true
+      }
+    }.getOrElse {
+       false
+    }
   }
 }

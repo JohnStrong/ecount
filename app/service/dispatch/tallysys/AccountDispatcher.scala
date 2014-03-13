@@ -65,4 +65,10 @@ object AccountDispatcher {
       }
     }}
   }
+
+  def getCountyIdForConstituency(constituencyId:Int) = {
+    withConnection { implicit conn =>
+      Tally.getCountyIdForConstituency(constituencyId)
+    }
+  }
 }

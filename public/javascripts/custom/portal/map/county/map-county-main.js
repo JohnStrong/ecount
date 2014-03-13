@@ -70,14 +70,15 @@ mapCountyMain.factory('Tally',
 			this.constituencies = constituencies;
 
 			// set up web socket connection for live updates...
-			this.socket = new WebSocket('ws://localhost:9000/feed?eid=' + 
+			this.socket = new WebSocket('ws://localhost:9000/feed?eid=' +
 				this.election.id + '&cid=' + this.county.id)
 
 			// this function will return the latest distirct tally for the specified election id...
 			this.socket.onmessage = function(evt) {
 				// TODO: update constituencyResults with new results...
-				
+
 				console.log("'MESSAGE FROM SERVER: ", evt);
+
 				this.constitunecyResults = evt.data;
 			}
 
@@ -225,7 +226,7 @@ mapCountyMain.controller('CountyController',
 
 		// listens for an latest election tally...
 		$scope.$on('latestTally', function(source, _elections) {
-			
+
 			console.log('latest tally', $scope);
 
 			$.each(_elections, function(ith, _election) {
@@ -234,7 +235,7 @@ mapCountyMain.controller('CountyController',
 					tally = null;
 
 				$scope.getConstituencies(_election.id, function(constituencies) {
-				
+
 					if(isLive) {
 						tally = Tally.live(constituencies, _election, $scope.countyTarget);
 					} else {
@@ -272,7 +273,7 @@ mapCountyMain.controller('DistrictsMapController',
 	function($scope, $compile, Map, GeomAPI, MapStyle) {
 
 		var DISTRICTS_ZOOM = 16,
-			
+
 			MAP_CONTENT_LIST = '<ul class="well info-pane county-vis">' +
 			'<li ng-repeat="c in mainTally.constituencies">' +
 			'<a href="" ng-click="visConstituencyResults(c.id)" class="btn">' +
@@ -342,7 +343,7 @@ mapCountyMain.controller('DistrictsMapController',
 			GeomAPI.electoralDistricts(countyId, function(geom) {
 				var id = $scope.$index,
 
-					imap = Map.draw('imap-' + id, geom, {'style' : MapStyle.base}, 
+					imap = Map.draw('imap-' + id, geom, {'style' : MapStyle.base},
 						function(target) {
 
 							// district visualization...
@@ -385,15 +386,15 @@ mapCountyMain.controller('DistrictsVisController',
 			visualize.county();
 		}
 
-		// watch for updates to tally results or the selected constituency id 
+		// watch for updates to tally results or the selected constituency id
 		// (change on live update or selection)...
 		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
 
 			console.log('dvc mcr', newVal);
 
-			// only visualize automatically if 
+			// only visualize automatically if
 			// 1) a constituency is being viewed by the user
-			// 2) there is data to view... 
+			// 2) there is data to view...
 			if($scope.activeCid && newVal) {
 				$scope.visualize();
 			}
@@ -447,12 +448,12 @@ mapCountyMain.controller('DistrictVisController',
 
 		// event triggered when constituencyResults is updated in the Tally object...
 		$scope.$watch('mainTally.constitunecyResults', function(newVal) {
-			
+
 			console.log('district vis cr', newVal);
 
-			// only visualize automatically if 
+			// only visualize automatically if
 			// 1) a district is being viewed by the user
-			// 2) there is data to view... 
+			// 2) there is data to view...
 			if($scope.districtId && newVal) {
 				visualizeDistrictResults();
 			}
