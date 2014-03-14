@@ -21,6 +21,7 @@ object StatsController extends Controller {
         Json.obj(
           "id" -> candidate.id,
           "name" -> candidate.name,
+          "party" -> candidate.party,
           "results" -> StatStore.getConstituencyTallyResults(candidate.id).map(res => {
             Json.obj(
               "result" -> res.result,

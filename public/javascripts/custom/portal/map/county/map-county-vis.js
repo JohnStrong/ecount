@@ -6,6 +6,9 @@ ecountVis.factory('FilterFor',
 		// filter functions for extractor utility...
 		return {
 			districts: function(datum) {
+
+				console.log('datum', datum);
+
 				// computes the sum of all district tally results per candidate...
 				var result = 0;
 
@@ -13,11 +16,10 @@ ecountVis.factory('FilterFor',
 					result += datum.results[r].result;
 				}
 
-				console.log(datum.name, result);
-
 				return {
 					'id': datum.id,
 					'name' : datum.name,
+					'party' : datum.party,
 					'count' : result
 				};
 			},
@@ -42,6 +44,7 @@ ecountVis.factory('FilterFor',
 					return {
 						'id' : datum.id,
 						'name' : datum.name,
+						'party' : datum.party,
 						'count' : result
 					};
 				}
@@ -92,7 +95,7 @@ ecountVis.service('StatVisualization', function() {
 			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 1,
 
-			LEGEND_PADDING = 150,
+			LEGEND_PADDING = 170,
 
 			TEXT_OFFSET = 10,
 			BAR_TEXT_PADDING = 8,
@@ -107,7 +110,7 @@ ecountVis.service('StatVisualization', function() {
 			LEGEND_RECT_HEIGHT = 10,
 
 			LEGEND_TEXT_HEIGHT = 15,
-			LEGEND_TEXT_WIDTH = 50,
+			LEGEND_TEXT_WIDTH = 25,
 
 			TOOLTIP_COLOR_ID_OFFSET = 1;
 
@@ -175,19 +178,20 @@ ecountVis.service('StatVisualization', function() {
 				var g = d3.select(this);
 
 				g.append('rect')
-					.attr('x', WIDTH - PADDING[1] + PADDING[0])
+					.attr('x', WIDTH - PADDING[1] + PADDING[0]/2)
 					.attr('y', PADDING[0]/2 + (PADDING[0] * i))
 					.attr('width', LEGEND_RECT_WIDTH)
 					.attr('height', LEGEND_RECT_HEIGHT)
 					.style('fill', colorScale(i));
 
 				g.append('text')
-					.attr('x', WIDTH - PADDING[1] + PADDING[0]*2.5)
-					.attr('y', PADDING[0] + (PADDING[0] * i))
+					.attr('x', WIDTH - PADDING[1] + PADDING[0]*2)
+					.attr('y', PADDING[0])
+					.attr('dy', PADDING[0] * i)
 					.attr('height', LEGEND_TEXT_HEIGHT)
-					.attr('width', LEGEND_TEXT_WIDTH)
 					.style('fill', colorScale(i))
-					.text('' + d.name);
+					.style('font-size', '.75em')
+					.text('' + d.name + ' (' + d.party + ')');
 			});
 
 		// add tipsy tooltip, called when a bar from chart is hovered over...
@@ -231,7 +235,7 @@ ecountVis.factory('Visualize',
 					var width = props? props.width : COUNTY_VIS_PIXEL_WIDTH;
 
 					if(elem) elem.empty();
-					
+
 					TallyExtractor(countyFilter, results)(function(resultSet) {
 
 						if(!resultSet || resultSet.length <= 0) {
@@ -262,7 +266,7 @@ ecountVis.factory('Visualize',
 								failedVisualizationView(elem);
 								return;
 							}
-							
+
 							StatVisualization(elem[0], resultSet, {'width': elem.width()});
 							return;
 						});

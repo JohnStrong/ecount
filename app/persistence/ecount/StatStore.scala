@@ -64,17 +64,20 @@ object StatStore {
     resultMap = new ResultMap[ElectionCandidate] {
       result(property = "id", column = "candidate_id")
       result(property = "name", column = "candidate_name")
+      result(property = "party", column = "party_name")
     }
 
     def xsql = <xsql>
-      SELECT ca.candidate_id, ca.candidate_name
+      SELECT ca.candidate_id, ca.candidate_name, p.party_name
       FROM stat_bank_constituencies as c,
       stat_bank_tally_election_to_const_candidates as ec,
-      stat_bank_tally_constituency_candidates as ca
+      stat_bank_tally_constituency_candidates as ca,
+      stat_bank_parties as p
       WHERE c.constituency_id = #{{constituencyId}}
       AND ec.election_id = #{{electionId}}
       AND ca.candidate_id = ec.candidate_id
-      AND ca.constituency_id = c.constituency_id;
+      AND ca.constituency_id = c.constituency_id
+      AND p.party_id = ca.party_id;
     </xsql>
   }
 
