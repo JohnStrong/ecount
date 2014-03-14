@@ -70,7 +70,7 @@ mapCountyMain.factory('Tally',
 			// this function will return the latest distirct tally for the specified election id...
 			this.socket.onmessage = function(e) {
 				var updatedTally = JSON.parse(e.data);
-				
+
 				this.constitunecyResults = new Updater(this.constitunecyResults, updatedTally);
 
 				// alert the districts visualization view that an update has occured...
@@ -90,7 +90,7 @@ mapCountyMain.factory('Tally',
 			this.election = election;
 
 			this.constituencies = constituencies;
-			
+
 			this.constitunecyResults = [];
 
 			this.live = false;
