@@ -17,9 +17,10 @@
 				<div class="list-group">
 					<div id="dash-main" class="list-group-item">
 						<div class="row">
-							<div class="col-md-8">
+							<div class="col-md-6">
 								<h3>@election.title</h3>
 							</div>
+							<div id="error-info" class="col-md-6"></div>
 						</div>
 						<ul id="candidates" class="list-group-item">
 							@candidates.map { candidate =>
@@ -40,7 +41,7 @@
 							}
 						</ul>
 						<div class="form-footer">
-							<button id="confirm-tally" type="button" class="btn btn-success btn-lg btn-block">Complete</button>
+							<button id="confirm-tally" type="button" class="btn btn-success btn-lg btn-block">Publish</button>
 						</div>
 					</div>
 					<script type="text/javascript" src="@routes.Assets.at("javascripts/custom/tallysys/dashboard.js")"></script>

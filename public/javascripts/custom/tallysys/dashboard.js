@@ -2,11 +2,21 @@
 
 	'use strict';
 
-	var $candidates = $('#candidates').find('.candidate-entry'),
-		
+	var $candidatesContainer = $('#candidates'),
+
+		$candidates = $candidatesContainer.find('.candidate-entry'),
+
 		$confirmTally = $('#confirm-tally'),
 
+		$infoContainer = $('#error-info'),
+
 		CONFIRM_TALLY_URI = '/tally/vote',
+
+		CONFIRM_TALLY_WAIT_MSG = 'Please wait...',
+
+		CONFIRM_TALLY_ACTIVE_MSG = 'Publish',
+
+		CONFIRM_TALLY_DONE_MSG = 'Published...',
 
 		candidatesToJson = function() {
 			var candidatesArr = [];
@@ -23,8 +33,23 @@
 			});
 
 			return candidatesArr;
-		};
+		},
 
+		buildXhrResponse = function(outer, inner, msg, after) {
+			var containerOuter = $('<div class="alert"></div>'),
+				containerInner = $('<p></p>');
+
+			containerOuter.addClass(outer);
+			containerInner.addClass(inner);
+
+			var contentInner = containerInner.append(msg),
+				message = containerOuter.append(contentInner);
+
+			$infoContainer.empty()
+				.append(message);
+
+			if(after) after();
+		};
 
 	// set up candidates...
 	$candidates.each(function(k, d) {
@@ -39,7 +64,7 @@
 	// events for candidate elements
 	$candidates.click(function(e) {
 		e.preventDefault();
-		
+
 		this.candidateTally = this.candidateTally + 1;
 		$(this).find('.candidate-tally')
 			.text(this.candidateTally);
@@ -53,19 +78,42 @@
 	// fired event user clicks complete button in #dash-main...
 	$confirmTally.click(function(e) {
 		var tally = {};
-			
 		tally.candidates = candidatesToJson();
-			
-		console.log(tally);
 
 		$.ajax({
 			type: 'POST',
 			url: CONFIRM_TALLY_URI,
 			data: JSON.stringify(tally),
 			contentType: 'application/json',
-			dataType: 'json'
-		}).done(function(msg) {
-			console.log(msg);
+			dataType: 'json',
+			beforeSend: function() {
+				$confirmTally.attr('disabled', true)
+					.text(CONFIRM_TALLY_WAIT_MSG);
+			},
+			statusCode: {
+				200: function(xhr) {
+					buildXhrResponse('alert-success', 'text-success', xhr.responseText,
+						function() {
+							$confirmTally.text(CONFIRM_TALLY_DONE_MSG);
+						});
+				},
+
+				400: function(xhr) {
+					buildXhrResponse(xhr, 'alert-danger', 'text-danger', xhr.responseText,
+					function() {
+						$confirmTally.attr('disabled', false)
+							.text(CONFIRM_TALLY_ACTIVE_MSG);
+					});
+				},
+
+				500: function(xhr) {
+					buildXhrResponse('alert-danger', 'text-danger', xhr.responseText,
+					function() {
+						$confirmTally.attr('disabled', false)
+							.text(CONFIRM_TALLY_ACTIVE_MSG);
+					});
+				}
+			}
 		});
 	});
 

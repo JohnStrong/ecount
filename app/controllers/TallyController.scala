@@ -13,14 +13,25 @@ import service.dispatch.tallysys.{AccountDispatcher, ResultsDispatcher}
 import models.ecount.tallysys.implicits.{Candidate, TallyGroup}
 import models.ecount.live.TallyFeed
 
+object TallySysConsts {
+
+  val BAD_VERIFICATION_KEY = "verification failed"
+
+  val BAD_TALLY_RESULTS_POST = "poor request. please do not try that again."
+
+  val VERIFICATION_KEY_MISSING_FROM_REQUEST = "could not verify request. please try again."
+
+  val FAILED_TO_PERSIST_CANDIDATE_TALLIES = "failed to publish tally results. please try again."
+
+  val PUBLISH_TALLY_RESULTS_SUCCESSFUL = "tally results published successfully. Thank you."
+
+  val PUBLISH_TALLY_RESULTS_FAILED = "failed to publish tally results. please try again."
+}
+
 object TallyController extends Controller {
 
   private val DASHBOARD_SESSION_KEY = "sys.account"
   private val VERIFICATION_KEY_COOKIE_ID = "verificationKey"
-
-  private val BAD_TALLY_RESULTS_POST = "poor request. please do not try that again."
-  private val VERIFICATION_KEY_MISSING_FROM_REQUEST = "could not verify request. please try again."
-  private val FAILED_TO_PERSIST_CANDIDATE_TALLIES = "failed to publish tally results. please try again."
 
   implicit val candidateRds = Json.reads[Candidate]
   implicit val resultsRds = Json.reads[TallyGroup]
@@ -77,7 +88,7 @@ object TallyController extends Controller {
               Cookie(VERIFICATION_KEY_COOKIE_ID, verificationKey)
             )
           } else {
-            Unauthorized("verification failed")
+            Unauthorized(TallySysConsts.BAD_VERIFICATION_KEY)
           }
         }
       )
@@ -96,7 +107,7 @@ object TallyController extends Controller {
           access match {
             case Some(sessionId) => {
               Redirect(routes.TallyController.dashboard).withSession{
-                DASHBOARD_SESSION_KEY -> sessionId
+                session + (DASHBOARD_SESSION_KEY -> sessionId)
               }
             }
             case _ => {
@@ -139,12 +150,10 @@ object TallyController extends Controller {
     }}
   }
 
-  // TODO: refractor function to be more cohesive
   def receiveTally = Action(parse.json) {
     implicit request => {
       request.body.validate[TallyGroup].map{
         case tallies => {
-
           val candidates = tallies.candidates
 
           session.get(DASHBOARD_SESSION_KEY).map(key => {
@@ -153,18 +162,18 @@ object TallyController extends Controller {
               ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
 
               TallyFeed.broadcastCandidateTallyResults(ballot, candidates) match {
-                case true =>  Ok("complete")
-                case _ => InternalServerError("failed. please try again")
+                case true =>  Ok(TallySysConsts.PUBLISH_TALLY_RESULTS_SUCCESSFUL)
+                case _ => InternalServerError(TallySysConsts.PUBLISH_TALLY_RESULTS_FAILED)
               }
             }).getOrElse {
-              BadRequest(FAILED_TO_PERSIST_CANDIDATE_TALLIES)
+              BadRequest(TallySysConsts.FAILED_TO_PERSIST_CANDIDATE_TALLIES)
             }
           }).getOrElse{
-            BadRequest(VERIFICATION_KEY_MISSING_FROM_REQUEST)
+            BadRequest(TallySysConsts.VERIFICATION_KEY_MISSING_FROM_REQUEST)
           }
         }
       }.recoverTotal {
-        e => BadRequest(BAD_TALLY_RESULTS_POST)
+        e => BadRequest(TallySysConsts.BAD_TALLY_RESULTS_POST)
       }
     }
   }
