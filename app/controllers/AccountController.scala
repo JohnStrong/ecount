@@ -4,7 +4,7 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
-import service.util.{Cache}
+import service.util.Cache
 import service.dispatch._
 
 object AccountController extends Controller {
@@ -27,8 +27,9 @@ object AccountController extends Controller {
           loginData => {
             FormHelper.authenticateUser(loginData) match {
               case Some(id) =>
-                Redirect(routes.ViewController.index)
-                .withSession(USER_SESSION_ID_KEY -> id)
+                Redirect(routes.ViewController.index).withSession {
+                  session + (USER_SESSION_ID_KEY -> id)
+                }
               case _ => {
                 BadRequest(views.html.auth(
                   FormHelper.loginForm.withGlobalError(ERROR_FAILED_AUTHENTICATION),
@@ -49,7 +50,6 @@ object AccountController extends Controller {
         Cache.removeCachedUser(user)
       }
 
-      // redirect to home and invalidate user session, add logout message
       Redirect(routes.ViewController.auth).flashing {
         "auth message" -> FLASH_SESSION_LOGOUT_MESSAGE
       }.withNewSession

@@ -1,7 +1,27 @@
 /* BASE STYLES FOR HOMEPAGE PROMO */
 html {
 	min-height: 100%;
+	position: relative;
 	background-color: #222222;
+}
+
+body {
+	height: 100%;
+
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		right bottom,
+		color-stop(0, #575958),
+		color-stop(1, #0C0D0D),
+		color-stop(1, #000000)
+	);
+
+	background-image: -o-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: -moz-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: -webkit-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: -ms-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	background-image: linear-gradient(to right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
 }
 
 .pin {
@@ -19,20 +39,12 @@ html {
 
 	width: 100%;
 
-	background-image: -webkit-gradient(
-		linear,
-		left top,
-		right bottom,
-		color-stop(0, #575958),
-		color-stop(1, #0C0D0D),
-		color-stop(1, #000000)
-	);
-
-	background-image: -o-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
-	background-image: -moz-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
-	background-image: -webkit-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
-	background-image: -ms-linear-gradient(right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
-	background-image: linear-gradient(to right bottom, #575958 0%, #0C0D0D 100%, #000000 100%);
+	position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    overflow:hidden;
 }
 
 header .navbar {

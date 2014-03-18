@@ -1,4 +1,6 @@
-(function() {
+(function($) {
+
+	'use strict';
 
 	var CHECKBOX_MARKUP = '<div class="checkbox">' +
 		'<label>' +
@@ -6,7 +8,7 @@
 		'yes, I am Human' +
 		'</label>' +
 		'</div>';
-	
+
 	$(document).ready(function() {
 		var registerSubmit = $('#register-form').find('button.submit');
 
@@ -18,7 +20,9 @@
 		$('#register-form input:checkbox').click(function() {
 			if($(this).is(':checked')) {
 				registerSubmit.attr('disabled', false);
+			} else {
+				registerSubmit.attr('disabled', true);
 			}
 		})
 	});
-})();
+})($);

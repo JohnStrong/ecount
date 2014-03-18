@@ -27,6 +27,8 @@ GET     /tally                            controllers.TallyController.index
 
 GET     /tally/account                    controllers.TallyController.account
 
+GET     /tally/logout                     controllers.TallyController.logout
+
 POST    /tally/access                     controllers.TallyController.access
 
 POST    /tally/verification               controllers.TallyController.verification

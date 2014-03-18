@@ -71,9 +71,9 @@ ecountVis.service('TallyExtractor',
 
 ecountVis.service('StatVisualization', function() {
 
-	'use strict';
-
 	return function(_domain, _dataset, props) {
+
+		'use strict';
 
 		var dataset = _dataset,
 			domain =  _domain,
@@ -94,6 +94,8 @@ ecountVis.service('StatVisualization', function() {
 			BAR_MIN_WIDTH = 1,
 			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 1,
+
+			YSCALE_PADDING_PERCENT = 0.20,
 
 			LEGEND_PADDING = 170,
 
@@ -129,8 +131,8 @@ ecountVis.service('StatVisualization', function() {
 				d3.max(dataset, function(d) {
 					return d.count; })]).range([0, WIDTH - PADDING[0] - PADDING[1] - PADDING[0]]),
 
-			yScale = d3.scale.linear().domain([0, dataset.length]).range([BAR_HEIGHT_OFFSET,
-				BAR_HEIGHT_TOTAL]),
+			yScale = d3.scale.ordinal().domain(d3.range(dataset.length)).rangeRoundBands([0,
+				BAR_HEIGHT_TOTAL], YSCALE_PADDING_PERCENT),
 
 			// to scale the xaxis on chart correctly...
 			xAxis = d3.svg.axis()
@@ -146,7 +148,7 @@ ecountVis.service('StatVisualization', function() {
 			.enter().append('svg:rect')
 			.attr('x', PADDING[0])
 			.attr('y', function(d, i) { return yScale(i); })
-			.attr('height', BAR_HEIGHT_OFFSET/1.5)
+			.attr('height', yScale.rangeBand())
 			.transition()
 				.ease('bounce')
 				.duration(ANIMATION_DURATION)
@@ -166,7 +168,7 @@ ecountVis.service('StatVisualization', function() {
 		chart.append('g')
 			.attr('class', 'axis')
 			.attr('transform', 'translate(' + PADDING[0] + ',' +
-				(BAR_HEIGHT_TOTAL) + ')')
+				yScale.rangeExtent()[1] + ')')
 			.style('fill', XAXIS_FILL_COLOR)
 			.call(xAxis);
 
@@ -259,8 +261,6 @@ ecountVis.factory('Visualize',
 					$.each(results, function(k, result) {
 
 						TallyExtractor(filterWithDEDId, result)(function(resultSet) {
-
-							console.log('extractor', resultSet);
 
 							if(!resultSet || resultSet.length <= 0) {
 								failedVisualizationView(elem);

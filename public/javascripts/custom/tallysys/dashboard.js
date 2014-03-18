@@ -18,6 +18,8 @@
 
 		CONFIRM_TALLY_DONE_MSG = 'Published...',
 
+		INFO_SUCCESS_PUBLISH_ANOTHER = $('<br /><a href="/tally/logout">want to tally another ED?</a>'),
+
 		candidatesToJson = function() {
 			var candidatesArr = [];
 
@@ -92,18 +94,27 @@
 			},
 			statusCode: {
 				200: function(xhr) {
-					buildXhrResponse('alert-success', 'text-success', xhr.responseText,
+					var msg = $('<span></span>');
+					msg.text(xhr.responseText);
+					msg.append(INFO_SUCCESS_PUBLISH_ANOTHER);
+
+					buildXhrResponse('alert-success', 'text-success', msg,
 						function() {
 							$confirmTally.text(CONFIRM_TALLY_DONE_MSG);
+							$candidates.off('click', function(e) { e.preventDefault(); });
 						});
 				},
 
 				400: function(xhr) {
-					buildXhrResponse(xhr, 'alert-danger', 'text-danger', xhr.responseText,
+					buildXhrResponse('alert-danger', 'text-danger', xhr.responseText,
 					function() {
 						$confirmTally.attr('disabled', false)
 							.text(CONFIRM_TALLY_ACTIVE_MSG);
 					});
+				},
+
+				401: function(xhr) {
+					buildXhrResponse('alert-danger', 'text-danger', xhr.responseText);
 				},
 
 				500: function(xhr) {

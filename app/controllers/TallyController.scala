@@ -15,7 +15,7 @@ import models.ecount.live.TallyFeed
 
 object TallySysConsts {
 
-  val BAD_VERIFICATION_KEY = "verification failed"
+  val BAD_VERIFICATION_KEY = "verification failed."
 
   val BAD_TALLY_RESULTS_POST = "poor request. please do not try that again."
 
@@ -76,6 +76,14 @@ object TallyController extends Controller {
     }}
   }
 
+  def logout = {
+    Action { implicit request => {
+      Redirect(routes.TallyController.account).withSession{
+        session - DASHBOARD_SESSION_KEY
+      }
+    }}
+  }
+
   def verification = CSRFAddToken {
     Action { implicit request => {
       TallyFormHelper.authForm.bindFromRequest.fold(
@@ -124,8 +132,6 @@ object TallyController extends Controller {
     Action { implicit request => {
       session.get(DASHBOARD_SESSION_KEY) match {
         case Some(sessId) => {
-          Console.println(sessId)
-
           AccountDispatcher.getAccount(sessId) match {
             case Some(account) => {
               val ballotBoxId = account.ballotBoxId
@@ -157,7 +163,8 @@ object TallyController extends Controller {
           val candidates = tallies.candidates
 
           session.get(DASHBOARD_SESSION_KEY).map(key => {
-            AccountDispatcher.getBallotBoxElectionDependencies(key).map(ballot => {
+            AccountDispatcher.getBallotBoxElectionDependencies(key).map(
+              ballot => {
 
               ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
 
