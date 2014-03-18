@@ -1,8 +1,10 @@
 package service.dispatch.tallysys
 
+import models.tallysys.{ExistingRepresentativeAccount, NewRepresentativeAccount}
+
 import persistence.ecount.Tally
 import persistence.ecount.PersistenceContext._
-import service.util.Cache
+import service.util.{Cache, Crypto}
 
 object AccountDispatcher {
 
@@ -10,6 +12,15 @@ object AccountDispatcher {
     withConnection { implicit conn => {
       Tally.getAccountByUsername(username)
     }}
+  }
+
+  private def checkHash(unhashed:String, account:NewRepresentativeAccount) = {
+    val hash = Crypto.password(unhashed, () => account.salt)._2
+
+    hash.equals(account.hash) match {
+      case true => Some(account)
+      case _ => None
+    }
   }
 
   def getElectionByBallotBoxId(ballotBoxId:Int) = {
@@ -42,9 +53,6 @@ object AccountDispatcher {
   def getAccount(sessId:String) = {
     val maybeAccount = Cache.getAccountFromCache(sessId)
 
-    Console.println(sessId)
-    Console.println(maybeAccount)
-
     maybeAccount match {
       case Some(account) => Some(account)
       case _ => {
@@ -53,6 +61,21 @@ object AccountDispatcher {
           case _ => None
         }
       }
+    }
+  }
+
+  def getAccountWithVerification(login:ExistingRepresentativeAccount) = {
+     getMaybeAccount(login.username).map {
+       account =>
+        checkHash(login.password, account)
+     }.getOrElse {
+      None
+     }
+  }
+
+  def removeAccount(username:String) = {
+    withConnection { implicit conn =>
+      Tally.deleteAccountByUsername(username)
     }
   }
 

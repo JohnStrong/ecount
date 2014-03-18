@@ -7,31 +7,17 @@ import play.api.libs.json._
 import play.api.libs.iteratee._
 import play.api.libs.concurrent.Execution.Implicits._
 
-import helpers.{TallyFormHelper, FormErrors}
 import service.dispatch.tallysys.{AccountDispatcher, ResultsDispatcher}
 
 import models.tallysys.implicits.{Candidate, TallyGroup}
 import models.live.TallyFeed
 
-object TallySysConsts {
+import consts.tallysys.{AuthenticationConsts, SessionConsts}
 
-  val BAD_VERIFICATION_KEY = "verification failed."
-
-  val BAD_TALLY_RESULTS_POST = "poor request. please do not try that again."
-
-  val VERIFICATION_KEY_MISSING_FROM_REQUEST = "could not verify request. please try again."
-
-  val FAILED_TO_PERSIST_CANDIDATE_TALLIES = "failed to publish tally results. please try again."
-
-  val PUBLISH_TALLY_RESULTS_SUCCESSFUL = "tally results published successfully. Thank you."
-
-  val PUBLISH_TALLY_RESULTS_FAILED = "failed to publish tally results. please try again."
-}
+import helpers.form.TallyFormHelper
+import helpers.form.error.FormErrors
 
 object TallyController extends Controller {
-
-  private val DASHBOARD_SESSION_KEY = "sys.account"
-  private val VERIFICATION_KEY_COOKIE_ID = "verificationKey"
 
   implicit val candidateRds = Json.reads[Candidate]
   implicit val resultsRds = Json.reads[TallyGroup]
@@ -51,10 +37,10 @@ object TallyController extends Controller {
 
   def index = CSRFAddToken {
     Action { implicit request => {
-     val key = request.cookies.get(VERIFICATION_KEY_COOKIE_ID)
+     val key = request.cookies.get(SessionConsts.VERIFICATION_KEY_COOKIE_ID)
      key match {
        case Some(key) => {
-         if(session.get(DASHBOARD_SESSION_KEY).isDefined) {
+         if(session.get(SessionConsts.DASHBOARD_SESSION_KEY).isDefined) {
            Redirect(routes.TallyController.dashboard)
          } else {
            Redirect(routes.TallyController.account)
@@ -69,8 +55,11 @@ object TallyController extends Controller {
 
   def account = CSRFAddToken {
     Action { implicit request => {
-      request.cookies.get(VERIFICATION_KEY_COOKIE_ID) match {
-        case Some(c) => Ok(views.html.tallyAuth(TallyFormHelper.RepresentativeRegisterForm))
+      request.cookies.get(SessionConsts.VERIFICATION_KEY_COOKIE_ID) match {
+        case Some(c) =>
+          Ok(views.html.tallyAuth(
+            TallyFormHelper.RepresentativeRegisterForm,
+            TallyFormHelper.RepresentativeLoginForm))
         case None => Redirect(routes.TallyController.index)
       }
     }}
@@ -79,7 +68,7 @@ object TallyController extends Controller {
   def logout = {
     Action { implicit request => {
       Redirect(routes.TallyController.account).withSession{
-        session - DASHBOARD_SESSION_KEY
+        session - SessionConsts.DASHBOARD_SESSION_KEY
       }
     }}
   }
@@ -93,10 +82,10 @@ object TallyController extends Controller {
         verificationKey => {
           if(AccountDispatcher.isValidKey(verificationKey)) {
             Redirect(routes.TallyController.account).withCookies(
-              Cookie(VERIFICATION_KEY_COOKIE_ID, verificationKey)
+              Cookie(SessionConsts.VERIFICATION_KEY_COOKIE_ID, verificationKey)
             )
           } else {
-            Unauthorized(TallySysConsts.BAD_VERIFICATION_KEY)
+            Unauthorized(AuthenticationConsts.BAD_VERIFICATION_KEY)
           }
         }
       )
@@ -107,7 +96,7 @@ object TallyController extends Controller {
     Action { implicit request => {
       TallyFormHelper.RepresentativeRegisterForm.bindFromRequest.fold(
         formWithErrors => {
-          Ok(views.html.tallyAuth(formWithErrors))
+          Ok(views.html.tallyAuth(formWithErrors, TallyFormHelper.RepresentativeLoginForm))
         },
         representativeAuthData => {
           val access = TallyFormHelper.createAccessAccount(representativeAuthData)
@@ -115,13 +104,39 @@ object TallyController extends Controller {
           access match {
             case Some(sessionId) => {
               Redirect(routes.TallyController.dashboard).withSession{
-                session + (DASHBOARD_SESSION_KEY -> sessionId)
+                session + (SessionConsts.DASHBOARD_SESSION_KEY -> sessionId)
               }
             }
             case _ => {
               val formWithGlobalErrors = FormErrors.accountRegistrationFailed
-              Unauthorized(views.html.tallyAuth(formWithGlobalErrors))
+              Unauthorized(views.html.tallyAuth(formWithGlobalErrors,
+                TallyFormHelper.RepresentativeLoginForm))
             }
+          }
+        }
+      )
+    }}
+  }
+
+  def login = CSRFCheck {
+    Action { implicit request => {
+      TallyFormHelper.RepresentativeLoginForm.bindFromRequest.fold(
+        formWithErrors => {
+          Ok(views.html.tallyAuth(TallyFormHelper.RepresentativeRegisterForm, formWithErrors))
+        },
+        loginData => {
+          val maybeAccount = AccountDispatcher.getAccountWithVerification(loginData)
+
+          maybeAccount.map {
+            account => {
+              Redirect(routes.TallyController.dashboard).withSession {
+                session + (SessionConsts.DASHBOARD_SESSION_KEY -> account.username)
+              }
+            }
+          }.getOrElse {
+            val formWithGlobalError = FormErrors.invalidLogin
+            Unauthorized(views.html.tallyAuth(TallyFormHelper.RepresentativeRegisterForm,
+              formWithGlobalError))
           }
         }
       )
@@ -130,7 +145,7 @@ object TallyController extends Controller {
 
   def dashboard = CSRFAddToken {
     Action { implicit request => {
-      session.get(DASHBOARD_SESSION_KEY) match {
+      session.get(SessionConsts.DASHBOARD_SESSION_KEY) match {
         case Some(sessId) => {
           AccountDispatcher.getAccount(sessId) match {
             case Some(account) => {
@@ -162,25 +177,29 @@ object TallyController extends Controller {
         case tallies => {
           val candidates = tallies.candidates
 
-          session.get(DASHBOARD_SESSION_KEY).map(key => {
+          session.get(SessionConsts.DASHBOARD_SESSION_KEY).map(key => {
             AccountDispatcher.getBallotBoxElectionDependencies(key).map(
               ballot => {
-
               ResultsDispatcher.addTalliesForCandidates(ballot, candidates)
 
               TallyFeed.broadcastCandidateTallyResults(ballot, candidates) match {
-                case true =>  Ok(TallySysConsts.PUBLISH_TALLY_RESULTS_SUCCESSFUL)
-                case _ => InternalServerError(TallySysConsts.PUBLISH_TALLY_RESULTS_FAILED)
+                case true =>  {
+                  // remove temporary account (user must create another to submit new tally)
+                  AccountDispatcher.removeAccount(key)
+
+                  Ok(AuthenticationConsts.PUBLISH_TALLY_RESULTS_SUCCESSFUL)
+                }
+                case _ => InternalServerError(AuthenticationConsts.PUBLISH_TALLY_RESULTS_FAILED)
               }
             }).getOrElse {
-              BadRequest(TallySysConsts.FAILED_TO_PERSIST_CANDIDATE_TALLIES)
+              BadRequest(AuthenticationConsts.FAILED_TO_PERSIST_CANDIDATE_TALLIES)
             }
           }).getOrElse{
-            BadRequest(TallySysConsts.VERIFICATION_KEY_MISSING_FROM_REQUEST)
+            BadRequest(AuthenticationConsts.VERIFICATION_KEY_MISSING_FROM_REQUEST)
           }
         }
       }.recoverTotal {
-        e => BadRequest(TallySysConsts.BAD_TALLY_RESULTS_POST)
+        e => BadRequest(AuthenticationConsts.BAD_TALLY_RESULTS_POST)
       }
     }
   }

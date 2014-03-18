@@ -1,5 +1,5 @@
-@(loginForm: Form[helpers.LoginData], 
-registerForm: Form[helpers.RegisterData])(implicit token: play.filters.csrf.CSRF.Token)
+@(loginForm: Form[helpers.form.LoginData],
+registerForm: Form[helpers.form.RegisterData])(implicit token: play.filters.csrf.CSRF.Token)
 
 @import helper._
 @import helper.twitterBootstrap._

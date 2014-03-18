@@ -1,4 +1,4 @@
-@(authForm:Form[models.tallysys.NewRepresentativeAccount])(implicit request: play.api.mvc.RequestHeader, token:play.filters.csrf.CSRF.Token)
+@(authForm:Form[models.tallysys.NewRepresentativeAccount], loginForm:Form[models.tallysys.ExistingRepresentativeAccount])(implicit request: play.api.mvc.RequestHeader, token:play.filters.csrf.CSRF.Token)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -20,99 +20,179 @@
 		<div class="container">
 			<div class="auth-body">
 				<div id="tally-verification" class="list-group">
-					<div class="list-group-item">
-						<div class="form-heading">
-							<div class="row">
-								<div class="col-md-6">
-									<h3>Register an account</h3>
-								</div>
-								<div class="col-md-6">
-									<div class="error-body">
-										@if(authForm.hasGlobalErrors) {
-							                <div class="alert form-alert">
-							                    @authForm.globalError.map { error =>
-							                        <p class="text-danger"><small>@error.message</small></p>
-							                    }
-							                </div>
-							            }
-						            </div>
-						        </div>
-						    </div>
-					        @form(action = routes.TallyController.access, 'id -> "register") {
-					        	<div class="form-body">
-			                        <div class="form-group">
-			                        	@input(
-			                            	authForm("username"),
-			                            	'_showErrors -> true
-			                            ) { (id, name, value, args) =>
-			                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-			                            }
-			                        </div>
-			                        <div class="form-group">
-			                        	<div class="row">
-			                        		<div class="col-md-6">
-			                        			@input(
-					                            	authForm("fname"),
-					                            	'_showErrors -> true
-					                            ) { (id, name, value, args) =>
-					                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-					                            }
-			                        		</div>
-			                        		<div class="col-md-6">
-			                        			@input(
-					                            	authForm("surname"),
-					                            	'_showErrors -> true
-					                            ) { (id, name, value, args) =>
-					                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-					                            }
-			                        		</div>
-			                        	</div>
-			                        </div>
-			                        <div class="form-group">
-			                        	@input(
-			                            	authForm("password.main"),
-			                            	'_label -> "password"
-			                            ) { (id, name, value, args) =>
-			                                <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-			                            }
-			                        </div>
-			                        <div class="form-group">
-			                        	@input(
-			                            	authForm("password.confirm"),
-			                            	'_label -> "confirm password"
-			                            ) { (id, name, value, args) =>
-			                                <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-			                            }
-			                        </div>
-			                        <div class="form-group">
-			                        	@input(
-			                            	authForm("ballot box"),
-			                            	'_showErrors -> true
-			                            ) { (id, name, value, args) =>
-			                                <select type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
-			                                	@if(request.cookies.get("verificationKey").isDefined) {
-													@AccountDispatcher.getBallotBoxes(request.cookies.get("verificationKey").get.value).map { ballotBox =>
-														<option value="@ballotBox.id">@ballotBox.title</option>
+					<div id="register">
+						<div class="list-group-item">
+							<div class="form-heading">
+								<div class="row">
+									<div class="col-md-6">
+										<h3>Register an account</h3>
+									</div>
+									<div class="col-md-6">
+										<div class="error-body">
+											@if(authForm.hasGlobalErrors) {
+								                <div class="alert form-alert">
+								                    @authForm.globalError.map { error =>
+								                        <p class="text-danger">
+								                        	<strong>Woops!</strong>
+								                        	<small>@error.message</small>
+								                        </p>
+								                    }
+								                </div>
+								            }
+							            </div>
+							        </div>
+							    </div>
+						        @form(action = routes.TallyController.access, 'id -> "register-form") {
+						        	<div class="form-body">
+				                        <div class="form-group">
+				                        	@input(
+				                            	authForm("username"),
+				                            	'_showConstraints -> false,
+				                            	'_showErrors -> true
+				                            ) { (id, name, value, args) =>
+				                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+				                            }
+				                        </div>
+				                        <div class="form-group">
+				                        	<div class="row">
+				                        		<div class="col-md-6">
+				                        			@input(
+						                            	authForm("fname"),
+						                            	'_showErrors -> true
+						                            ) { (id, name, value, args) =>
+						                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+						                            }
+				                        		</div>
+				                        		<div class="col-md-6">
+				                        			@input(
+						                            	authForm("surname"),
+						                            	'_showErrors -> true
+						                            ) { (id, name, value, args) =>
+						                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+						                            }
+				                        		</div>
+				                        	</div>
+				                        </div>
+				                        <div class="form-group">
+				                        	@input(
+				                            	authForm("password.main"),
+				                            	'_showConstraints -> false,
+				                            	'_label -> "password"
+				                            ) { (id, name, value, args) =>
+				                                <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+				                            }
+				                        </div>
+				                        <div class="form-group">
+				                        	@input(
+				                            	authForm("password.confirm"),
+				                            	'_label -> "confirm password"
+				                            ) { (id, name, value, args) =>
+				                                <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+				                            }
+				                        </div>
+				                        <div class="form-group">
+				                        	@input(
+				                            	authForm("ballot box"),
+				                            	'_showConstraints -> false
+				                            ) { (id, name, value, args) =>
+				                                <select type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+				                                	<option>select a ballot box to tally</option>
+				                                	@if(request.cookies.get("verificationKey").isDefined) {
+														@AccountDispatcher.getBallotBoxes(request.cookies.get("verificationKey").get.value).map { ballotBox =>
+																<option value="@ballotBox.id">@ballotBox.title</option>
+														}
 													}
-												}
-											</select>
-			                            }
-			                        </div>
-			                        <span>
-			                            @CSRF.formField
-			                        </span>
-			                    </div>
-							    <div class="form-group">
-								    <div class="form-footer">
-								        <button type="submit" class="btn btn-success">create account</button>
-								   		<span class="suggestion">
-							        		<small>coming back? <a href="" class="switch primary">login here</a></small>
-							        	</span>
-							   		</div>
-							   	</div>
-					        }
-					   	</div>
+												</select>
+				                            }
+				                        </div>
+				                        <span>
+				                            @CSRF.formField
+				                        </span>
+				                    </div>
+								    <div class="form-group">
+									    <div class="form-footer">
+									    	<div class="row">
+									    		<div class="col-md-5">
+											    	<button type="submit" class="btn btn-success">create account</button>
+											   		<span class="suggestion">
+										        		<small>coming back? <a href="" class="switch primary">login here</a></small>
+										        	</span>
+										        </div>
+										    	<div class="col-md-7">
+										    		<div class="alert alert-info">
+											    		<p class="text-info">
+											    			<strong>NOTE:</strong>
+											    			Once you submit a tally your account is deleted<br />
+											    			you must make a new one if you wish to tally another ballot box.
+											    		</p>
+											    	</div>
+										    	</div>
+										    </div>
+								   		</div>
+								   	</div>
+						        }
+						   	</div>
+						</div>
 			        </div>
+			        <div class="outer-large" id="login">
+				        <div class="list-group-item">
+					        <div class="form-heading">
+									<div class="row">
+										<div class="col-md-6">
+											<h3>Login</h3>
+										</div>
+										<div class="col-md-6">
+											<div class="error-body">
+												@if(loginForm.hasGlobalErrors) {
+									                <div class="alert form-alert">
+									                    @loginForm.globalError.map { error =>
+									                        <p class="text-danger">
+									                        	<strong>Woops!</strong>
+									                        	<small>@error.message</small>
+									                        </p>
+									                    }
+									                </div>
+									            }
+								            </div>
+								        </div>
+								    </div>
+							        @form(action = routes.TallyController.login, 'id -> "login-form") {
+							        	<div class="form-body">
+					                        <div class="form-group">
+					                        	@input(
+					                            	loginForm("username"),
+					                            	'_showConstraints -> false,
+					                            	'_showErrors -> true
+					                            ) { (id, name, value, args) =>
+					                                <input type="text" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+					                            }
+					                        </div>
+					                       <div class="form-group">
+					                        	@input(
+					                            	loginForm("password"),
+					                            	'_showConstraints -> false
+					                            ) { (id, name, value, args) =>
+					                                <input type="password" class="form-control" name="@name" id="@id" @toHtmlArgs(args)>
+					                            }
+					                        </div>
+					                        <span>
+					                            @CSRF.formField
+					                        </span>
+					                    </div>
+									    <div class="form-group">
+										    <div class="form-footer">
+										        <button type="submit" class="btn btn-success">create account</button>
+										   		<span class="suggestion">
+									        		<small>not registered? <a href="" class="switch primary">register here</a></small>
+									        	</span>
+									   		</div>
+									   	</div>
+							        }
+							   	</div>
+							</div>
+						</div>
+			        </div>
+			        <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/home/form-util.js")"></script>
 			        <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/tallysys/auth.js")"></script>
 			    </div>
 			</div>

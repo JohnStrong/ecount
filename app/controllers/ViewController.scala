@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import play.filters.csrf._
 
-import helpers.FormHelper
+import helpers.form.FormHelper
 
 object ViewController extends Controller {
 

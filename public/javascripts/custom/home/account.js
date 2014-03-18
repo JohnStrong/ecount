@@ -1,4 +1,5 @@
 (function($) {
+
 	'use strict';
 
 	var URL_REGISTER_FAILED = '/auth/register',
@@ -12,62 +13,11 @@
 
 		MAYBE_LOGOUT_ALERT = '#logout',
 
-		// utility for applying jquery animations to auth forms...
-		anim = (function() {
-
-			var ELEM_ANIMATE_TIMER = 300,
-				ALERT_ANIM_WAIT = 3000;
-
-			return {
-				register: function() {
-					$(LOGIN_ELEM_DEEP_LINK).animate({
-						'opacity': 0
-					}, ELEM_ANIMATE_TIMER, function() {
-
-						$(this).hide();
-
-						$(REGISTER_ELEM_DEEP_LINK).show()
-							.css({'opacity' : 1});
-					});
-
-				},
-
-				login: function() {
-					$(REGISTER_ELEM_DEEP_LINK).animate({
-						'opacity': 0
-					}, ELEM_ANIMATE_TIMER, function() {
-
-						$(this).hide();
-
-						$(LOGIN_ELEM_DEEP_LINK).show()
-							.css({'opacity' : 1});
-					});
-				},
-
-				logout: function() {
-					var logoutAlert = $(MAYBE_LOGOUT_ALERT);
-
-					if(logoutAlert) {
-						setTimeout(function() {
-							logoutAlert.animate({
-								'opacity' : 0
-							}, ELEM_ANIMATE_TIMER, function() {
-								$(this).hide();
-							});
-						}, ALERT_ANIM_WAIT);
-					}
-				}
-			};
-		})();
+		anim = Ecount.Anim(LOGIN_ELEM_DEEP_LINK, REGISTER_ELEM_DEEP_LINK, MAYBE_LOGOUT_ALERT);
 
 	$(document).ready(function() {
 
-		var getWhichView = function() {
-			var findURL = new RegExp('/\\w+/\\w+$', 'g');
-			return findURL.exec(document.URL);
-		}
-
-		var url = getWhichView(),
+		var url = Ecount.WhichView(),
 			elemToHide = REGISTER_ELEM_DEEP_LINK;
 
 		if(url && url[0] === URL_REGISTER_FAILED) {

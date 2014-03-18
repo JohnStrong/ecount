@@ -57,9 +57,12 @@
 	$candidates.each(function(k, d) {
 		this.candidateId = $(this).data('candidate-id');
 		this.candidateName = $(this).data('candidate-name');
+		this.candidateParty = $(this).data('candidate-party');
 		this.candidateTally = $(this).data('tally');
 
-		$(this).find('.candidate-name').text(this.candidateName);
+		$(this).find('.candidate-name').text(this.candidateName +
+			' (' + this.candidateParty + ')');
+
 		$(this).find('.candidate-tally').text(this.candidateTally);
 	});
 

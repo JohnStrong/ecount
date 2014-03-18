@@ -1,4 +1,4 @@
-package helpers
+package helpers.form
 
 import play.api.data.Form
 import play.api.data.Forms._
@@ -6,11 +6,12 @@ import play.api.data.Forms._
 import persistence.ecount.PersistenceContext._
 import persistence.ecount.Tally
 import models.tallysys.{RepresentativeAccount, NewRepresentativeAccount, ExistingRepresentativeAccount}
-import service.util.{Cache}
+import service.util.Cache
+import consts.tallysys.{SessionConsts, FormConsts}
 
 object TallyFormHelper {
 
-  val ACCOUNT_SESSION_ID = "tallysys.account."
+  private val minMax = FormConsts.USER_PASS_TEXT_LENGTH
 
   val authForm:Form[String] = Form[String] {
    "key" -> text
@@ -18,11 +19,11 @@ object TallyFormHelper {
 
   val RepresentativeRegisterForm = Form[NewRepresentativeAccount] {
     mapping(
-      "username" -> text,
+      "username" -> nonEmptyText(minLength = minMax._1, maxLength = minMax._2),
       "fname" -> text,
       "surname" -> text,
       "password" -> tuple(
-        "main" -> text(minLength = 6),
+        "main" -> nonEmptyText(minLength = minMax._1, maxLength = minMax._2),
         "confirm" -> text
       ).verifying(
        "passwords do not match", password => password._1 == password._2
@@ -40,15 +41,15 @@ object TallyFormHelper {
 
   val RepresentativeLoginForm = Form[ExistingRepresentativeAccount] {
    mapping(
-    "username" -> text,
-    "password" -> text
+    "username" -> nonEmptyText(minLength = minMax._1, maxLength = minMax._2),
+    "password" -> nonEmptyText(minLength = minMax._1, maxLength = minMax._2)
    )(RepresentativeAccount.apply)(RepresentativeAccount.unapply)
   }
 
   private def generateAccountSession(account: NewRepresentativeAccount) = {
-    Console.println(ACCOUNT_SESSION_ID + account.username)
+    Console.println(SessionConsts.ACCOUNT_SESSION_ID + account.username)
 
-    Cache.cacheAccount(ACCOUNT_SESSION_ID + account.username, account)
+    Cache.cacheAccount(SessionConsts.ACCOUNT_SESSION_ID + account.username, account)
     Some(account.username)
   }
 

@@ -26,11 +26,11 @@ body {
 	padding-right: 2%;
 }
 
-.auth-body #login {
+.auth-body .outer-large {
 	padding-top: 24%;
 }
 
-.auth-body #register-outer {
+.auth-body .outer-small {
 	padding-top: 20%;
 }
 

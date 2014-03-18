@@ -3,9 +3,9 @@ package controllers
 import play.api.mvc._
 import play.filters.csrf._
 
-import helpers.FormHelper
 import service.util.Cache
 import service.dispatch._
+import helpers.form.FormHelper
 
 object AccountController extends Controller {
 
@@ -63,7 +63,6 @@ object AccountController extends Controller {
           BadRequest(views.html.auth(FormHelper.loginForm, formWithErrors))
         },
         registerData => {
-          // verify that registration is not spam
           FormHelper.registerUser(registerData) match {
             case Some(i) => {
               Redirect(routes.ViewController.confirmation(registerData.email))

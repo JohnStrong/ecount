@@ -31,6 +31,8 @@ GET     /tally/logout                     controllers.TallyController.logout
 
 POST    /tally/access                     controllers.TallyController.access
 
+POST    /tally/login                      controllers.TallyController.login
+
 POST    /tally/verification               controllers.TallyController.verification
 
 GET     /tally/dashboard                  controllers.TallyController.dashboard

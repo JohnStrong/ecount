@@ -75,15 +75,18 @@ object Tally {
     resultMap = new ResultMap[ElectionCandidate] {
       result(property = "id", column = "candidate_id")
       result(property = "name", column = "candidate_name")
+      result(property = "party", column = "party_name")
     }
 
     def xsql = <xsql>
-      SELECT cc.candidate_id, cc.candidate_name
+      SELECT cc.candidate_id, cc.candidate_name, p.party_name
       FROM
       stat_bank_tally_constituency_candidates as cc,
-      stat_bank_election_to_constituency as ec
+      stat_bank_election_to_constituency as ec,
+      stat_bank_parties as p
       WHERE ec.election_id = #{{id}}
       AND cc.constituency_id = ec.constituency_id
+      AND cc.party_id = p.party_id
     </xsql>
   }
 
@@ -101,6 +104,13 @@ object Tally {
       SELECT username, fname, surname, salt, hash, ballot_box_id
       FROM tally_sys_user_access
       WHERE username = #{{id}}
+    </xsql>
+  }
+
+  val deleteAccountByUsername = new Delete[String] {
+    def xsql = <xsql>
+      DELETE FROM tally_sys_user_access
+      WHERE username = #{{username}}
     </xsql>
   }
 
@@ -166,6 +176,7 @@ object Tally {
     isValidVerificationKey,
     lockBallotBox,
     getAccountByUsername,
+    deleteAccountByUsername,
     getBallotBoxElectionDetails,
     hasPartialTallyForCandidate,
     insertNewCandidateTallyResult,
