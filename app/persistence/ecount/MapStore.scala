@@ -23,18 +23,19 @@ object MapStore {
   val getElectoralDivisions = new SelectListBy[Long, CountyElectoralDivision] {
 
     resultMap = new ResultMap[CountyElectoralDivision] {
-        result(property = "gid", column = "gid")
+        result(property = "id", column = "ded_id")
         result(property = "label", column = "saps_label")
         result(property = "county", column = "county")
         result(property = "geometry", column = "geom")
     }
 
     def xsql = <xsql>
-      SELECT ed.gid, ed.county, ed.saps_label,
+      SELECT d.ded_id, ed.county, ed.saps_label,
       ST_ASGEOJSON(ST_TRANSFORM(ST_SETSRID(ST_SIMPLIFY(ed.geom, 150), 29902), 4326)) as geom
-      FROM geom_electoral_divisions ed, counties c
+      FROM geom_electoral_divisions ed, counties c, stat_bank_tally_ded_details as d
       WHERE c.county_id = #{{id}}
       AND ed.county like '%' || c.county || '%'
+      AND ed.gid = d.gid
       </xsql>
   }
 

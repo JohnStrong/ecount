@@ -40,32 +40,71 @@ map.directive('mapBaseDirective', function() {
 	};
 });
 
+map.directive('statTab', function() {
+	return {
+		restrict: 'E',
+		transclude: true,
+		scope: {},
+		controller: function($scope) {
+			var panes = $scope.panes = [];
+
+			$scope.select = function(pane) {
+				angular.forEach(panes, function(pane) {
+					pane.selected = false;
+				});
+
+				pane.selected = true;
+			};
+
+			this.addPane = function(pane) {
+				if(panes.length === 0) {
+					$scope.select(pane);
+				}
+
+				panes.push(pane);
+			};
+		},
+
+		templateUrl: '/templates/map/county/templates/statTab.html'
+	};
+});
+
+map.directive('statPane', function() {
+	return {
+		require: '^statTab',
+		restrict: 'E',
+		transclude: true,
+		scope: {
+			title: '@'
+		},
+		link: function(scope, element, attrs, tabsCtrl) {
+			tabsCtrl.addPane(scope);
+		},
+		templateUrl: '/templates/map/county/templates/statPane.html'
+	};
+});
+
 map.controller('MapController',
 	['$scope', '$compile', '$route', '$location', 'ElectionStatistics',
 	function($scope, $compile, $route, $location, ElectionStatistics) {
 
-		// county currently being viewed...
-		$scope.countyTarget = null;
-
-		$scope.loadCountyView = function() {
-			var countyId = $scope.countyTarget.id;
-
-			$location.path('/map/county/' + countyId);
-			$route.reload();
-		}
-
-		$scope.closeCountyView = function() {
-			$scope.countyTarget = null;
-
-			$location.path('/');
-			$route.reload();
-		};
+		$scope.county = null;
 
 		$scope.compileDom = function(domStr) {
 			var compiledDom = $compile(domStr),
 				newScope = $scope.$new();
 
 			return compiledDom(newScope)[0];
+		};
+
+		$scope.addOrReplaceCountyTab = function(county) {
+			console.log(county);
+			$scope.county = county;
+			$scope.$digest();
+		};
+
+		$scope.resetToHome = function() {
+			$scope.county = null;
 		};
 
 		// get all election tallys, if it is currently ongoing create a live feed for it...
@@ -99,7 +138,7 @@ map.controller('MapController',
 				$scope.$broadcast('previousTallys', elections);
 				$scope.$broadcast('latestTally', latestElections);
 			});
-		}
+		};
 	}
 ]);
 
@@ -113,17 +152,16 @@ map.controller('MapBaseController',
 			WELCOME_HTML = '<div class="welcome-info info-pane">' +
 			'<h1>Welcome to ecount!</h1>' +
 			'<p>choose a county to view some tally statistics</p></div>',
-			
+
 			WELCOME_POSITION = 'topright';
 
 		$scope.initMap = function() {
 			GeomAPI.countyBounds(function(geom) {
 				var compiledWelcome = $scope.compileDom(WELCOME_HTML);
 
-				var imap = Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base}, 
+				var imap = Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base},
 					function(target) {
-						$scope.countyTarget = target;
-						$scope.loadCountyView();
+						$scope.addOrReplaceCountyTab(target);
 					});
 				imap.createInfoControl(compiledWelcome, WELCOME_POSITION);
 			});

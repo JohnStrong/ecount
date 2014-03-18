@@ -2,12 +2,21 @@
 	<div class="col-md-12">
 		<div id="Map">
 			<div class="map-container">
-				<div class="map-base">
-					<map-base-directive></map-base-directive>
-				</div>
-		    	<div ng-if="countyTarget" id="county-view" class="map-county county-tally-results">
-		    		<county-directive></county-directive>
-	        	</div>
+				<ul id="tab-main" class="nav nav-pills">
+					<li class="">
+						<a href="#home" ng-click="resetToHome()">Home</a>
+					</li>
+		        </ul>
+		        <div class="main-content" ng-switch on="county !== null">
+		        	<div ng-switch-when="false">
+			        	<div id="home" class="map-base">
+							<map-base-directive></map-base-directive>
+						</div>
+					</div>
+					<div ng-switch-when="true">
+						<county-directive id="{{county.id}}"></county-directive>
+					</div>
+		        </div>
 		    </div>
 		</div>
 	</div>

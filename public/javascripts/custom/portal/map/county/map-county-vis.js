@@ -35,7 +35,9 @@ ecountVis.factory('FilterFor',
 					$.each(datum.results, function(k, d) {
 
 						// hard coded for testing purposes for now... (1 = Renmore)
-						if(d.dedId === 1) {
+						console.log('ded vis', dedId);
+
+						if(d.dedId === dedId) {
 							result = d.result;
 							return;
 						}
@@ -266,6 +268,8 @@ ecountVis.factory('Visualize',
 								failedVisualizationView(elem);
 								return;
 							}
+
+							console.log(elem[0], resultSet);
 
 							StatVisualization(elem[0], resultSet, {'width': elem.width()});
 							return;

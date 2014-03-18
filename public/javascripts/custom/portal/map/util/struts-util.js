@@ -47,12 +47,10 @@ strutsUtil.service('Compare', function() {
 strutsUtil.service('Updater', function() {
 
 	function updateDEDResult(old, update, target) {
-		
-		$.each(old, function(ith, dedResult) {
-			if(dedResult.id = update.id) {
-				dedResult.result += update.tally;
-				return;
-			}
+		old.push({
+			'result' : update.result,
+			'id' : update.id,
+			'dedId' : target
 		});
 	}
 
@@ -63,9 +61,9 @@ strutsUtil.service('Updater', function() {
 		});
 
 		$.each(constituencyFilter[0].results, function(ith, entryResult) {
-			
+
 			$.each(newSet.results, function(kth, newResult) {
-				
+
 				if(entryResult.id === newResult.id) {
 					updateDEDResult(entryResult.results, newResult, newSet.dedId);
 				}

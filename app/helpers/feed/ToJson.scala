@@ -15,7 +15,7 @@ object ToJson {
         Json.obj(
           "id" -> candidate.id,
           "name" -> candidate.name,
-          "tally" -> candidate.tally
+          "result" -> candidate.tally
         )
       }
     )

@@ -53,9 +53,7 @@ mapUtil.factory('Map',
 
 		var HIGHLIGHT_WEIGHT = 2,
 			HIGHLIGHT_CLICK_COLOR = '#555',
-			HIGHLIGHT_FILL_OPACITY = 0.5,
-
-			VIS_CONTAINER_ID = '#tally-results-vis';
+			HIGHLIGHT_FILL_OPACITY = 0.5;
 
 		function infoHelper() {
 			var info = L.control({position : 'bottomright'});
@@ -69,14 +67,14 @@ mapUtil.factory('Map',
 			info.draw = function(contents) {
 				if(contents) {
 					this.container.innerHTML = contents;
-				} 
+				}
 			}
 
 			return info;
 		}
 
 		function IMap(_mapId, _geom, _onClick, style, zoom) {
-					
+
 			this.map = L.map(_mapId, {"zoom" : zoom });
 
 			this.layer = VendorTileLayer(this.map);
@@ -95,7 +93,7 @@ mapUtil.factory('Map',
 				}).addTo(this.map);
 
 			this.bounds = this.geoJson.getBounds();
-			
+
 		}
 
 		IMap.prototype.enableInteraction = function(feature, layer) {
@@ -124,7 +122,7 @@ mapUtil.factory('Map',
 			}
 
 			function getElectoralInformation(e){
-				
+
 				var target = e.target.feature.properties;
 				this.onClick(target);
 			}
@@ -136,8 +134,8 @@ mapUtil.factory('Map',
 			});
 		};
 
-		IMap.prototype.createInfoControl = function(content, position) {
-			
+		IMap.prototype.createInfoControl = function(content, position, id) {
+
 			var control = L.control({'position': position});
 
 			control.onAdd = function(map) {
@@ -150,11 +148,11 @@ mapUtil.factory('Map',
 			};
 
 			control.show = function() {
-				$(VIS_CONTAINER_ID).show();
+				$('#' + id).show();
 			}
 
 			control.empty = function() {
-				$(VIS_CONTAINER_ID).hide();
+				$('#' + id).hide();
 			};
 
 			control.addTo(this.map);

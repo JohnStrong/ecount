@@ -43,7 +43,7 @@ object MapController extends Controller {
             "type" -> "Feature",
             "geometry" ->  Json.parse(ed.geometry),
             "properties" -> Json.obj(
-              "gid" -> ed.gid,
+              "gid" -> ed.id,
               "name" -> ed.label,
               "county" -> ed.county
             )

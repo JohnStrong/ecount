@@ -17,16 +17,18 @@ case class NewCandidateResult(
 ) extends CandidateResult
 
 case class UpdatedCandidateResult(resultsId:Int, tally:Int) extends CandidateResult
+case class PartialTally(candidateId:Int, dedId:Int) extends CandidateResult
 
 object ResultsDispatcher {
 
-  private def getMaybePartialTallyForCandidate(candidateId:Int) = {
+  private def getMaybePartialTallyForCandidate(candidateId:Int, dedId:Int) = {
    withConnection { implicit conn => {
-     Tally.hasPartialTallyForCandidate(candidateId)
+     val partial = PartialTally(candidateId, dedId)
+     Tally.hasPartialTallyForCandidate(partial)
    }}
   }
 
-  private def newCandidateTallyResult(candidate:Candidate)(implicit ballot:ElectionBallotBox) = {
+  private def newCandidateTallyResult(candidate:Candidate, ballot:ElectionBallotBox) = {
     withConnection { implicit conn => {
       val result = NewCandidateResult(candidate.id, candidate.tally,
         ballot.id, ballot.dedId, ballot.electionId)
@@ -41,18 +43,17 @@ object ResultsDispatcher {
     }}
   }
 
-  private def addCandidateTally(candidate:Candidate)(implicit ballot:ElectionBallotBox) = {
-    getMaybePartialTallyForCandidate(candidate.id).map {
+  private def addCandidateTally(candidate:Candidate, ballot:ElectionBallotBox) = {
+    getMaybePartialTallyForCandidate(candidate.id, ballot.dedId).map {
       case resultsId => updateCandidateTallyResult(resultsId, candidate.tally)
     }.getOrElse {
-      newCandidateTallyResult(candidate)
+      newCandidateTallyResult(candidate, ballot)
     }
   }
 
   def addTalliesForCandidates(ballot:ElectionBallotBox, candidates:List[Candidate]) = {
     candidates.foreach { candidate =>
-      implicit val b = ballot
-      addCandidateTally(candidate)
+      addCandidateTally(candidate, ballot)
     }
   }
 }

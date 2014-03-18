@@ -172,8 +172,7 @@ table.gen-table tr:nth-child(1) td {
 	z-index: 1000;
 }
 
-.county-tally-results.ng-enter,
-.county-tally-results.ng-leave {
+.county-tally-results.ng-enter {
 	-webkit-transition: all 1s linear;
     transition: all 1s linear;
 }

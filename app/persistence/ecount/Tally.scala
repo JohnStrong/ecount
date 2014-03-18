@@ -7,6 +7,8 @@ import service.dispatch.tallysys.{UpdatedCandidateResult, NewCandidateResult}
 import models.tallysys._
 import models.stat.{ElectionCandidate, Election}
 
+import service.dispatch.tallysys.PartialTally
+
 object Tally {
 
   val getInactiveBallotBoxes = new SelectListBy[String, ElectionBallotBox] {
@@ -116,24 +118,26 @@ object Tally {
 
   val getBallotBoxElectionDetails = new SelectOneBy[Int, ElectionBallotBox] {
     resultMap = new ResultMap[ElectionBallotBox] {
+      result(property = "id", column = "ballot_box_id")
       result(property = "dedId", column = "ded_id")
       result(property = "electionId", column = "election_id")
       result(property = "constituencyId", column = "constituency_id")
     }
 
     def xsql = <xsql>
-      SELECT ded_id, election_id, constituency_id
+      SELECT ballot_box_id, ded_id, election_id, constituency_id
       FROM tally_sys_ballot_box
       WHERE ballot_box_id = #{{id}}
     </xsql>
   }
 
-  val hasPartialTallyForCandidate = new SelectOneBy[Int, Int] {
+  val hasPartialTallyForCandidate = new SelectOneBy[PartialTally, Int] {
     def xsql = <xsql>
       SELECT cr.results_id
       FROM stat_bank_tally_candidate_to_results as ctr,
       stat_bank_tally_candidate_results as cr
-      WHERE ctr.candidate_id = #{{id}}
+      WHERE ctr.candidate_id = #{{candidateId}}
+      AND cr.ded_id = #{{dedId}}
       AND cr.results_id = ctr.results_id
     </xsql>
   }

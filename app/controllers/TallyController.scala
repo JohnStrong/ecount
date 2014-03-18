@@ -187,7 +187,9 @@ object TallyController extends Controller {
                   // remove temporary account (user must create another to submit new tally)
                   AccountDispatcher.removeAccount(key)
 
-                  Ok(AuthenticationConsts.PUBLISH_TALLY_RESULTS_SUCCESSFUL)
+                  Ok(AuthenticationConsts.PUBLISH_TALLY_RESULTS_SUCCESSFUL).withSession {
+                    session - (SessionConsts.DASHBOARD_SESSION_KEY)
+                  }
                 }
                 case _ => InternalServerError(AuthenticationConsts.PUBLISH_TALLY_RESULTS_FAILED)
               }
