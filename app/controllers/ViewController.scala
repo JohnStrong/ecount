@@ -4,7 +4,6 @@ import play.api.mvc._
 import play.filters.csrf._
 
 import helpers.FormHelper
-import service.dispatch.MapDispatcher
 
 object ViewController extends Controller {
 

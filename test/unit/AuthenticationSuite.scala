@@ -5,7 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner._
 
 import helper.account.AccountDispatcher
-import models.ecount.security.AccountSaltAndHash
+import models.models.security.AccountSaltAndHash
 import service.util.Crypto
 
 @RunWith(classOf[JUnitRunner])

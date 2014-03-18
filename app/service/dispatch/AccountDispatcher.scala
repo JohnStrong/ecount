@@ -2,9 +2,9 @@ package service.dispatch
 
 import persistence.ecount.{PersistenceContext, AccountStore}
 import PersistenceContext._
-import models.ecount._
+import models._
 import persistence.ecount.AccountStore
-import models.ecount.account.User
+import models.account.User
 import service.util.Crypto
 import service.util
 

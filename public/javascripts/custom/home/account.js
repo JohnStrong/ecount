@@ -8,13 +8,13 @@
 
 
 		LOGIN_ELEM_DEEP_LINK = '#login',
-		REGISTER_ELEM_DEEP_LINK = '#register',
+		REGISTER_ELEM_DEEP_LINK = '#register-outer',
 
 		MAYBE_LOGOUT_ALERT = '#logout',
 
 		// utility for applying jquery animations to auth forms...
 		anim = (function() {
-		
+
 			var ELEM_ANIMATE_TIMER = 300,
 				ALERT_ANIM_WAIT = 3000;
 
@@ -23,20 +23,20 @@
 					$(LOGIN_ELEM_DEEP_LINK).animate({
 						'opacity': 0
 					}, ELEM_ANIMATE_TIMER, function() {
-						
+
 						$(this).hide();
-						
+
 						$(REGISTER_ELEM_DEEP_LINK).show()
-							.css({'opacity' : 1});	
+							.css({'opacity' : 1});
 					});
-					
+
 				},
 
 				login: function() {
 					$(REGISTER_ELEM_DEEP_LINK).animate({
 						'opacity': 0
 					}, ELEM_ANIMATE_TIMER, function() {
-						
+
 						$(this).hide();
 
 						$(LOGIN_ELEM_DEEP_LINK).show()
@@ -66,14 +66,14 @@
 			var findURL = new RegExp('/\\w+/\\w+$', 'g');
 			return findURL.exec(document.URL);
 		}
-		
+
 		var url = getWhichView(),
 			elemToHide = REGISTER_ELEM_DEEP_LINK;
 
 		if(url && url[0] === URL_REGISTER_FAILED) {
 			elemToHide = LOGIN_ELEM_DEEP_LINK;
 		}
-		
+
 		$(elemToHide).hide();
 
 		anim.logout();

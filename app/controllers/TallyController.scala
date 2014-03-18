@@ -10,8 +10,8 @@ import play.api.libs.concurrent.Execution.Implicits._
 import helpers.{TallyFormHelper, FormErrors}
 import service.dispatch.tallysys.{AccountDispatcher, ResultsDispatcher}
 
-import models.ecount.tallysys.implicits.{Candidate, TallyGroup}
-import models.ecount.live.TallyFeed
+import models.tallysys.implicits.{Candidate, TallyGroup}
+import models.live.TallyFeed
 
 object TallySysConsts {
 
@@ -70,7 +70,7 @@ object TallyController extends Controller {
   def account = CSRFAddToken {
     Action { implicit request => {
       request.cookies.get(VERIFICATION_KEY_COOKIE_ID) match {
-        case Some(c) => Ok(views.html.tallyAuth(TallyFormHelper.RepresentativeForm))
+        case Some(c) => Ok(views.html.tallyAuth(TallyFormHelper.RepresentativeRegisterForm))
         case None => Redirect(routes.TallyController.index)
       }
     }}
@@ -105,7 +105,7 @@ object TallyController extends Controller {
 
   def access = CSRFCheck {
     Action { implicit request => {
-      TallyFormHelper.RepresentativeForm.bindFromRequest.fold(
+      TallyFormHelper.RepresentativeRegisterForm.bindFromRequest.fold(
         formWithErrors => {
           Ok(views.html.tallyAuth(formWithErrors))
         },

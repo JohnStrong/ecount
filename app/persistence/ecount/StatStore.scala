@@ -2,8 +2,8 @@ package persistence.ecount
 
 import org.mybatis.scala.mapping._
 
-import models.ecount.stat._
-import models.ecount.map.County
+import models.stat._
+import models.map.County
 
 object StatStore {
 

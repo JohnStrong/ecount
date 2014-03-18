@@ -1,4 +1,4 @@
-name := "ecount"
+name := "models"
 
 version := "1.0-SNAPSHOT"
 

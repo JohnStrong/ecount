@@ -2,8 +2,8 @@ package persistence.ecount
 
 import org.mybatis.scala.mapping._
 
-import models.ecount.map.{CountyElectoralDivision, CountyGeom, ElectoralDistrict}
-import models.ecount.stat.Constituency
+import models.map.{CountyElectoralDivision, CountyGeom, ElectoralDistrict}
+import models.stat.Constituency
 
 object MapStore {
 

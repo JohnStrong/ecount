@@ -3,8 +3,8 @@ package service.util
 import play.api.cache.Cache._
 import play.api.Play.current
 
-import models.ecount.account.User
-import models.ecount.tallysys.RepresentativeAccount
+import models.account.User
+import models.tallysys.NewRepresentativeAccount
 
 object Cache {
 
@@ -12,7 +12,7 @@ object Cache {
       set("user." + sessId, user)
   }
 
-  def cacheAccount(sessId:String, account:RepresentativeAccount) {
+  def cacheAccount(sessId:String, account:NewRepresentativeAccount) {
     set("tallysys.account", account)
   }
 
@@ -25,6 +25,6 @@ object Cache {
   }
 
   def getAccountFromCache(sessId: String) = {
-    getAs[RepresentativeAccount]("tallysys.account")
+    getAs[NewRepresentativeAccount]("tallysys.account")
   }
 }

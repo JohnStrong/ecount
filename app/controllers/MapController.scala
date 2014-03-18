@@ -1,6 +1,6 @@
 package controllers
 
-import persistence.ecount.{PersistenceContext, MapStore}
+import persistence.ecount.{PersistenceContext}
 import PersistenceContext._
 
 import play.api.libs.concurrent.Execution.Implicits._

@@ -1,7 +1,7 @@
 package helpers.feed
 
-import models.ecount.tallysys.ElectionBallotBox
-import models.ecount.tallysys.implicits.Candidate
+import models.tallysys.ElectionBallotBox
+import models.tallysys.implicits.Candidate
 import play.api.libs.json.Json
 
 

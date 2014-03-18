@@ -1,8 +1,8 @@
 package helper.ibatis
 
 import org.mybatis.scala.mapping._
-import models.ecount.security.AccountSaltAndHash
-import models.ecount.account.User
+import models.models.security.AccountSaltAndHash
+import models.models.account.User
 
 object AccountStore {
 

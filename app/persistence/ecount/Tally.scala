@@ -4,8 +4,8 @@ import org.mybatis.scala.mapping._
 
 import service.dispatch.tallysys.{UpdatedCandidateResult, NewCandidateResult}
 
-import models.ecount.tallysys._
-import models.ecount.stat.{ElectionCandidate, Election}
+import models.tallysys._
+import models.stat.{ElectionCandidate, Election}
 
 object Tally {
 
@@ -40,7 +40,7 @@ object Tally {
     </xsql>
   }
 
-  val insertNewAccount = new Insert[RepresentativeAccount] {
+  val insertNewAccount = new Insert[NewRepresentativeAccount] {
     def xsql = <xsql>
      INSERT INTO tally_sys_user_access(username, ballot_box_id, salt, hash, fname, surname)
      VALUES (#{{username}}, #{{ballotBoxId}}, #{{salt}}, #{{hash}}, #{{fname}}, #{{surname}})
@@ -87,8 +87,8 @@ object Tally {
     </xsql>
   }
 
-  val getAccountByUsername = new SelectOneBy[String, RepresentativeAccount] {
-    resultMap = new ResultMap[RepresentativeAccount] {
+  val getAccountByUsername = new SelectOneBy[String, NewRepresentativeAccount] {
+    resultMap = new ResultMap[NewRepresentativeAccount] {
       result(property = "username", column = "username")
       result(property = "fname", column = "fname")
       result(property = "surname", column = "surname")

@@ -15,7 +15,7 @@ object Mail {
     mail.setRecipient(userEmail, userEmail)
     mail.setFrom(VERIFICATION_MAIL_ORIGIN)
 
-    val verificationLinkHtml = "Follow this link to verify your account and begin using ecount<br />" +
+    val verificationLinkHtml = "Follow this link to verify your account and begin using models<br />" +
       "<a href='http://localhost:9000/auth/verification?id=" +
       verificationLink + "'>continue</a>"
 

@@ -1,11 +1,10 @@
 package service.dispatch.tallysys
 
-import models.ecount.tallysys.implicits.Candidate
-
 import persistence.ecount.Tally
 import persistence.ecount.PersistenceContext._
 
-import models.ecount.tallysys.ElectionBallotBox
+import models.tallysys.implicits.Candidate
+import models.tallysys.ElectionBallotBox
 
 sealed trait CandidateResult
 

@@ -5,7 +5,7 @@ import play.api.data.Forms._
 
 import persistence.ecount.PersistenceContext._
 import persistence.ecount.Tally
-import models.ecount.tallysys.{RepresentativeAccount}
+import models.tallysys.{RepresentativeAccount, NewRepresentativeAccount, ExistingRepresentativeAccount}
 import service.util.{Cache}
 
 object TallyFormHelper {
@@ -16,7 +16,7 @@ object TallyFormHelper {
    "key" -> text
   }
 
-  val RepresentativeForm:Form[RepresentativeAccount] = Form[RepresentativeAccount] {
+  val RepresentativeRegisterForm = Form[NewRepresentativeAccount] {
     mapping(
       "username" -> text,
       "fname" -> text,
@@ -31,21 +31,28 @@ object TallyFormHelper {
     )
     {
       (username, fname, surname, password, ballotBoxId) =>
-          RepresentativeAccount.apply(username, fname, surname, password._1, ballotBoxId)
+        RepresentativeAccount.apply(username, fname, surname, password._1, ballotBoxId)
     }
     {
        ra => Some(ra.username, ra.fname, ra.surname, ("", ""), ra.ballotBoxId)
     }
   }
 
-  private def generateAccountSession(account: models.ecount.tallysys.RepresentativeAccount) = {
+  val RepresentativeLoginForm = Form[ExistingRepresentativeAccount] {
+   mapping(
+    "username" -> text,
+    "password" -> text
+   )(RepresentativeAccount.apply)(RepresentativeAccount.unapply)
+  }
+
+  private def generateAccountSession(account: NewRepresentativeAccount) = {
     Console.println(ACCOUNT_SESSION_ID + account.username)
 
     Cache.cacheAccount(ACCOUNT_SESSION_ID + account.username, account)
     Some(account.username)
   }
 
-  def createAccessAccount(implicit newAccount: models.ecount.tallysys.RepresentativeAccount) = {
+  def createAccessAccount(implicit newAccount: NewRepresentativeAccount) = {
     withConnection { implicit conn => {
      Tally.isUnique(newAccount.username) match {
        case None => {

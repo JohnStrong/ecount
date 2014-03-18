@@ -10,7 +10,7 @@ import PersistenceContext._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json._
 
-import models.ecount.stat.{ConstituencyExtractor, TallyResultsExtractor}
+import models.stat.{ConstituencyExtractor, TallyResultsExtractor}
 
 object StatsController extends Controller {
 

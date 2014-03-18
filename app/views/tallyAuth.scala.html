@@ -1,6 +1,4 @@
-@(authForm:Form[models.ecount.tallysys.RepresentativeAccount])(implicit request: play.api.mvc.RequestHeader, token:play.filters.csrf.CSRF.Token)
-
-<!-- fix cookie issue where it appears to not be defined in some cases -->
+@(authForm:Form[models.tallysys.NewRepresentativeAccount])(implicit request: play.api.mvc.RequestHeader, token:play.filters.csrf.CSRF.Token)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -11,6 +9,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" >
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
     <title>Tally System Authentication</title>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
@@ -25,7 +24,7 @@
 						<div class="form-heading">
 							<div class="row">
 								<div class="col-md-6">
-									<h3>Set up your account</h3>
+									<h3>Register an account</h3>
 								</div>
 								<div class="col-md-6">
 									<div class="error-body">
@@ -39,7 +38,7 @@
 						            </div>
 						        </div>
 						    </div>
-					        @form(action = routes.TallyController.access) {
+					        @form(action = routes.TallyController.access, 'id -> "register") {
 					        	<div class="form-body">
 			                        <div class="form-group">
 			                        	@input(
@@ -107,13 +106,14 @@
 								    <div class="form-footer">
 								        <button type="submit" class="btn btn-success">create account</button>
 								   		<span class="suggestion">
-							        		<small>coming back? <a href="" class="primary">login here</a></small>
+							        		<small>coming back? <a href="" class="switch primary">login here</a></small>
 							        	</span>
 							   		</div>
 							   	</div>
 					        }
 					   	</div>
 			        </div>
+			        <script type="text/javascript" src="@routes.Assets.at("javascripts/custom/tallysys/auth.js")"></script>
 			    </div>
 			</div>
 		</div>

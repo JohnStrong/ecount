@@ -2,9 +2,10 @@ package persistence.ecount
 
 import org.mybatis.scala.mapping._
 
-import models.ecount.security.AccountSaltAndHash
 import service.dispatch.NewAccount
-import models.ecount.account.User
+
+import models.security.AccountSaltAndHash
+import models.account.User
 
 object AccountStore {
 

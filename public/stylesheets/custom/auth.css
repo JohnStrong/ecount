@@ -30,7 +30,7 @@ body {
 	padding-top: 24%;
 }
 
-.auth-body #register {
+.auth-body #register-outer {
 	padding-top: 20%;
 }
 
@@ -39,7 +39,7 @@ body {
 }
 
 .auth-body .list-group-item {
-	box-shadow: 1px 0px 2px #428B88;
+	box-shadow: 1px 0px 2px #DDDDDD;
 }
 
 .form-heading {
