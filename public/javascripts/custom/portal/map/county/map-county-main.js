@@ -257,7 +257,11 @@ mapCountyMain.controller('DistrictsMapController',
 
 		// get results of constituency matching cid
 		$scope.visConstituencyResults = function(cid) {
+			console.log(cid);
 			$scope.activeCid = cid;
+
+			console.log($scope.activeCid);
+
 			$scope.$broadcast('cidChange');
 		};
 
@@ -314,18 +318,28 @@ mapCountyMain.controller('DistrictsVisController',
 	['$scope', '$element', 'Visualize',
 	function($scope, $element, Visualize) {
 
-		$scope.visualize = function() {
-			var cid = $scope.activeCid;
+		var MAP_CONTAINER_CLASS = '.leaflet-container',
 
-			// get the tally results for the active cid...
-			var tallyResults = $scope.mainTally.getConstituencyTallyResults(cid);
+			VIS_VIEWPORT_DIVIDE = 1.5,
 
-			// set the vis container to visible before begining visualization...
-			$scope.districtsVisControl.show();
+			visualize = function() {
 
-			var visualize = Visualize(tallyResults.results, $element);
-			visualize.county();
-		}
+				console.log($scope.activeCid);
+
+				var cid = $scope.activeCid,
+
+					// get the tally results for the active cid...
+					tallyResults = $scope.mainTally.getConstituencyTallyResults(cid),
+
+					// get desired width...
+					visWidth = $element.closest(MAP_CONTAINER_CLASS).width()/VIS_VIEWPORT_DIVIDE;
+
+				// set the vis container to visible before begining visualization...
+				$scope.districtsVisControl.show();
+
+				var visualize = Visualize(tallyResults.results, $element);
+				visualize.county({'width' : visWidth});
+			}
 
 		// watch for updates to tally results or the selected constituency id
 		$scope.$watch('mainTally', function(newVal) {
@@ -334,22 +348,20 @@ mapCountyMain.controller('DistrictsVisController',
 			// 1) a constituency is being viewed by the user
 			// 2) there is data to view...
 			if($scope.activeCid && newVal) {
-				$scope.visualize();
+				visualize();
 			}
 		});
 
 		// a live tally update has occured...
 		$scope.$on('liveTallyUpdate', function() {
 
-			console.log('live Update');
-
 			if($scope.activeCid) {
-				$scope.visualize();
+				visualize();
 			}
 		});
 
 		// event triggered when user chooses an constituency to view..
-		$scope.$on('cidChange', $scope.visualize);
+		$scope.$on('cidChange', visualize);
 	}
 ]);
 

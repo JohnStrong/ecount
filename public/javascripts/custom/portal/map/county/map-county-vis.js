@@ -82,7 +82,7 @@ ecountVis.service('StatVisualization', function() {
 
 			// general chart...
 			CANVAS_HEIGHT_PADDING = 25,
-			PADDING = [20, 180],
+			PADDING = [20, 180, 25],
 
 			WIDTH = props.width,
 			HEIGHT = dataset.length * CANVAS_HEIGHT_PADDING,
@@ -95,7 +95,7 @@ ecountVis.service('StatVisualization', function() {
 			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length - PADDING[0],
 			BAR_MIN_WIDTH = 1,
 			BAR_BORDER_COLOR = '#FFFFFF',
-			BAR_BORDER_WIDTH = 1,
+			BAR_BORDER_WIDTH = 2,
 
 			YSCALE_PADDING_PERCENT = 0.20,
 
@@ -116,22 +116,23 @@ ecountVis.service('StatVisualization', function() {
 			LEGEND_TEXT_HEIGHT = 15,
 			LEGEND_TEXT_WIDTH = 25,
 
-			TOOLTIP_COLOR_ID_OFFSET = 1;
+			TOOLTIP_COLOR_ID_OFFSET = 1,
 
-		console.log('domain', domain);
+			getOrZero = function(d) {
+				return (d.count ? d.count : 0);
+			},
 
-		// set up chart with container styles and svg vector...
-		var chart = d3.select(domain)
-			.append('div')
-			.attr('class', 'info-pane')
-			.append('svg:svg')
-			.attr('width', WIDTH)
-			.attr('height', HEIGHT + PADDING[0]);
+			// set up chart with container styles and svg vector...
+			chart = d3.select(domain)
+				.append('div')
+				.attr('class', 'info-pane')
+				.append('svg:svg')
+				.attr('width', WIDTH)
+				.attr('height', HEIGHT + PADDING[0]),
 
-		// d3 api specific vars...
-		var xScale = d3.scale.linear().domain([0,
-				d3.max(dataset, function(d) {
-					return d.count; })]).range([0, WIDTH - PADDING[0] - PADDING[1] - PADDING[0]]),
+			xScale = d3.scale.linear().domain([0, d3.max(dataset,
+					function(d) { return getOrZero(d); })
+				]).range([0, WIDTH - PADDING[0] - PADDING[1] - PADDING[2]]),
 
 			yScale = d3.scale.ordinal().domain(d3.range(dataset.length)).rangeRoundBands([0,
 				BAR_HEIGHT_TOTAL], YSCALE_PADDING_PERCENT),
@@ -142,29 +143,29 @@ ecountVis.service('StatVisualization', function() {
 		        .orient(XAXIS_ORIENT)
 		        .ticks(XAXIS_TICK_TOTAL),
 
-			colorScale = d3.scale.category20c();
+			colorScale = d3.scale.category20c(),
 
-		// begin visualization.....
-		var chartMain = chart.selectAll('rect.bar')
-			.data(dataset)
-			.enter().append('svg:rect')
-			.attr('x', PADDING[0])
-			.attr('y', function(d, i) { return yScale(i); })
-			.attr('height', yScale.rangeBand())
-			.transition()
-				.ease('bounce')
-				.duration(ANIMATION_DURATION)
-				.delay(function(d, i) { return i * ANIMATION_DELAY; })
-			.attr('width',
-				function(d) {
-					var ex  = d.count;
-					return xScale(ex) + BAR_MIN_WIDTH;
-				})
-			.style('fill', function(d, i) { return colorScale(i); })
-			.style('stroke', BAR_BORDER_COLOR)
-			.style('stroke-width', BAR_BORDER_WIDTH)
-			.attr('index_value', function(d, i) { return 'item-' + i; })
-			.attr('color_value', function(d, i) { return colorScale(i); });
+			// begin visualization.....
+			chartMain = chart.selectAll('rect.bar')
+				.data(dataset)
+				.enter().append('svg:rect')
+				.attr('x', PADDING[0])
+				.attr('y', function(d, i) { return yScale(i); })
+				.attr('height', yScale.rangeBand())
+				.transition()
+					.ease('bounce')
+					.duration(ANIMATION_DURATION)
+					.delay(function(d, i) { return i * ANIMATION_DELAY; })
+				.attr('width',
+					function(d) {
+						var ex  = getOrZero(d);
+						return xScale(ex) + BAR_MIN_WIDTH;
+					})
+				.style('fill', function(d, i) { return colorScale(i); })
+				.style('stroke', BAR_BORDER_COLOR)
+				.style('stroke-width', BAR_BORDER_WIDTH)
+				.attr('index_value', function(d, i) { return 'item-' + i; })
+				.attr('color_value', function(d, i) { return colorScale(i); });
 
 		// chart axis...
 		chart.append('g')
@@ -204,7 +205,7 @@ ecountVis.service('StatVisualization', function() {
 			html: true,
 			title: function() {
 				var d = this.__data__;
-				return '<span style="color:#222222">' + d.count + '</span>';
+				return '<span style="color:#222222">' + getOrZero(d) + '</span>';
 			}
 		});
 	};
@@ -222,6 +223,7 @@ ecountVis.factory('Visualize',
 		'</div>',
 
 		TOOLTIP_ELEM = 'body',
+
 		COUNTY_VIS_PIXEL_WIDTH = 520,
 
 			countyFilter = FilterFor.districts,
