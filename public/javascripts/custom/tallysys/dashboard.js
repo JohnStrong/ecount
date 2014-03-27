@@ -20,15 +20,68 @@
 
 		INFO_SUCCESS_PUBLISH_ANOTHER = $('<br /><a href="/tally/logout">want to tally another ED?</a>'),
 
+		storage = {
+
+			supported: function() {
+				return true
+			},
+
+			create: function() {
+				var tally = localStorage.getItem('tally');
+
+				if(!tally) {
+					localStorage.setItem('tally', JSON.stringify({}));
+				}
+			},
+
+			persist: function(_candidate) {
+				var tallies = localStorage.getItem('tally'),
+
+					theTallies = JSON.parse(tallies) || {},
+
+					candidate = {};
+
+
+				if(!theTallies[_candidate.cid]) {
+					theTallies[_candidate.cid] =  {};
+				}
+
+				candidate = theTallies[_candidate.cid];
+				candidate.tally = _candidate.tally;
+
+				console.log(theTallies);
+
+				localStorage.setItem('tally', JSON.stringify(theTallies));
+			},
+
+			getCandidateTally: function(cid) {
+				var tallies = localStorage.getItem('tally'),
+
+					theTallies = JSON.parse(tallies) || {},
+
+					tally = 0;
+
+				if(theTallies[cid]) {
+					tally = theTallies[cid].tally;
+				}
+
+				return tally;
+			},
+
+			delete: function() {
+				localStorage.removeItem('tally');
+			}
+		},
+
 		candidatesToJson = function() {
 			var candidatesArr = [];
 
 			$candidates.each(function(k, candidate) {
 				var candidateJson = {};
 
-				candidateJson['id'] = this.candidateId;
-				candidateJson['name'] = this.candidateName;
-				candidateJson['tally'] = this.candidateTally;
+				candidateJson['id'] = this.candidate.cid;
+				candidateJson['name'] = this.candidate.name;
+				candidateJson['tally'] = this.candidate.tally;
 
 
 				candidatesArr.push(candidateJson);
@@ -53,26 +106,43 @@
 			if(after) after();
 		};
 
+
+	// create local store tally object...
+	if(storage.supported()) {
+		storage.create();
+	}
+
+	// prevents event an unbound candidate anchor from attempting to deep link...
+	$('a').click(function(e) { e.preventDefault() });
+
 	// set up candidates...
 	$candidates.each(function(k, d) {
-		this.candidateId = $(this).data('candidate-id');
-		this.candidateName = $(this).data('candidate-name');
-		this.candidateParty = $(this).data('candidate-party');
-		this.candidateTally = $(this).data('tally');
+		this.candidate = {};
 
-		$(this).find('.candidate-name').text(this.candidateName +
-			' (' + this.candidateParty + ')');
+		this.candidate.cid = $(this).data('candidate-id');
+		this.candidate.name = $(this).data('candidate-name');
+		this.candidate.party = $(this).data('candidate-party');
 
-		$(this).find('.candidate-tally').text(this.candidateTally);
+		// get tally from local store or set to 0...
+		this.candidate.tally = storage.getCandidateTally(this.candidate.cid);
+
+		$(this).find('.candidate-name').text(this.candidate.name +
+			' (' + this.candidate.party + ')');
+
+		$(this).find('.candidate-tally').text(this.candidate.tally);
 	});
 
 	// events for candidate elements
 	$candidates.click(function(e) {
 		e.preventDefault();
 
-		this.candidateTally = this.candidateTally + 1;
+		this.candidate.tally = this.candidate.tally + 1;
+
+		// store tally in local storage...
+		storage.persist(this.candidate);
+
 		$(this).find('.candidate-tally')
-			.text(this.candidateTally);
+			.text(this.candidate.tally);
 	}).hover(function() {
 		// todo: hover in...
 	}, function() {
@@ -104,8 +174,13 @@
 					buildXhrResponse('alert-success', 'text-success', msg,
 						function() {
 							$confirmTally.text(CONFIRM_TALLY_DONE_MSG);
-							$candidates.off('click', function(e) { e.preventDefault(); });
+
+							// remove click event to add tallies
+							$candidates.off('click');
 						});
+
+					// delete tally data...
+					storage.delete();
 				},
 
 				400: function(xhr) {

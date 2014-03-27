@@ -56,11 +56,35 @@ header .navbar {
 }
 
 .contain {
-	max-width: 1200px;
+	max-width: 1800px;
 	margin: 0 auto;
 }
 
 .get-this #honeypot_field {
 	display: none;
+}
+
+/* MEDIA QUERIES */
+@media only screen and (max-width : 1024px) {
+	.ul {
+		margin: 0 !important;
+	}
+
+	.text-promo {
+		float: none;
+		display: block;
+		width: 100%;
+	}
+}
+
+@media only screen and (max-width : 640px) {
+	.promo-sheet {
+		text-align: center;
+	}
+
+	.text-promo {
+		text-align: left;
+	}
+
 }
 

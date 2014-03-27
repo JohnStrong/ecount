@@ -97,8 +97,7 @@ map.controller('MapController',
 			return compiledDom(newScope)[0];
 		};
 
-		$scope.addOrReplaceCountyTab = function(county) {
-			console.log(county);
+		$scope.openCountyView = function(county) {
 			$scope.county = county;
 			$scope.$digest();
 		};
@@ -133,8 +132,6 @@ map.controller('MapController',
 					latestElections.push(elections.splice(ith, 1)[0]);
 				});
 
-				console.log('elections gotten', latestElections);
-
 				$scope.$broadcast('previousTallys', elections);
 				$scope.$broadcast('latestTally', latestElections);
 			});
@@ -161,7 +158,7 @@ map.controller('MapBaseController',
 
 				var imap = Map.draw(MAP_VIEW_DOM_ID, geom, {'style' : MapStyle.base},
 					function(target) {
-						$scope.addOrReplaceCountyTab(target);
+						$scope.openCountyView(target);
 					});
 				imap.createInfoControl(compiledWelcome, WELCOME_POSITION);
 			});

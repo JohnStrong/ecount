@@ -5,6 +5,8 @@
 .promo-inner {
 	padding: 4% 0;
 	min-height: 610px;
+	max-width: 900px;
+	margin: 0 auto;
 	position: relative;
 }
 
@@ -41,12 +43,25 @@
 
 .info {
 	clear: both;
-	padding: 1%;
+	padding: 5%;
 	background-color: #222222;
 }
 
 .promo-sheet {
 	text-align: center;
+	width: 100%;
+}
+
+.text-promo {
+	width: 50%;
+}
+
+.text-promo:nth-child(1) {
+	float: left;
+}
+
+.text-promo:nth-child(2) {
+	float: right;
 }
 
 .text-promo h1,
