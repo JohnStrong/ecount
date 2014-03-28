@@ -1,32 +1,28 @@
-.promo-body {
-	background: #C5C5C5 url(/assets/images/home.png) no-repeat top right;
+.promo {
+	/*background: #C5C5C5 url(/assets/images/home.png) no-repeat top right;*/
+	background-color: #FFFFFF;
+	padding-top: 5%;
 }
 
 .promo-inner {
 	padding: 4% 0;
-	min-height: 610px;
 	max-width: 900px;
 	margin: 0 auto;
 	position: relative;
 }
 
 .promo-inner .jumbotron {
-	margin-top: 200px;
+	margin-top: 20px;
 }
 
 .jumbotron {
-	background-color: #222222;
 	opacity: 0.85;
 	border-radius: .25em;
 	padding-bottom: 60px !important;
 }
 
 .jumbotron h1 {
-	color: #EEEEEE;
 	font-size: 40px;
-}
-.jumbotron p {
-	color: #CCCCCC;
 }
 
 .details {
@@ -42,40 +38,31 @@
 }
 
 .info {
-	clear: both;
-	padding: 5%;
-	background-color: #222222;
+	padding: 10%;
 }
 
 .promo-sheet {
-	text-align: center;
 	width: 100%;
 }
 
-.text-promo {
-	width: 50%;
+.text-promo h3 {
+	color: #428bca;
 }
 
-.text-promo:nth-child(1) {
+.text-promo img {
 	float: left;
 }
 
-.text-promo:nth-child(2) {
-	float: right;
+.jumbotron h1 {
+	color: #222222;
 }
 
-.text-promo h1,
-.text-promo p {
-	color: #EEE;
-}
-
-.promo-sheet,
-.info-list {
-	list-style: none;
-	margin-left: 0;
-	padding-left: .5%;
-}
-
+.jumbotron p,
 .info-list li {
-	color: #CCCCCC;
+	color: #555555;
+}
+
+.boxed {
+	background-color: #FFFFFF;
+	border: 1px solid #E7E7E7;
 }

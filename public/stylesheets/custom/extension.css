@@ -218,3 +218,12 @@ table.gen-table tr:nth-child(1) td {
 .county-body {
 	margin-top: 10px;
 }
+
+.nav li > a {
+	vertical-align: middle;
+	line-height: 40px;
+}
+
+.navbar {
+	margin-bottom: 0;
+}

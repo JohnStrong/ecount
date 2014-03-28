@@ -20,21 +20,7 @@
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/vis.css")"/>
 </head>
 <body>
-	<div class="account-header">
-		<nav class="navbar navbar-default navbar-static-top" role="navigation">
-			<div class="container">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="#/home">
-						Ecount
-						<small>portal</small>
-					</a>
-				</div>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="/logout" class="btn btn-link">Logout</a></li>
-				</ul>
-			</div>
-		</nav>
-    </div>
+	@homeNav(false, true)
 	<div class="content-main">
 		<div id="account-holder"></div>
 		<div id="interactive-main">

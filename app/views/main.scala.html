@@ -17,26 +17,7 @@ registerForm: Form[helpers.form.RegisterData])(implicit token: play.filters.csrf
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/promo.css")"/>
 </head>
 <body id="main">
-	<header>
-        <nav class="navbar navbar-default navbar-static-top" role="navigation">
-            <div class="container">
-                <div class="nav-container">
-                    <a id="brand-link" class="navbar-brand" href="">
-                        <span class="brand contrast">Ecount</span>
-                    </a>
-                    <ul class="nav navbar-nav navbar-right">
-    	                <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a data-toggle="modal" data-target="#login-modal" href="#">Login</a></li>
-                                <li><a data-toggle="modal" data-target="#register-modal" href="#">Register</a></li>
-                            </ul>
-    	                </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    @homeNav(true)
     <main class="pin">
     	<noscript>
     		<div class="no-js container">
@@ -47,65 +28,61 @@ registerForm: Form[helpers.form.RegisterData])(implicit token: play.filters.csrf
 	    	</div>
     	</noscript>
         <div class="promo">
-        	<div class="promo-body">
-	            <div class="contain">
-	            	<div class="container extra">
-		                <div class="promo-inner">
-		                    <div class="jumbotron">
-		                    	<div class="details">
-			                        <h1>Electronic Tally System</h1>
-			                        <p class="lead">
-			                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-			                        </p>
-			                    </div>
-		                        <div class="tease">
-			                        <p>
-			                            <a class="btn btn-success btn-lg" data-toggle="modal" data-target="#register-modal" role="button">
-			                                Try it out!
-			                            </a>
-			                        </p>
-		                    	</div>
-		                    </div>
-		                </div>
-		            </div>
-	            </div>
-	        </div>
-        </div>
-        <div class="info">
         	<div class="contain">
-	            <div class="container">
-	                <ul class="promo-sheet">
-	                    <li class="text-promo">
-	                        <h1>What is Ecount?</h1>
-	                        <ul class="info-list">
-	                            <li>
-	                               orem ipsum dolor sit amet, consectetur adipisicing elit
-	                            </li>
-	                            <li>
-	                               orem ipsum dolor sit amet, consectetur adipisicing elit
-	                            </li>
-	                            <li>
-	                               orem ipsum dolor sit amet, consectetur adipisicing elit
-	                            </li>
-	                        </ul>
-	                    </li>
-	                    <li class="text-promo">
-	                        <h1>Why is it Good?</h1>
-	                        <ul class="info-list">
-	                            <li>
-	                               orem ipsum dolor sit amet, consectetur adipisicing elit
-	                            </li>
-	                            <li>
-	                               orem ipsum dolor sit amet, consectetur adipisicing elit
-	                            </li>
-	                            <li>
-	                               orem ipsum dolor sit amet, consectetur adipisicing elit
-	                            </li>
-	                        </ul>
-	                    </li>
-	                </ul>
+            	<div class="container">
+	                <div class="promo-inner">
+	                    <div class="jumbotron boxed">
+	                    	<div class="details">
+		                        <h1>Electronic Tally System</h1>
+		                        <p class="lead">
+		                          Ecount allows you to view election tallies as they happen from all around Ireland
+		                        </p>
+		                    </div>
+	                        <div class="tease">
+		                        <p>
+		                            <a class="btn btn-success btn-lg" data-toggle="modal" data-target="#register-modal" role="button">
+		                                Try it out!
+		                            </a>
+		                        </p>
+	                    	</div>
+	                    </div>
+	                </div>
 	            </div>
 	        </div>
+            <div class="info">
+                <div class="contain">
+                    <div class="container">
+                        <div class="row promo-sheet">
+                            <div class=" col-md-5 text-promo">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <img src="@routes.Assets.at("images/chart.svg")"></img>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h3>Real Time Results</h3>
+                                            <p>allows you to observe tallies as they happen!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-5 col-md-offset-2 text-promo">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <img src="@routes.Assets.at("images/map.svg")"></img>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h3>Map Navigation</h3>
+                                            <p>click any county to view some tally results!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- Auth Modals -->
         <div class="modal fade" id="register-modal" role="dialog" tab-index="-1"  aria-labelledby="register-label" aria-hidden="true">

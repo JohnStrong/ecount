@@ -7,16 +7,6 @@ body {
 	height: 100%;
 }
 
-.container {
-	padding-left: 10%;
-	padding-right: 10%;
-	margin: 0 auto;
-}
-
-.container {
-	padding-bottom: 2%;
-}
-
 .list-group-item {
 	position: relative;
 }
@@ -27,11 +17,11 @@ body {
 }
 
 .auth-body .outer-large {
-	padding-top: 24%;
+	padding-top: 15%;
 }
 
 .auth-body .outer-small {
-	padding-top: 20%;
+	padding-top: 12%;
 }
 
 .auth-body #tally-verification {

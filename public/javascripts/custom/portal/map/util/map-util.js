@@ -2,7 +2,7 @@ var mapUtil = angular.module('Ecount.Map.Util', []);
 
 mapUtil.factory('VendorTileLayer', function() {
 
-	var URL = 'http://{s}.tile.cloudmade.com/{key}/22677/256/{z}/{x}/{y}.png',
+	var URL = 'http://{s}.tile.cloudmade.com/{key}/1714/256/{z}/{x}/{y}.png',
 		ATTRIBUTION = 'Map data &copy; 2011 OpenStreetMap contributors, ' +
 			'Imagery &copy; 2012 CloudMade',
 		API_KEY = '1f43dc838a3344c69e1a320cf87ce237';
