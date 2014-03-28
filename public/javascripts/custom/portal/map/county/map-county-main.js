@@ -6,6 +6,13 @@ var mapCountyMain = angular.module('Ecount.Map.County.Main',
 'Ecount.Struts.Util'
 ]);
 
+mapCountyMain.directive('legendDirective', function() {
+	return {
+		restrict: 'E',
+		templateUrl: '/templates/map/county/templates/legend.html'
+	};
+});
+
 mapCountyMain.service('Election',
 	[function() {
 		return function(_election) {

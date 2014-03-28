@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" >
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
-	<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/leaflet.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-tipsy.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
@@ -12,7 +12,8 @@
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/angular-route.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/d3.v3.min.js")"></script>
 	<title>Ecount Portal</title>
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+	<link rel="icon" type="image/svg" href="@routes.Assets.at("images/logo-fav.png")" />
+	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/leaflet.css")" />
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/tipsy.css")"/>
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/main.css")"/>
@@ -37,9 +38,11 @@
 			<script src="@routes.Assets.at("javascripts/custom/portal/map/county/map-county-previous.js")"></script>
 			<!--main-->
 			<script src="@routes.Assets.at("javascripts/custom/portal/core/ecount.js")"></script>
-	</div>
-	<div class="footer">
-		<p>2014 E-count all rights reserved</p>
+		<!--
+		<div class="footer">
+			<p>2014 E-count all rights reserved</p>
+		</div>
+		-->
 	</div>
 </body>
 </html>

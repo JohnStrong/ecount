@@ -12,6 +12,7 @@ registerForm: Form[helpers.form.RegisterData])(implicit token: play.filters.csrf
     <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.min.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
     <title>Ecount</title>
+    <link rel="icon" type="image/svg" href="@routes.Assets.at("images/logo-fav.png")" />
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/home.css")"/>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/custom/promo.css")"/>
@@ -51,9 +52,9 @@ registerForm: Form[helpers.form.RegisterData])(implicit token: play.filters.csrf
 	        </div>
             <div class="info">
                 <div class="contain">
-                    <div class="container">
+                    <div class="container-fluid">
                         <div class="row promo-sheet">
-                            <div class=" col-md-5 text-promo">
+                            <div class="col-md-6 text-promo">
                                 <div class="container-fluid">
                                     <div class="row">
                                         <div class="col-md-4">
@@ -66,7 +67,7 @@ registerForm: Form[helpers.form.RegisterData])(implicit token: play.filters.csrf
                                     </div>
                                 </div>
                             </div>
-                            <div class=" col-md-5 col-md-offset-2 text-promo">
+                            <div class=" col-md-6 text-promo">
                                 <div class="container-fluid">
                                     <div class="row">
                                         <div class="col-md-4">

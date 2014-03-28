@@ -227,3 +227,12 @@ table.gen-table tr:nth-child(1) td {
 .navbar {
 	margin-bottom: 0;
 }
+
+.legend li {
+	margin: 0.2em 0;
+}
+
+.legend img {
+	height: 25px;
+	width: 25px;
+}

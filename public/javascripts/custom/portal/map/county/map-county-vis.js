@@ -73,6 +73,36 @@ ecountVis.service('TallyExtractor',
 
 ecountVis.service('StatVisualization', function() {
 
+	var getImage = function(party) {
+
+		var img = 'assets/images/Other.svg';
+
+		switch(party) {
+			case 'FF':
+				img = 'assets/images/FineFail.svg'
+				break;
+			case 'FG':
+				img = 'assets/images/FineGael.svg'
+				break;
+			case 'SF':
+				img = 'assets/images/SinnFein.svg'
+				break;
+			case 'LAB':
+				img = 'assets/images/Labour.svg'
+				break;
+			case 'GRN':
+				img = 'assets/images/GreenParty.svg'
+				break;
+			case 'IND':
+				img = 'assets/images/Independent.svg'
+				break;
+			default:
+				break;
+		}
+
+		return img;
+	};
+
 	return function(_domain, _dataset, props) {
 
 		'use strict';
@@ -116,6 +146,9 @@ ecountVis.service('StatVisualization', function() {
 			LEGEND_TEXT_HEIGHT = 15,
 			LEGEND_TEXT_WIDTH = 25,
 
+			LEGEND_IMAGE_DIM = '20px',
+			LEGEND_IMAGE_OFFSET = 12,
+
 			TOOLTIP_COLOR_ID_OFFSET = 1,
 
 			getOrZero = function(d) {
@@ -127,6 +160,7 @@ ecountVis.service('StatVisualization', function() {
 				.append('div')
 				.attr('class', 'info-pane')
 				.append('svg:svg')
+				.attr('xlink', 'http://www.w3.org/1999/xlink')
 				.attr('width', WIDTH)
 				.attr('height', HEIGHT + PADDING[0]),
 
@@ -180,23 +214,38 @@ ecountVis.service('StatVisualization', function() {
 			.enter()
 			.append('g')
 			.each(function(d, i) {
-				var g = d3.select(this);
+
+				var g = d3.select(this),
+
+					textLen = WIDTH - PADDING[1] + PADDING[0]*2;
 
 				g.append('rect')
 					.attr('x', WIDTH - PADDING[1] + PADDING[0]/2)
-					.attr('y', PADDING[0]/2 + (PADDING[0] * i))
+					.attr('y', yScale(i) - LEGEND_RECT_HEIGHT)
 					.attr('width', LEGEND_RECT_WIDTH)
 					.attr('height', LEGEND_RECT_HEIGHT)
 					.style('fill', colorScale(i));
 
 				g.append('text')
-					.attr('x', WIDTH - PADDING[1] + PADDING[0]*2)
-					.attr('y', PADDING[0])
-					.attr('dy', PADDING[0] * i)
+					.attr('x', textLen)
+					.attr('dy', yScale(i))
 					.attr('height', LEGEND_TEXT_HEIGHT)
 					.style('fill', colorScale(i))
 					.style('font-size', '.75em')
-					.text('' + d.name + ' (' + d.party + ')');
+					.text(d.name)
+					.each(function(d) {
+						d.location = textLen + this.getBBox().width + 5;
+					});
+
+				g.append('image')
+					.attr('x', function(d) { return d.location; })
+					.attr('y', yScale(i) - LEGEND_IMAGE_OFFSET)
+					.attr('height', LEGEND_IMAGE_DIM)
+					.attr('width', LEGEND_IMAGE_DIM)
+					.attr('preserveAspectRatio', 'xMinYMin')
+					.attr('xlink:href' , function(d) {
+						return getImage(d.party);
+					});
 			});
 
 		// add tipsy tooltip, called when a bar from chart is hovered over...
