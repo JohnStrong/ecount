@@ -19,10 +19,6 @@
 	padding: 10% 20%;
 }
 
-.info-fixed .info-pane {
-	overflow-x: scroll;
-}
-
 .alert-vis {
 	background-color: #222222;
 	color: #FFFFFF;

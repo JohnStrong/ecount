@@ -103,7 +103,7 @@ table.gen-table tr:nth-child(1) td {
 }
 
 .county-contain {
-	width: 98%;
+	max-width: 1500px;
 	margin: 0.7% auto;
 }
 
@@ -201,6 +201,10 @@ table.gen-table tr:nth-child(1) td {
 
 .county-heading-panel {
 	background-color: #333333;
+}
+
+.district-vis {
+	margin: .5em auto;
 }
 
 .county-heading-panel button.close,

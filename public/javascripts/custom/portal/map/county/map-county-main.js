@@ -116,7 +116,11 @@ mapCountyMain.directive('countyDirective', function() {
 	return {
 		restrict: 'E',
 		scope: {
-			id: '@'
+			id: '@',
+			name: '@'
+		},
+		link: function($scope) {
+			// todo...
 		},
 		controller: 'CountyController',
 		templateUrl: '/templates/map/county/templates/county.html'
@@ -185,7 +189,7 @@ mapCountyMain.controller('CountyController',
 			});
 		});
 
-		console.log($scope);
+
 		$scope.$parent.getElections();
 	}
 ]);
@@ -257,11 +261,7 @@ mapCountyMain.controller('DistrictsMapController',
 
 		// get results of constituency matching cid
 		$scope.visConstituencyResults = function(cid) {
-			console.log(cid);
 			$scope.activeCid = cid;
-
-			console.log($scope.activeCid);
-
 			$scope.$broadcast('cidChange');
 		};
 

@@ -13,7 +13,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #CCCCCC;
+    background-color: #FFFFFF;
     font-size: 100%;
 }
 
@@ -45,7 +45,8 @@ ul {
 }
 
 #interactive-main {
-    min-height: 665px;
+    min-height: 95%;
+    height: 95%;
 }
 
 /**
@@ -60,19 +61,9 @@ ul {
     padding: 2%;
     min-height: 100px;
     color: #FFFFFF;
+    background-color: 555555;
     text-align: center;
     line-height: 70px;
-}
-
-/***
- *  Errors
- */
-.server-error {
-
-}
-
-.server-error h1 {
-
 }
 
 /**

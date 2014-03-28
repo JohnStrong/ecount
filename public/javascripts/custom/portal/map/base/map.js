@@ -90,6 +90,14 @@ map.controller('MapController',
 
 		$scope.county = null;
 
+		var SCROLL_ANIM_TIME = 2000;
+
+		function scrollToDirective() {
+			$('html, body').animate({
+				scrollTop: $('#' + $scope.county.id).offset().top
+			}, SCROLL_ANIM_TIME)
+		};
+
 		$scope.compileDom = function(domStr) {
 			var compiledDom = $compile(domStr),
 				newScope = $scope.$new();
@@ -98,8 +106,14 @@ map.controller('MapController',
 		};
 
 		$scope.openCountyView = function(county) {
+
+			$scope.county = null;
+			$scope.$apply();
+
 			$scope.county = county;
-			$scope.$digest();
+			$scope.$apply();
+
+			scrollToDirective();
 		};
 
 		$scope.resetToHome = function() {
