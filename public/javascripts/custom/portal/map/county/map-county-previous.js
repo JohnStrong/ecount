@@ -34,8 +34,8 @@ mapCountyPrev.controller('PreviousTallyController',
 					var tallyVisElement = $element.find(TALLY_VIS_ELEM_ID);
 
 					// if we get a useful result set, visualize the tally results...
-					Visualize(tallyResults.results, tallyVisElement)
-						.county({'width' : tallyVisElement.width()});
+					Visualize(tallyResults.results)
+						.county(tallyVisElement, {'width' : tallyVisElement.width()});
 				});
 		}
 

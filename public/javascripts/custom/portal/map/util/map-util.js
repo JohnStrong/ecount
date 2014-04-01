@@ -9,7 +9,6 @@ mapUtil.factory('VendorTileLayer', function() {
 
 	return function(map) {
 		return L.tileLayer(URL, {
-			attribution: ATTRIBUTION,
 			key: API_KEY
 		}).addTo(map);
 	}

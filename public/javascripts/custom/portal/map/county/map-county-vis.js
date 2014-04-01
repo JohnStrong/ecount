@@ -111,7 +111,7 @@ ecountVis.service('StatVisualization', function() {
 			domain =  _domain,
 
 			// general chart...
-			CANVAS_HEIGHT_PADDING = 25,
+			CANVAS_HEIGHT_PADDING = 30,
 			PADDING = [20, 180, 25],
 
 			WIDTH = props.width,
@@ -127,7 +127,7 @@ ecountVis.service('StatVisualization', function() {
 			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 2,
 
-			YSCALE_PADDING_PERCENT = 0.20,
+			YSCALE_PADDING_PERCENT = 0.2,
 
 			LEGEND_PADDING = 170,
 
@@ -141,7 +141,7 @@ ecountVis.service('StatVisualization', function() {
 
 			// legend...
 			LEGEND_RECT_WIDTH = 20,
-			LEGEND_RECT_HEIGHT = 10,
+			LEGEND_RECT_HEIGHT = 20,
 
 			LEGEND_TEXT_HEIGHT = 15,
 			LEGEND_TEXT_WIDTH = 25,
@@ -221,14 +221,14 @@ ecountVis.service('StatVisualization', function() {
 
 				g.append('rect')
 					.attr('x', WIDTH - PADDING[1] + PADDING[0]/2)
-					.attr('y', yScale(i) - LEGEND_RECT_HEIGHT)
+					.attr('y', yScale(i))
 					.attr('width', LEGEND_RECT_WIDTH)
-					.attr('height', LEGEND_RECT_HEIGHT)
+					.attr('height', yScale.rangeBand())
 					.style('fill', colorScale(i));
 
 				g.append('text')
 					.attr('x', textLen)
-					.attr('dy', yScale(i))
+					.attr('dy', yScale(i) + LEGEND_RECT_HEIGHT/2)
 					.attr('height', LEGEND_TEXT_HEIGHT)
 					.style('fill', colorScale(i))
 					.style('font-size', '.75em')
@@ -239,7 +239,7 @@ ecountVis.service('StatVisualization', function() {
 
 				g.append('image')
 					.attr('x', function(d) { return d.location; })
-					.attr('y', yScale(i) - LEGEND_IMAGE_OFFSET)
+					.attr('y', yScale(i))
 					.attr('height', LEGEND_IMAGE_DIM)
 					.attr('width', LEGEND_IMAGE_DIM)
 					.attr('preserveAspectRatio', 'xMinYMin')
@@ -275,17 +275,57 @@ ecountVis.factory('Visualize',
 
 		COUNTY_VIS_PIXEL_WIDTH = 520,
 
-			countyFilter = FilterFor.districts,
-			districtFilter = FilterFor.ded;
+		DIALOG_PADDING = 20,
+
+		countyFilter = FilterFor.districts,
+
+		districtFilter = FilterFor.ded;
 
 		function failedVisualizationView(container) {
 			container.html(FAILED_VIS_MESSAGE);
 		}
 
-		return function(results, elem) {
+		function createDialog(elemId, title, width) {
+			var dialog = $(elemId).dialog({
+				'title':  		title, 
+				'width': 		width,
+				'modal': 		true,
+				'position': 	{ my: "top", at: "top", of: '#live-feed' },
+				'resizable': 	false,
+				'draggable': 	false,
+				'closeText': 	'[x]'  
+			});
+
+			return dialog;
+		}
+
+		return function(results) {
 
 			return {
-				county: function(props) {
+				countyWithDialog: function(dialogTitle, props) {
+
+					var width = props? props.width : COUNTY_VIS_PIXEL_WIDTH,
+
+						title = dialogTitle,
+						
+						elem = createDialog('#vis-dialog', title, width + DIALOG_PADDING);
+
+					if(elem) elem.empty();
+
+					TallyExtractor(countyFilter, results)(function(resultSet) {
+
+						if(!resultSet || resultSet.length <= 0) {
+							failedVisualizationView(elem);
+							return;
+						}
+
+						StatVisualization(elem[0], resultSet, {'width': width});
+
+						elem.dialog('open');
+					});
+				},
+
+				county: function(elem, props) {
 
 					var width = props? props.width : COUNTY_VIS_PIXEL_WIDTH;
 
@@ -299,11 +339,10 @@ ecountVis.factory('Visualize',
 						}
 
 						StatVisualization(elem[0], resultSet, {'width': width});
-						return;
 					});
 				},
 
-				ded: function(dedId, props) {
+				ded: function(elem, dedId, props) {
 
 					// empty current element to make way for fresh results...
 					if(elem) elem.empty();
@@ -320,10 +359,7 @@ ecountVis.factory('Visualize',
 								return;
 							}
 
-							console.log(elem[0], resultSet);
-
 							StatVisualization(elem[0], resultSet, {'width': elem.width()});
-							return;
 						});
 					});
 				}

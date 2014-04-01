@@ -80,9 +80,6 @@ mapCountyMain.factory('Tally',
 
 				this.constitunecyResults = new Updater(this.constitunecyResults, updatedTally);
 
-				console.log(updatedTally);
-				console.log(this.constitunecyResults);
-
 				// alert the districts visualization view that an update has occured...
 				$rootScope.$broadcast('liveTallyUpdate');
 
@@ -234,30 +231,9 @@ mapCountyMain.controller('DistrictsMapController',
 			'</li>' +
 			'</ul>',
 
-			DISTRICTS_VIS_LAYER = '<div id="' + INFO_CONTROL_ID + '" class="county-vis info-pane">' +
-				'<div>' +
-					'<div ng-if="activeCid !== null">' +
-						'<button type="button" class="close" aria-hidden="true"' +
-							'ng-click="closeDistrictsVis()">&times;</button>' +
-						'<districts-vis-directive></districts-vis-directive>' +
-					'</div>' +
-				'</div>' +
-			'</div>',
-
 			DISTRICTS_VIS_CONTENT_POSITION = 'topright',
 
 			LIST_CONTENT_POSITION = 'bottomleft';
-
-		// compile vis templates...
-		function compileTemplates() {
-			var compiledConstList = $scope.compileDom(MAP_CONTENT_LIST),
-				compiledVisContainer = $scope.compileDom(DISTRICTS_VIS_LAYER);
-
-			return [compiledConstList, compiledVisContainer];
-		}
-
-		// container for the visualize view container...
-		$scope.districtsVisControl = null;
 
 		$scope.activeCid = null;
 
@@ -289,7 +265,7 @@ mapCountyMain.controller('DistrictsMapController',
 
 			var countyId = $scope.countyId,
 
-				templates = compileTemplates();
+				template = $scope.compileDom(MAP_CONTENT_LIST);
 
 			// get ed geoms and set up map controls to display interactive content...
 			GeomAPI.electoralDistricts(countyId, function(geom) {
@@ -297,16 +273,10 @@ mapCountyMain.controller('DistrictsMapController',
 					function(target) {
 
 						// district visualization...
-						console.log(target);
-
 						$scope.districtChange(target.gid);
 					});
 
-				imap.createInfoControl(templates[0], LIST_CONTENT_POSITION, INFO_CONTROL_ID);
-
-				// districts vis control...
-				$scope.districtsVisControl = imap.createInfoControl(templates[1],
-					DISTRICTS_VIS_CONTENT_POSITION, INFO_CONTROL_ID);
+				imap.createInfoControl(template, LIST_CONTENT_POSITION, INFO_CONTROL_ID);
 			});
 		}
 	}
@@ -325,27 +295,27 @@ mapCountyMain.controller('DistrictsVisController',
 	['$scope', '$element', 'Visualize',
 	function($scope, $element, Visualize) {
 
-		var MAP_CONTAINER_CLASS = '.leaflet-container',
+		var MAP_CONTAINER_CLASS = '#live-feed',
 
 			VIS_VIEWPORT_DIVIDE = 1.5,
 
 			visualize = function() {
-
-				console.log($scope.activeCid);
 
 				var cid = $scope.activeCid,
 
 					// get the tally results for the active cid...
 					tallyResults = $scope.mainTally.getConstituencyTallyResults(cid),
 
+					// get election title for visualization dialog
+					tallyTitle = $scope.mainTally.election.title,
+
 					// get desired width...
 					visWidth = $element.closest(MAP_CONTAINER_CLASS).width()/VIS_VIEWPORT_DIVIDE;
 
-				// set the vis container to visible before begining visualization...
-				$scope.districtsVisControl.show();
+				console.log($scope, tallyResults);
 
-				var visualize = Visualize(tallyResults.results, $element);
-				visualize.county({'width' : visWidth});
+				var visualize = Visualize(tallyResults.results);
+				visualize.countyWithDialog(tallyTitle, {'width' : visWidth});
 			}
 
 		// watch for updates to tally results or the selected constituency id
@@ -388,8 +358,6 @@ mapCountyMain.controller('DistrictVisController',
 
 				constitunecyResults = $scope.mainTally.constitunecyResults;
 
-			console.log('vis district');
-
 			for(var r in constitunecyResults) {
 				if(constitunecyResults[r].results.length > 0) {
 					results.push(constitunecyResults[r].results);
@@ -397,8 +365,8 @@ mapCountyMain.controller('DistrictVisController',
 			}
 
 			// visualize results for ded by gid...
-			var visualize = Visualize(results, districtVisElem);
-			visualize.ded($scope.districtId);
+			var visualize = Visualize(results);
+			visualize.ded(districtVisElem, $scope.districtId);
 
 		}
 
