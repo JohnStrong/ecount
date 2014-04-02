@@ -23,3 +23,57 @@
 .alert {
 	text-align: center;
 }
+
+.party-FF:after {
+	margin-left: 2em;
+	padding-right: 2em;
+	background-image: url('/assets/images/FineFail.svg');
+	background-repeat: no-repeat;
+	background-size: 30px 30px;
+	content: ""
+}
+
+.party-FG:after {
+	margin-left: 2em;
+	padding-right: 2em;
+	background-image: url('/assets/images/FineGael.svg');
+	background-repeat: no-repeat;
+	background-size: 30px 30px;
+	content: ""
+}
+
+.party-SF:after {
+	margin-left: 2em;
+	padding-right: 2em;
+	background-image: url('/assets/images/SinnFein.svg');
+	background-repeat: no-repeat;
+	background-size: 30px 30px;
+	content: ""
+}
+
+.party-LAB:after {
+	margin-left: 2em;
+	padding-right: 2em;
+	background-image: url('/assets/images/Labour.svg');
+	background-repeat: no-repeat;
+	background-size: 30px 30px;
+	content: ""
+}
+
+.party-IND:after {
+	margin-left: 2em;
+	padding-right: 2em;
+	background-image: url('/assets/images/Independent.svg');
+	background-repeat: no-repeat;
+	background-size: 30px 30px;
+	content: ""
+}
+
+.party-GRN:after {
+	margin-left: 2em;
+	padding-right: 2em;
+	background-image: url('/assets/images/GreenParty.svg');
+	background-repeat: no-repeat;
+	background-size: 30px 30px;
+	content: ""
+}

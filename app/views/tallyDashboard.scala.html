@@ -24,6 +24,9 @@
 							</div>
 							<div id="error-info" class="col-md-6"></div>
 						</div>
+						<div class="form-footer">
+							<button id="confirm-tally" type="button" class="btn btn-success btn-lg btn-block">Publish</button>
+						</div>
 						<ul id="candidates" class="list-group-item">
 							@candidates.map { candidate =>
 								<div class="candidate-entry" data-candidate-id="@candidate.id" data-candidate-name="@candidate.name" data-candidate-party="@candidate.party">
@@ -31,7 +34,7 @@
 										<div class="candidate-inner list-group-item">
 											<ul class="list-inline">
 												<li class="candidate-left">
-													<h3 class="text-primary candidate-name"></h3>
+													<h3 class="candidate-name"></h3>
 												</li>
 												<li>
 													<span class="candidate-tally text-primary"></span>
@@ -42,9 +45,6 @@
 								</div>
 							}
 						</ul>
-						<div class="form-footer">
-							<button id="confirm-tally" type="button" class="btn btn-success btn-lg btn-block">Publish</button>
-						</div>
 					</div>
 					<script type="text/javascript" src="@routes.Assets.at("javascripts/custom/tallysys/dashboard.js")"></script>
 				</div>

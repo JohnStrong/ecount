@@ -49,8 +49,6 @@
 				candidate = theTallies[_candidate.cid];
 				candidate.tally = _candidate.tally;
 
-				console.log(theTallies);
-
 				localStorage.setItem('tally', JSON.stringify(theTallies));
 			},
 
@@ -126,8 +124,9 @@
 		// get tally from local store or set to 0...
 		this.candidate.tally = storage.getCandidateTally(this.candidate.cid);
 
-		$(this).find('.candidate-name').text(this.candidate.name +
-			' (' + this.candidate.party + ')');
+		$(this).find('.candidate-name').text(this.candidate.name).addClass('party-' + this.candidate.party);
+
+		//.closest('.candidate-left').addClass('party-' + this.candidate.party);
 
 		$(this).find('.candidate-tally').text(this.candidate.tally);
 	});
@@ -148,7 +147,6 @@
 	}, function() {
 		// todo: hover out...
 	});
-
 
 	// fired event user clicks complete button in #dash-main...
 	$confirmTally.click(function(e) {
