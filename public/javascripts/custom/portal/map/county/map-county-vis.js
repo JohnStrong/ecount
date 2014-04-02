@@ -293,7 +293,7 @@ ecountVis.factory('Visualize',
 			container.html(FAILED_VIS_MESSAGE);
 		}
 
-		function createDialog(elemId, title, width, close) {
+		function createDialog(elemId, title, width, _close) {
 			var dialog = $(elemId).dialog({
 				'title':  		title, 
 				'width': 		width,
@@ -301,8 +301,8 @@ ecountVis.factory('Visualize',
 				'position': 	{ my: "top", at: "top", of: '#live-feed' },
 				'resizable': 	false,
 				'draggable': 	false,
-				'closeText': 	'[x]',
-				'close': close
+				'closeText': 	'close',
+				'close': 		_close
 			});
 
 			return dialog;
@@ -353,9 +353,6 @@ ecountVis.factory('Visualize',
 				},
 
 				ded: function(elem, dedId, props) {
-
-					// empty current element to make way for fresh results...
-					if(elem) elem.empty();
 
 					// get correct filter for ded results...
 					var filterWithDEDId = districtFilter(dedId);

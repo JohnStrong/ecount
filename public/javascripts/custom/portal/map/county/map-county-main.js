@@ -318,7 +318,6 @@ mapCountyMain.controller('DistrictsVisController',
 
 				var visualize = Visualize(tallyResults.results);
 				visualize.countyWithDialog(tallyTitle, {'width' : visWidth}, function() {
-					console.log('on close');
 					$scope.activeCid = null;
 				});
 			}
@@ -352,6 +351,11 @@ mapCountyMain.controller('DistrictVisController',
 	function($scope, $element, Visualize) {
 
 		var DISTRICT_VIS_CONTAINER_ID = '#district-vis-body',
+
+			DISTRICT_RESULTS_NOT_FOUND_ALERT = $('<div class="alert alert-warning">' +
+				'there are no tally results for that distirct.' +
+				'they will be made available soon.' +
+				'</div>');
 
 			districtVisElem = $element.find(DISTRICT_VIS_CONTAINER_ID);
 
@@ -391,11 +395,18 @@ mapCountyMain.controller('DistrictVisController',
 				}
 			}
 
-			// flash if results empty...
+			if(districtVisElem) districtVisElem.empty();
 
-			// visualize results for ded by gid...
-			var visualize = Visualize(results);
-			visualize.ded(districtVisElem, $scope.districtId);
+			// flash if results empty...
+			if(results.length === 0) {
+				districtVisElem.append(DISTRICT_RESULTS_NOT_FOUND_ALERT)
+			} else {
+
+				// visualize results for ded by gid...
+				var visualize = Visualize(results);
+				visualize.ded(districtVisElem, $scope.districtId);
+
+			}
 
 		}
 
@@ -406,6 +417,7 @@ mapCountyMain.controller('DistrictVisController',
 
 		// if constituency results change we have to update vis with new results...
 		$scope.$on('districtVis', function(source, gid) {
+
 			$scope.districtId = gid;
 			visualizeDistrictResults();
 		});
