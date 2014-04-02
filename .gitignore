@@ -18,3 +18,4 @@ test/scala
 test/javascript/unit/lib/*
 test/javascript/unit/src/*
 tally_system_utils/*
+verification_keys_demo.txt

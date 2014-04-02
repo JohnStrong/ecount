@@ -143,9 +143,9 @@
 		$(this).find('.candidate-tally')
 			.text(this.candidate.tally);
 	}).hover(function() {
-		// todo: hover in...
+		// 
 	}, function() {
-		// todo: hover out...
+		// 
 	});
 
 	// fired event user clicks complete button in #dash-main...
