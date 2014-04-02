@@ -1,4 +1,4 @@
-logs
+logs/
 lib/
 project/project
 project/target
@@ -17,4 +17,4 @@ dist
 test/scala
 test/javascript/unit/lib/*
 test/javascript/unit/src/*
-tally_system_utils/
+tally_system_utils/*
