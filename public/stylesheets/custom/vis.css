@@ -5,8 +5,9 @@
 }
 
 .info-pane {
-	background-color: #222222;
-	border-radius: 0.25em;
+	background-color: #FFFFFF;
+	color: #333333;
+	font-weight: 500;
     z-index: 2000;
 }
 
@@ -19,9 +20,8 @@
 	padding: 10% 20%;
 }
 
-.alert-vis {
-	background-color: #222222;
-	color: #FFFFFF;
+.info-pane .county-vis {
+	background-color: #333333
 }
 
 .county-vis {
@@ -35,11 +35,11 @@
 
 
 .ui-dialog {
-	background-color: #222222;
+	background-color: #FAFAFA;
 }
 
-.ui-dialog .ui-dialog-titlebar {
-	background-color: #222222;
+.ui-dialog .info-pane {
+	background-color: inherit;
 }
 
 /*

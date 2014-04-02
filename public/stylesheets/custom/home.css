@@ -13,6 +13,10 @@ header a.dropdown-toggle {
 	vertical-align: middle;
 }
 
+p, a, strong, small, span, li, h1, h2, h3 {
+    font-family: 'Verdana';
+}
+
 .pin {
 	position: relative;
 }

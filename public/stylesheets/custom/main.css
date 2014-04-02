@@ -1,4 +1,3 @@
-
 * {
     padding: 0;
     margin: 0;
@@ -25,6 +24,10 @@ ul {
     list-style: none;
 }
 
+p, a, strong, small, span, li, h1, h2, h3 {
+    font-family: 'Verdana';
+}
+
 .container {
     width: 90%;
     margin: 0 auto;
@@ -47,6 +50,10 @@ ul {
 #interactive-main {
     min-height: 95%;
     height: 95%;
+}
+
+.legend {
+    padding: 5%;
 }
 
 /**

@@ -111,6 +111,10 @@ ecountVis.service('StatVisualization', function() {
 			domain =  _domain,
 
 			// general chart...
+			XLINK_NS_PATH = 'http://www.w3.org/1999/xlink',
+
+			CHART_CLASS = 'info-pane',
+
 			CANVAS_HEIGHT_PADDING = 30,
 			PADDING = [20, 180, 25],
 
@@ -124,7 +128,6 @@ ecountVis.service('StatVisualization', function() {
 
 			BAR_HEIGHT_TOTAL = BAR_HEIGHT_OFFSET * dataset.length - PADDING[0],
 			BAR_MIN_WIDTH = 1,
-			BAR_BORDER_COLOR = '#FFFFFF',
 			BAR_BORDER_WIDTH = 2,
 
 			YSCALE_PADDING_PERCENT = 0.2,
@@ -137,7 +140,8 @@ ecountVis.service('StatVisualization', function() {
 			// chart axis...
 			XAXIS_ORIENT = 'bottom',
 			XAXIS_TICK_TOTAL = 8,
-			XAXIS_FILL_COLOR = '#FFFFFF',
+
+			LABEL_FILL_COLOR = '#333333',
 
 			// legend...
 			LEGEND_RECT_WIDTH = 20,
@@ -158,9 +162,9 @@ ecountVis.service('StatVisualization', function() {
 			// set up chart with container styles and svg vector...
 			chart = d3.select(domain)
 				.append('div')
-				.attr('class', 'info-pane')
+				.attr('class', CHART_CLASS)
 				.append('svg:svg')
-				.attr('xlink', 'http://www.w3.org/1999/xlink')
+				.attr('xlink', XLINK_NS_PATH)
 				.attr('width', WIDTH)
 				.attr('height', HEIGHT + PADDING[0]),
 
@@ -196,7 +200,7 @@ ecountVis.service('StatVisualization', function() {
 						return xScale(ex) + BAR_MIN_WIDTH;
 					})
 				.style('fill', function(d, i) { return colorScale(i); })
-				.style('stroke', BAR_BORDER_COLOR)
+				.style('stroke', LABEL_FILL_COLOR)
 				.style('stroke-width', BAR_BORDER_WIDTH)
 				.attr('index_value', function(d, i) { return 'item-' + i; })
 				.attr('color_value', function(d, i) { return colorScale(i); });
@@ -206,7 +210,7 @@ ecountVis.service('StatVisualization', function() {
 			.attr('class', 'axis')
 			.attr('transform', 'translate(' + PADDING[0] + ',' +
 				yScale.rangeExtent()[1] + ')')
-			.style('fill', XAXIS_FILL_COLOR)
+			.style('fill', LABEL_FILL_COLOR)
 			.call(xAxis);
 
 		// legend...
@@ -230,7 +234,7 @@ ecountVis.service('StatVisualization', function() {
 					.attr('x', textLen)
 					.attr('dy', yScale(i) + LEGEND_RECT_HEIGHT/2)
 					.attr('height', LEGEND_TEXT_HEIGHT)
-					.style('fill', colorScale(i))
+					.style('fill', LABEL_FILL_COLOR)
 					.style('font-size', '.75em')
 					.text(d.name)
 					.each(function(d) {
@@ -310,6 +314,7 @@ ecountVis.factory('Visualize',
 						
 						elem = createDialog('#vis-dialog', title, width + DIALOG_PADDING);
 
+					// empty dialogs contents...
 					if(elem) elem.empty();
 
 					TallyExtractor(countyFilter, results)(function(resultSet) {
