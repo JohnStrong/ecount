@@ -43,6 +43,8 @@ ecountVis.factory('FilterFor',
 						}
 					});
 
+					console.log('ded result', result);
+
 					return {
 						'id' : datum.id,
 						'name' : datum.name,
@@ -64,6 +66,8 @@ ecountVis.service('TallyExtractor',
 				var resultSet = $.map(dataSet, function(datum) {
 					return filter(datum);
 				});
+
+				console.log('result set', resultSet);
 
 				callback(resultSet);
 			}
@@ -115,7 +119,7 @@ ecountVis.service('StatVisualization', function() {
 
 			CHART_CLASS = 'info-pane',
 
-			CANVAS_HEIGHT_PADDING = 30,
+			CANVAS_HEIGHT_PADDING = 40,
 			PADDING = [20, 180, 25],
 
 			WIDTH = props.width,
@@ -289,7 +293,7 @@ ecountVis.factory('Visualize',
 			container.html(FAILED_VIS_MESSAGE);
 		}
 
-		function createDialog(elemId, title, width) {
+		function createDialog(elemId, title, width, close) {
 			var dialog = $(elemId).dialog({
 				'title':  		title, 
 				'width': 		width,
@@ -297,7 +301,8 @@ ecountVis.factory('Visualize',
 				'position': 	{ my: "top", at: "top", of: '#live-feed' },
 				'resizable': 	false,
 				'draggable': 	false,
-				'closeText': 	'[x]'  
+				'closeText': 	'[x]',
+				'close': close
 			});
 
 			return dialog;
@@ -306,13 +311,13 @@ ecountVis.factory('Visualize',
 		return function(results) {
 
 			return {
-				countyWithDialog: function(dialogTitle, props) {
+				countyWithDialog: function(dialogTitle, props, onClose) {
 
 					var width = props? props.width : COUNTY_VIS_PIXEL_WIDTH,
 
 						title = dialogTitle,
 						
-						elem = createDialog('#vis-dialog', title, width + DIALOG_PADDING);
+						elem = createDialog('#vis-dialog', title, width + DIALOG_PADDING, onClose);
 
 					// empty dialogs contents...
 					if(elem) elem.empty();
@@ -358,6 +363,8 @@ ecountVis.factory('Visualize',
 					$.each(results, function(k, result) {
 
 						TallyExtractor(filterWithDEDId, result)(function(resultSet) {
+
+							console.log('te', resultSet);
 
 							if(!resultSet || resultSet.length <= 0) {
 								failedVisualizationView(elem);

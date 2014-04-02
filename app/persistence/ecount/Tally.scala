@@ -7,7 +7,7 @@ import service.dispatch.tallysys.{UpdatedCandidateResult, NewCandidateResult}
 import models.tallysys._
 import models.stat.{ElectionCandidate, Election}
 
-import service.dispatch.tallysys.PartialTally
+import service.dispatch.tallysys.{PartialTally, CandidateExtractor}
 
 object Tally {
 
@@ -57,14 +57,15 @@ object Tally {
     </xsql>
   }
 
-  val getElectionById = new SelectOneBy[Int, Election] {
-    resultMap = new ResultMap[Election] {
+  val getElectionById = new SelectOneBy[Int, TallyElection] {
+    resultMap = new ResultMap[TallyElection] {
       result(property = "id", column = "election_id")
       result(property = "title", column = "election_title")
+      result(property = "constituencyId", column = "constituency_id")
     }
 
     def xsql = <xsql>
-      SELECT e.election_id, e.election_title
+      SELECT e.election_id, e.election_title, constituency_id
       FROM stat_bank_elections as e,
       tally_sys_ballot_box as b
       WHERE b.ballot_box_id = #{{id}}
@@ -72,7 +73,7 @@ object Tally {
     </xsql>
   }
 
-  val getElectionCandidates = new SelectListBy[Int, ElectionCandidate] {
+  val getElectionCandidates = new SelectListBy[CandidateExtractor, ElectionCandidate] {
 
     resultMap = new ResultMap[ElectionCandidate] {
       result(property = "id", column = "candidate_id")
@@ -86,7 +87,8 @@ object Tally {
       stat_bank_tally_constituency_candidates as cc,
       stat_bank_election_to_constituency as ec,
       stat_bank_parties as p
-      WHERE ec.election_id = #{{id}}
+      WHERE ec.election_id = #{{electionId}}
+      AND cc.constituency_id = #{{constituencyId}}
       AND cc.constituency_id = ec.constituency_id
       AND cc.party_id = p.party_id
     </xsql>

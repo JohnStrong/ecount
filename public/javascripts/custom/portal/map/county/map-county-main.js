@@ -78,6 +78,8 @@ mapCountyMain.factory('Tally',
 			this.socket.onmessage = function(e) {
 				var updatedTally = JSON.parse(e.data);
 
+				console.log('updatedTally', updatedTally);
+
 				this.constitunecyResults = new Updater(this.constitunecyResults, updatedTally);
 
 				// alert the districts visualization view that an update has occured...
@@ -272,6 +274,8 @@ mapCountyMain.controller('DistrictsMapController',
 				var imap = Map.draw('imap-' + countyId, geom, {'style' : MapStyle.base},
 					function(target) {
 
+						console.log('target', $scope);
+
 						// district visualization...
 						$scope.districtChange(target.gid);
 					});
@@ -312,10 +316,11 @@ mapCountyMain.controller('DistrictsVisController',
 					// get desired width...
 					visWidth = $element.closest(MAP_CONTAINER_CLASS).width()/VIS_VIEWPORT_DIVIDE;
 
-				console.log($scope, tallyResults);
-
 				var visualize = Visualize(tallyResults.results);
-				visualize.countyWithDialog(tallyTitle, {'width' : visWidth});
+				visualize.countyWithDialog(tallyTitle, {'width' : visWidth}, function() {
+					console.log('on close');
+					$scope.activeCid = null;
+				});
 			}
 
 		// watch for updates to tally results or the selected constituency id
@@ -352,6 +357,23 @@ mapCountyMain.controller('DistrictVisController',
 
 		$scope.districtId = null;
 
+		function containsDedId(resultSet) {
+			
+			found = false;
+
+			$.each(resultSet[0].results, function(k, v) {
+
+				console.log(v);
+
+				if(v.dedId === $scope.districtId) {
+					found = true;
+					return;
+				}
+			});
+
+			return found;
+		}
+
 		// visualizes tally results for the active district (using districtId)...
 		function visualizeDistrictResults() {
 			var results = [],
@@ -360,9 +382,16 @@ mapCountyMain.controller('DistrictVisController',
 
 			for(var r in constitunecyResults) {
 				if(constitunecyResults[r].results.length > 0) {
-					results.push(constitunecyResults[r].results);
+					var found = containsDedId(constitunecyResults[r].results);
+
+					if(found === true) {
+						results.push(constitunecyResults[r].results);
+						break;
+					}
 				}
 			}
+
+			// flash if results empty...
 
 			// visualize results for ded by gid...
 			var visualize = Visualize(results);

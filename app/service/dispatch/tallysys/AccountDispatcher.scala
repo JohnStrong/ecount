@@ -6,6 +6,8 @@ import persistence.ecount.Tally
 import persistence.ecount.PersistenceContext._
 import service.util.{Cache, Crypto}
 
+case class CandidateExtractor(electionId:Int, constituencyId:Int)
+
 object AccountDispatcher {
 
   private def getMaybeAccount(username:String) = {
@@ -28,9 +30,10 @@ object AccountDispatcher {
       Tally.getElectionById(ballotBoxId)
     }}
   }
-  def getElectionCandidates(electionId:Int) = {
+  def getElectionCandidates(electionId:Int, constituencyId:Int) = {
     withConnection { implicit conn => {
-       Tally.getElectionCandidates(electionId).toList
+       val ce = CandidateExtractor(electionId, constituencyId)
+       Tally.getElectionCandidates(ce).toList
     }}
   }
 

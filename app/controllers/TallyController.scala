@@ -153,7 +153,7 @@ object TallyController extends Controller {
 
               AccountDispatcher.getElectionByBallotBoxId(ballotBoxId) match {
                 case Some(election) => {
-                  val candidates = AccountDispatcher.getElectionCandidates(election.id)
+                  val candidates = AccountDispatcher.getElectionCandidates(election.id, election.constituencyId)
                   Ok(views.html.tallyDashboard(election, candidates))
                 }
                 case _ => {
