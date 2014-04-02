@@ -41,10 +41,6 @@ body {
 	padding-right: 1.5%;
 }
 
-.error-body {
-
-}
-
 .form-alert {
 	margin: 0 auto;
 	text-align: center;
@@ -55,7 +51,9 @@ body {
 	color: #A94442;
 }
 
-.suggestion { }
+.help-inline {
+	color: #C09858;
+}
 
 @media only screen and (max-width : 640px) {
 	.suggestion {

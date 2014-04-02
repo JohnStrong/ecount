@@ -170,7 +170,7 @@ ecountVis.service('StatVisualization', function() {
 
 			xScale = d3.scale.linear().domain([0, d3.max(dataset,
 					function(d) { return getOrZero(d); })
-				]).range([0, WIDTH - PADDING[0] - PADDING[1] - PADDING[2]]),
+				]).range([0, WIDTH - PADDING[2] - PADDING[1] - PADDING[2]]),
 
 			yScale = d3.scale.ordinal().domain(d3.range(dataset.length)).rangeRoundBands([0,
 				BAR_HEIGHT_TOTAL], YSCALE_PADDING_PERCENT),
