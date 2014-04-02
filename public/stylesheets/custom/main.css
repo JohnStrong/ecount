@@ -24,7 +24,7 @@ ul {
     list-style: none;
 }
 
-p, a, strong, small, span, li, h1, h2, h3 {
+p, a, strong, small, span, li, h1, h2, h3, label {
     font-family: 'Verdana';
 }
 
