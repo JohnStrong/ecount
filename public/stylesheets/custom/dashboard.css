@@ -1,3 +1,7 @@
+.dim {
+	overflow-y: scroll;
+}
+
 #dashboard {
 	padding-top: 10%;
 }
